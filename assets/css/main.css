@@ -1,0 +1,18 @@
+/* Catalog List Styles */
+#catalogList { height: 100vh; }
+
+#catalogList aside, #catalogList section { padding: 10px; background: #222; border: 1px #333 solid; border-radius: 6px; }
+
+#catalogList aside .filter-group { margin-bottom: 20px; }
+
+#catalogList aside .filter-group h5 { margin-top: 0; }
+
+#catalogList aside .filter-group ul { list-style: none; padding: 0; }
+
+#catalogList aside .filter-group ul a { display: block; padding: 4px; color: blueviolet; font-size: 11px; border: 1px #333 solid; text-transform: capitalize; }
+
+#catalogList aside .filter-group ul a:hover, #catalogList aside .filter-group ul a:focus { color: #b96ffd; text-decoration: none; }
+
+#catalogList aside .filter-group ul a.active { background: #333; border: 1px #555 solid; }
+
+#catalogList aside .filter-group ul a.disabled { color: #AAA; opacity: 0.4; pointer-events: none; }

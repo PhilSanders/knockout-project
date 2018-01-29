@@ -1,0 +1,30 @@
+@import 'node_modules/bootstrap-sass/assets/stylesheets/bootstrap';
+
+body {
+  background: #111;
+}
+
+h1, h2 {
+  color: #FFF;
+}
+
+h3, h4 ,h5 ,h6 {
+  color: #AAA;
+}
+
+table {
+  table-layout: fixed;
+  width: 100%;
+  font-size: 12px;
+  border: none;
+  thead {
+    background: #111;
+  }
+  tr {
+    border-bottom: 1px #333 solid;
+  }
+  th, td {
+    padding: 4px;
+    color: #CCC;
+  }
+}
