@@ -17,7 +17,7 @@ gulp.task('build-css', function() {
           .pipe(gulp.dest(sassConfig.outputDir));
 });
 
-gulp.task('webserver', function() {
+gulp.task('webserver', ['watch'], function() {
   gulp.src('.')
     .pipe(webserver({
       livereload: true,
