@@ -3,6 +3,7 @@
     "bootstrap-sass": "^3.3.7",
     "gulp": "^3.9.1",
     "gulp-sass": "^3.1.0",
+    "gulp-webserver": "^0.9.1",
     "knockout": "^3.5.0-beta"
   }
 }
