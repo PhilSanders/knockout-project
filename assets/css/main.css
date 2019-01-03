@@ -1,7 +1,7 @@
 /* Catalog List Styles */
 #catalogList { height: 100vh; }
 
-#catalogList aside, #catalogList section { padding: 10px; background: #222; border: 1px #333 solid; border-radius: 6px; }
+#catalogList aside, #catalogList section { margin-bottom: 30px; padding: 10px; background: #222; border: 1px #333 solid; border-radius: 6px; }
 
 #catalogList aside .filter-group { margin-bottom: 20px; }
 

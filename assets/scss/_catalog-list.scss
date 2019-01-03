@@ -4,6 +4,7 @@
   height: 100vh;
   aside,
   section {
+    margin-bottom: 30px;
     padding: 10px;
     background: #222;
     border: 1px #333 solid;
@@ -22,7 +23,6 @@
           display: block;
           padding: 4px;
           color: blueviolet;
-//          font-size: 11px;
           border: 1px #333 solid;
           text-transform: capitalize;
           &:hover,
