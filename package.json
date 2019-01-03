@@ -1,9 +1,22 @@
 {
+  "name": "music-catalog",
+  "version": "1.0.0",
+  "description": "PillFORM Music Catalog",
+  "main": "gulpFile.js",
   "dependencies": {
+    "knockout": "^3.5.0-beta"
+  },
+  "devDependencies": {
     "bootstrap-sass": "^3.3.7",
+    "del": "^3.0.0",
     "gulp": "^3.9.1",
     "gulp-sass": "^3.1.0",
-    "gulp-webserver": "^0.9.1",
-    "knockout": "^3.5.0-beta"
-  }
+    "gulp-useref": "^3.1.6",
+    "gulp-webserver": "^0.9.1"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Phil Sanders (phil@sourcetoad.com)",
+  "license": "ISC"
 }
