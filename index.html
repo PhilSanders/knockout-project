@@ -9,7 +9,7 @@
   <link href="assets/css/main.css" rel="stylesheet">
   <!--[if lt IE 9]>
     <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script> 
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
   <![endif]-->
  </head>
  <body>
@@ -22,15 +22,16 @@
    <div class="row">
     <div class="col-sm-3">
      <aside>
-      <h4>Filters</h4>
+      <h4>Filter By</h4>
+      <br>
       <div data-bind="foreach: { data: getFilterGroupAsList(), as: 'filterGroup' }">
        <div class="filter-group">
         <h5 data-bind="text: filterGroup.name"></h5>
         <ul data-bind="foreach: { data: filterGroup.filters, as: 'filter' }">
          <li>
           <a href="href" data-bind="text: filter.value,
-                     click: function() { $root.filterClicked(filter) },
-                     css: { active: filter.active(), disabled: filter.disabled() }"></a>
+             click: function() { $root.filterClicked(filter) },
+             css: { active: filter.active(), disabled: filter.disabled() }"></a>
          </li>
         </ul>
        </div>
@@ -39,7 +40,6 @@
     </div>
     <div class="col-sm-9">
      <section>
-      <h4>Compilations</h4>
       <table>
        <thead>
         <tr>
@@ -51,34 +51,7 @@
          <th>Tags</th>
         </tr>
        </thead>
-       <tbody data-bind="foreach: filterdCompilations">
-        <tr>
-         <td data-bind="text: catNum"></td>
-         <td data-bind="text: artist"></td>
-         <td data-bind="text: title"></td>
-         <td data-bind="text: genre"></td>
-         <td data-bind="text: year"></td>
-         <td data-bind="foreach: { data: tags, as: 'tag' }">
-          <span data-bind="text: tag"></span>,
-         </td>
-        </tr>
-       </tbody>
-      </table>
-     </section>
-     <section>
-      <h4>Singles</h4>
-      <table>
-       <thead>
-        <tr>
-         <th>Cat#</th>
-         <th>Artist</th>
-         <th>Title</th>
-         <th>Genre</th>
-         <th>Year</th>
-         <th>Tags</th>
-        </tr>
-       </thead>
-       <tbody data-bind="foreach: filteredTracks">
+       <tbody data-bind="foreach: filteredReleases">
         <tr>
          <td data-bind="text: catNum"></td>
          <td data-bind="text: artist"></td>

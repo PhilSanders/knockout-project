@@ -7,15 +7,11 @@ const CatalogListCore = new function() {
   core.catalogViewModel = function() {
     const coreVM = this;
 
-    coreVM.compilationData = [];
-
-    coreVM.trackData = [];
+    coreVM.releasesData = [];
 
     coreVM.filterGroups = {};
 
-    coreVM.filterdCompilations = ko.observableArray([]);
-
-    coreVM.filteredTracks = ko.observableArray([]);
+    coreVM.filteredReleases = ko.observableArray([]);
 
     coreVM.getFilterGroupAsList = function() {
       let filterGroupList = [];
@@ -35,48 +31,27 @@ const CatalogListCore = new function() {
       //console.log(filter);
       core.toggleFilter(filter);
       coreVM.setItemFlags();
-      coreVM.filteredTracks(coreVM.getFilteredTracks());
-      coreVM.filterdCompilations(coreVM.getFilteredCompilations());
+      coreVM.filteredReleases(coreVM.getFilteredReleases());
     };
 
     coreVM.setItemFlags = function() {
-      // set flag for single tracks
-      coreVM.trackData.forEach(function(item) {
+      coreVM.releasesData.forEach(function(item) {
         item.active(false);
       });
 
-      coreVM.filteredTracks().forEach(function(item) {
-        item.active(false);
-      });
-
-      // set flags for compilations
-      coreVM.compilationData.forEach(function(item) {
-        item.active(false);
-      });
-
-      coreVM.filterdCompilations().forEach(function(item) {
+      coreVM.filteredReleases().forEach(function(item) {
         item.active(false);
       });
     };
 
-    coreVM.getFilteredTracks = function() {
-      let filteredTracks = coreVM.trackData;
+    coreVM.getFilteredReleases = function() {
+      let filteredReleases = coreVM.releasesData;
 
       for (let key in coreVM.filterGroups) {
-        filteredTracks = core.filterByGroup(key, filteredTracks);
+        filteredReleases = core.filterByGroup(key, filteredReleases);
       }
 
-      return filteredTracks;
-    };
-
-    coreVM.getFilteredCompilations = function() {
-      let filterdCompilations = coreVM.compilationData;
-
-      for (let key in coreVM.filterGroups) {
-        filterdCompilations = core.filterByGroup(key, filterdCompilations);
-      }
-
-      return filterdCompilations;
+      return filteredReleases;
     };
   };
 
@@ -113,7 +88,6 @@ const CatalogListCore = new function() {
 
   core.filterByGroup = function(filterGroup, items) {
     const activeFilters = core.viewModel.filterGroups[filterGroup].selected();
-    console.log(activeFilters);
     return activeFilters.length !== 0 ? core.applyFilters(activeFilters, items) : items;
   };
 
@@ -127,38 +101,23 @@ const CatalogListCore = new function() {
   };
 
   core.updateDisabledFlagsInGroup = function(filterGroupName) {
-    let filteredTracks = core.viewModel.trackData;
+    let filteredReleases = core.viewModel.releasesData;
     // apply all filters in other groups
     for (let key in core.viewModel.filterGroups) {
       if (key !== filterGroupName) {
-        filteredTracks = core.filterByGroup(key, filteredTracks);
+        filteredReleases = core.filterByGroup(key, filteredReleases);
       }
     }
-
-//    let filteredCompilations = core.viewModel.compilationData;
-//    // apply all filters in other groups
-//    for (let key in core.viewModel.filterGroups) {
-//      if (key !== filterGroupName) {
-//        filteredCompilations = core.filterByGroup(key, filteredCompilations);
-//      }
-//    }
 
     const filterGroup = core.viewModel.filterGroups[filterGroupName];
     filterGroup.all.forEach(function(filter) {
       // disable filter if applying it would result in an empty set
-      const tempFilteredTracks = core.applyFilters([filter], filteredTracks);
-      if (tempFilteredTracks.length === 0) {
+      const tempFilteredReleases = core.applyFilters([filter], filteredReleases);
+      if (tempFilteredReleases.length === 0) {
         core.disableFilter(filterGroup.selected, filter)
       } else {
         core.enableFilter(filter);
       }
-
-//      const tempFilteredComps = core.applyFilters([filter], filteredCompilations);
-//      if (tempFilteredComps.length === 0) {
-//        core.disableFilter(filterGroup.selected, filter)
-//      } else {
-//        core.enableFilter(filter);
-//      }
     });
   };
 
@@ -181,6 +140,22 @@ const CatalogListCore = new function() {
     };
   };
 
+  core.getTypeFilters = function(data) {
+    let typeFiltersArray = [];
+
+    data.forEach(function(item) {
+      const filter = {
+        value: item.type,
+      };
+
+      if (filter.value && typeFiltersArray.map(function(f){ return f.value }).indexOf(filter.value) === -1) {
+        typeFiltersArray.push(filter);
+      }
+    });
+
+    return typeFiltersArray;
+  };
+
   core.getYearFilters = function(data) {
     let yearFiltersArray = [];
 
@@ -188,6 +163,7 @@ const CatalogListCore = new function() {
       const filter = {
         value: item.year,
       };
+
       if (filter.value && yearFiltersArray.map(function(f){ return f.value }).indexOf(filter.value) === -1) {
         yearFiltersArray.push(filter);
       }
@@ -203,27 +179,13 @@ const CatalogListCore = new function() {
       const filter = {
         value: item.genre,
       };
+
       if (filter.value && genreFiltersArray.map(function(f){ return f.value }).indexOf(filter.value) === -1) {
         genreFiltersArray.push(filter);
       }
     });
 
     return genreFiltersArray;
-  };
-
-  core.getCompilationFilters = function(data) {
-    let compFiltersArray = [];
-
-    data.forEach(function(item) {
-      const filter = {
-        value: item.title,
-      };
-      if (filter.value && compFiltersArray.map(function(f){ return f.value }).indexOf(filter.value) === -1) {
-        compFiltersArray.push(filter);
-      }
-    });
-
-    return compFiltersArray;
   };
 
   core.getTagFilters = function(data) {
@@ -234,6 +196,7 @@ const CatalogListCore = new function() {
         const filter = {
           value: tag,
         };
+
         if (tag && tagFiltersArray.map(function(f){ return f.value }).indexOf(filter.value) === -1) {
           tagFiltersArray.push(filter);
         }
@@ -245,47 +208,35 @@ const CatalogListCore = new function() {
 
   core.initCallback = function(catalogData) {
     // setup catalog data
-    core.viewModel.compilationData = catalogData.compilations.map(function(item) {
-      item.active = ko.observable(true);
-      return item;
-    });
-
-    core.viewModel.trackData = catalogData.tracks.map(function(item) {
+    core.viewModel.releasesData = catalogData.releases.map(function(item) {
       item.active = ko.observable(true);
       return item;
     });
 
     // setup filter groups
-    const yearFilters = core.getYearFilters(catalogData.tracks);
+    const typeFilters = core.getTypeFilters(catalogData.releases);
+    core.addFilterGroup('Type', typeFilters, function(filter, item) {
+      return item.type === filter.value;
+    });
+
+    const yearFilters = core.getYearFilters(catalogData.releases);
     core.addFilterGroup('Year', yearFilters, function(filter, item) {
       return item.year === filter.value;
     });
 
-    const compFilters = core.getCompilationFilters(catalogData.compilations);
-    core.addFilterGroup('Compilation', compFilters, function(filter, item) {
-      return item.title === filter.value;
-    });
-
-    const genreFilters = core.getGenreFilters(catalogData.tracks);
+    const genreFilters = core.getGenreFilters(catalogData.releases);
     core.addFilterGroup('Genre', genreFilters, function(filter, item) {
       return item.genre === filter.value;
     });
 
-    const tagFilters = core.getTagFilters(catalogData.tracks);
+    const tagFilters = core.getTagFilters(catalogData.releases);
     core.addFilterGroup('Tags', tagFilters, function(filter, item) {
       return item.tags.indexOf(filter.value) !== -1;
     });
 
-    core.viewModel.filteredTracks(core.viewModel.getFilteredTracks());
-
-    core.viewModel.filterdCompilations(core.viewModel.getFilteredCompilations());
+    core.viewModel.filteredReleases(core.viewModel.getFilteredReleases());
 
     core.updateDisabledFlags();
-
-    // debug
-//    console.log('comps',core.viewModel.compilationData);
-//    console.log('tracks',core.viewModel.filteredTracks());
-//    console.log('filters',core.viewModel.filterGroups);
 
     ko.applyBindings(core.viewModel, document.getElementById('catalogList'));
   };
