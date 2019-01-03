@@ -2680,7 +2680,7 @@ h1, h2 { color: #FFF; }
 
 h3, h4, h5, h6 { color: #AAA; }
 
-table { table-layout: fixed; width: 100%; font-size: 12px; border: none; }
+table { table-layout: fixed; width: 100%; border: none; }
 
 table thead { background: #111; }
 
