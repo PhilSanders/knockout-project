@@ -1,0 +1,42 @@
+/* Catalog List Styles */
+
+#catalogList {
+  height: 100vh;
+  aside,
+  section {
+    margin-bottom: 30px;
+    padding: 10px;
+    background: #222;
+    border: 1px #333 solid;
+    border-radius: 6px;
+  }
+  aside {
+    .filter-group {
+      margin-bottom: 20px;
+      h5 {
+        margin-top: 0;
+      }
+      ul {
+        li {
+          a {
+            display: block;
+            padding: 4px;
+            border: 1px #333 solid;
+            border-bottom-width: 0;
+            text-transform: capitalize;
+            &.active {
+              background: blueviolet;
+              border-bottom-width: 0;
+              color: #FFF;
+            }
+          }
+          &:last-child {
+            a {
+              border-bottom-width: 1px;
+            }
+          }
+        }
+      }
+    }
+  }
+}

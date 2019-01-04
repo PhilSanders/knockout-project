@@ -5,15 +5,15 @@ var del = require('del'),
     useref = require('gulp-useref');
 
 var sassConfig = {
-    inputDir: 'assets/scss/**/*.scss',
+    inputDir: 'assets/css/scss/**/*.scss',
     outputDir: 'assets/css',
     options: {
-      outputStyle: 'compact'
+      outputStyle: 'expanded'
     }
 }
 
 gulp.task('move-assets', ['clean'], function() {
-  return gulp.src(['assets/**'])
+  return gulp.src(['assets/*/*.*'])
       .pipe(gulp.dest('dist/assets'))
 });
 

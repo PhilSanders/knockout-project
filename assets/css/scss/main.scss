@@ -1,0 +1,66 @@
+
+@import "variables";
+
+body {
+  background: #111;
+}
+
+h1, h2 {
+  color: #FFF;
+}
+
+h3, h4 ,h5 ,h6 {
+  color: #AAA;
+}
+
+table {
+  table-layout: fixed;
+  width: 100%;
+  border: none;
+  thead {
+    background: blueviolet;
+  }
+  tr {
+    border-bottom: 1px #333 solid;
+  }
+  th, td {
+    padding: 4px;
+    color: #CCC;
+  }
+}
+
+a,
+a:hover,
+a:focus,
+a:active {
+  color: blueviolet;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #b96ffd;
+  text-decoration: none;
+}
+
+a.disabled,
+a.disabled:hover,
+a.disabled:focus,
+a.disabled:active {
+  color: rgba(170,170,170, 0.4);
+  pointer-events: none;
+}
+
+.unstyled-list {
+  list-style: none;
+  padding: 0;
+}
+
+.list-inline {
+  font-size: 0;
+  li {
+    display: inline-block;
+    font-size: $font-size-base;
+  }
+}
+
+@import 'catalog-list';

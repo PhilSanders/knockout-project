@@ -1,18 +1,105 @@
+body {
+  background: #111;
+}
+
+h1, h2 {
+  color: #FFF;
+}
+
+h3, h4, h5, h6 {
+  color: #AAA;
+}
+
+table {
+  table-layout: fixed;
+  width: 100%;
+  border: none;
+}
+
+table thead {
+  background: blueviolet;
+}
+
+table tr {
+  border-bottom: 1px #333 solid;
+}
+
+table th, table td {
+  padding: 4px;
+  color: #CCC;
+}
+
+a,
+a:hover,
+a:focus,
+a:active {
+  color: blueviolet;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #b96ffd;
+  text-decoration: none;
+}
+
+a.disabled,
+a.disabled:hover,
+a.disabled:focus,
+a.disabled:active {
+  color: rgba(170, 170, 170, 0.4);
+  pointer-events: none;
+}
+
+.unstyled-list {
+  list-style: none;
+  padding: 0;
+}
+
+.list-inline {
+  font-size: 0;
+}
+
+.list-inline li {
+  display: inline-block;
+  font-size: 14px;
+}
+
 /* Catalog List Styles */
-#catalogList { height: 100vh; }
+#catalogList {
+  height: 100vh;
+}
 
-#catalogList aside, #catalogList section { margin-bottom: 30px; padding: 10px; background: #222; border: 1px #333 solid; border-radius: 6px; }
+#catalogList aside,
+#catalogList section {
+  margin-bottom: 30px;
+  padding: 10px;
+  background: #222;
+  border: 1px #333 solid;
+  border-radius: 6px;
+}
 
-#catalogList aside .filter-group { margin-bottom: 20px; }
+#catalogList aside .filter-group {
+  margin-bottom: 20px;
+}
 
-#catalogList aside .filter-group h5 { margin-top: 0; }
+#catalogList aside .filter-group h5 {
+  margin-top: 0;
+}
 
-#catalogList aside .filter-group ul { list-style: none; padding: 0; }
+#catalogList aside .filter-group ul li a {
+  display: block;
+  padding: 4px;
+  border: 1px #333 solid;
+  border-bottom-width: 0;
+  text-transform: capitalize;
+}
 
-#catalogList aside .filter-group ul a { display: block; padding: 4px; color: blueviolet; border: 1px #333 solid; text-transform: capitalize; }
+#catalogList aside .filter-group ul li a.active {
+  background: blueviolet;
+  border-bottom-width: 0;
+  color: #FFF;
+}
 
-#catalogList aside .filter-group ul a:hover, #catalogList aside .filter-group ul a:focus { color: #b96ffd; text-decoration: none; }
-
-#catalogList aside .filter-group ul a.active { background: #333; border: 1px #555 solid; }
-
-#catalogList aside .filter-group ul a.disabled { color: #AAA; opacity: 0.4; pointer-events: none; }
+#catalogList aside .filter-group ul li:last-child a {
+  border-bottom-width: 1px;
+}

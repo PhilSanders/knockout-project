@@ -27,7 +27,7 @@
       <div data-bind="foreach: { data: getFilterGroupAsList(), as: 'filterGroup' }">
        <div class="filter-group">
         <h5 data-bind="text: filterGroup.name"></h5>
-        <ul data-bind="foreach: { data: filterGroup.filters, as: 'filter' }">
+        <ul class="unstyled-list" data-bind="foreach: { data: filterGroup.filters, as: 'filter' }">
          <li>
           <a href="href" data-bind="text: filter.value,
              click: function() { $root.filterClicked(filter) },
