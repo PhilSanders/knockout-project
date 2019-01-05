@@ -7,7 +7,7 @@ const CatalogData = new function() {
         {
           'type': 'compilation',
           'catNum': 'FFC001',
-          'artist': 'PilFORM',
+          'artist': 'PillFORM',
           'title': 'Refried 99\'',
           'description': 'The electro bass collection that started it all',
           'cover': null,
@@ -20,7 +20,7 @@ const CatalogData = new function() {
         {
           'type': 'compilation',
           'catNum': 'FFC002',
-          'artist': 'PilFORM',
+          'artist': 'PillFORM',
           'title': 'Revive',
           'description': 'Rivived tracks from the early days from 1999-2001 and released',
           'cover': null,
@@ -33,7 +33,7 @@ const CatalogData = new function() {
         {
           'type': 'single',
           'catNum': 'FF0001',
-          'artist': 'PilFORM',
+          'artist': 'PillFORM',
           'title': 'Conscious',
           'description': 'None',
           'cover': null,
@@ -46,7 +46,7 @@ const CatalogData = new function() {
         {
           'type': 'single',
           'catNum': 'FF0002',
-          'artist': 'PilFORM',
+          'artist': 'PillFORM',
           'title': 'Reverb Says',
           'description': null,
           'cover': null,
@@ -59,7 +59,7 @@ const CatalogData = new function() {
         {
           'type': 'single',
           'catNum': 'FF0003',
-          'artist': 'PilFORM',
+          'artist': 'PillFORM',
           'title': 'Domination 42',
           'description': null,
           'cover': null,
@@ -72,7 +72,7 @@ const CatalogData = new function() {
         {
           'type': 'single',
           'catNum': 'FF0004',
-          'artist': 'PilFORM',
+          'artist': 'PillFORM',
           'title': 'Testing',
           'description': null,
           'cover': null,
@@ -85,7 +85,7 @@ const CatalogData = new function() {
         {
           'type': 'single',
           'catNum': 'FF0005',
-          'artist': 'PilFORM',
+          'artist': 'PillFORM',
           'title': 'Sync Electro',
           'description': null,
           'cover': null,
@@ -98,7 +98,7 @@ const CatalogData = new function() {
         {
           'type': 'single',
           'catNum': 'FF0006',
-          'artist': 'PilFORM',
+          'artist': 'PillFORM',
           'title': 'Turn Up The Bass',
           'description': null,
           'cover': null,
@@ -111,7 +111,7 @@ const CatalogData = new function() {
         {
           'type': 'single',
           'catNum': 'FF0007',
-          'artist': 'PilFORM',
+          'artist': 'PillFORM',
           'title': 'Inner Robot',
           'description': null,
           'cover': null,
@@ -124,7 +124,7 @@ const CatalogData = new function() {
         {
           'type': 'single',
           'catNum': 'FF0008',
-          'artist': 'PilFORM',
+          'artist': 'PillFORM',
           'title': 'Mod-Rhythm',
           'description': null,
           'cover': null,
@@ -137,7 +137,7 @@ const CatalogData = new function() {
         {
           'type': 'single',
           'catNum': 'FF0009',
-          'artist': 'PilFORM',
+          'artist': 'PillFORM',
           'title': 'Techno Bass',
           'description': null,
           'cover': null,
@@ -150,7 +150,7 @@ const CatalogData = new function() {
         {
           'type': 'single',
           'catNum': 'FF0010',
-          'artist': 'PilFORM',
+          'artist': 'PillFORM',
           'title': 'Beat Back',
           'description': null,
           'cover': null,
@@ -163,7 +163,7 @@ const CatalogData = new function() {
         {
           'type': 'single',
           'catNum': 'FF0011',
-          'artist': 'PilFORM',
+          'artist': 'PillFORM',
           'title': 'I\'ve Seen Things',
           'description': null,
           'cover': null,
@@ -176,7 +176,7 @@ const CatalogData = new function() {
         {
           'type': 'single',
           'catNum': 'FF0012',
-          'artist': 'PilFORM',
+          'artist': 'PillFORM',
           'title': 'God Damn Noise',
           'description': null,
           'cover': null,
@@ -189,7 +189,7 @@ const CatalogData = new function() {
         {
           'type': 'single',
           'catNum': 'FF0013',
-          'artist': 'PilFORM',
+          'artist': 'PillFORM',
           'title': 'Dedicated To The Dj',
           'description': null,
           'cover': null,

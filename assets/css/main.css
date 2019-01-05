@@ -50,6 +50,11 @@ a.disabled:active {
   pointer-events: none;
 }
 
+.container {
+  width: 100%;
+  max-width: 1170px;
+}
+
 .unstyled-list {
   list-style: none;
   padding: 0;
@@ -62,6 +67,18 @@ a.disabled:active {
 .list-inline li {
   display: inline-block;
   font-size: 14px;
+}
+
+.flex-row {
+  display: flex;
+}
+
+.flex-row:before {
+  display: block;
+}
+
+.flex-wrap {
+  flex-wrap: wrap;
 }
 
 /* Catalog List Styles */

@@ -1,3 +1,4 @@
+// Main.css
 
 @import "variables";
 
@@ -50,6 +51,11 @@ a.disabled:active {
   pointer-events: none;
 }
 
+.container {
+  width: 100%;
+  max-width: 1170px;
+}
+
 .unstyled-list {
   list-style: none;
   padding: 0;
@@ -61,6 +67,17 @@ a.disabled:active {
     display: inline-block;
     font-size: $font-size-base;
   }
+}
+
+.flex-row {
+  display: flex;
+  &:before {
+    display: block;
+  }
+}
+
+.flex-wrap {
+  flex-wrap: wrap;
 }
 
 @import 'catalog-list';
