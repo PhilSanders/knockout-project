@@ -1,17 +1,31 @@
-// App.js 
+// main.js
+console.log('app.js');
 
-const { app, BrowserWindow } = require('electron')
+const { electron } = require('electron')
+const { app, BrowserWindow, dialog } = require('electron')
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
-let win
+let win, libPath, library
+
+exports.selectDirectory = function () {
+  dialog.showOpenDialog(win, {
+    properties: ['openDirectory']
+  }, function (path) {
+      if (path !== undefined) {
+          // handle files
+          console.log(path)
+          libPath = path
+      }
+  })
+}
 
 function createWindow () {
   // Create the browser window.
-  win = new BrowserWindow({ width: 1024, height: 768 })
+  win = new BrowserWindow({ width: 800, height: 600 })
 
   // and load the index.html of the app.
-  win.loadFile('index.html')
+  win.loadFile('assets/views/index.html')
 
   // Open the DevTools.
   // win.webContents.openDevTools()

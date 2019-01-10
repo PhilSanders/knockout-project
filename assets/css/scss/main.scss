@@ -4,6 +4,10 @@
 
 body {
   background: #111;
+  overflow: hidden;
+  > div {
+    height: calc(100vh - 100px);
+  }
 }
 
 h1, h2 {
@@ -14,20 +18,14 @@ h3, h4 ,h5 ,h6 {
   color: #AAA;
 }
 
+aside {
+  height: 100%;
+}
+
 table {
   table-layout: fixed;
   width: 100%;
   border: none;
-  thead {
-    background: blueviolet;
-  }
-  tr {
-    border-bottom: 1px #333 solid;
-  }
-  th, td {
-    padding: 4px;
-    color: #CCC;
-  }
 }
 
 a,
@@ -80,4 +78,9 @@ a.disabled:active {
   flex-wrap: wrap;
 }
 
+.maxvh {
+  height: 100vh;
+}
+
+@import 'header';
 @import 'catalog-list';

@@ -1,5 +1,10 @@
 body {
   background: #111;
+  overflow: hidden;
+}
+
+body > div {
+  height: calc(100vh - 100px);
 }
 
 h1, h2 {
@@ -10,23 +15,14 @@ h3, h4, h5, h6 {
   color: #AAA;
 }
 
+aside {
+  height: 100%;
+}
+
 table {
   table-layout: fixed;
   width: 100%;
   border: none;
-}
-
-table thead {
-  background: blueviolet;
-}
-
-table tr {
-  border-bottom: 1px #333 solid;
-}
-
-table th, table td {
-  padding: 4px;
-  color: #CCC;
 }
 
 a,
@@ -81,29 +77,67 @@ a.disabled:active {
   flex-wrap: wrap;
 }
 
-/* Catalog List Styles */
-#catalogList {
+.maxvh {
   height: 100vh;
 }
 
-#catalogList aside,
-#catalogList section {
-  margin-bottom: 30px;
-  padding: 10px;
-  background: #222;
-  border: 1px #333 solid;
-  border-radius: 6px;
+/* header */
+header {
+  min-height: 100px;
+  background: blueviolet;
+  border-bottom: 1px solid #000;
 }
 
-#catalogList aside .filter-group {
+/* Catalog List Styles */
+#musicLibrary section {
+  padding: 0;
+  background: #222;
+}
+
+#musicLibrary .side-nav {
+  min-width: 200px;
+}
+
+#musicLibrary .side-nav h4 {
+  padding: 0 10px;
+}
+
+#musicLibrary .side-nav .filters-menu {
+  height: calc(100% - 19px);
+  overflow-y: auto;
+}
+
+#musicLibrary .side-nav .filters-menu > div {
+  position: relative;
+  min-height: 100%;
+  padding: 10px;
+}
+
+#musicLibrary .side-nav .filters-menu > div:after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 10px;
+  height: 100%;
+  background: blueviolet;
+  opacity: 0.4;
+  cursor: ew-resize;
+}
+
+#musicLibrary .side-nav .filters-menu > div:after:hover {
+  opacity: 0.8;
+}
+
+#musicLibrary .side-nav .filter-group {
   margin-bottom: 20px;
 }
 
-#catalogList aside .filter-group h5 {
+#musicLibrary .side-nav .filter-group h5 {
   margin-top: 0;
 }
 
-#catalogList aside .filter-group ul li a {
+#musicLibrary .side-nav .filter-group ul li a {
   display: block;
   padding: 4px;
   border: 1px #333 solid;
@@ -111,12 +145,63 @@ a.disabled:active {
   text-transform: capitalize;
 }
 
-#catalogList aside .filter-group ul li a.active {
-  background: blueviolet;
+#musicLibrary .side-nav .filter-group ul li a.active {
+  background: rgba(56, 41, 128, 0.9);
   border-bottom-width: 0;
   color: #FFF;
 }
 
-#catalogList aside .filter-group ul li:last-child a {
+#musicLibrary .side-nav .filter-group ul li:last-child a {
   border-bottom-width: 1px;
+}
+
+#musicLibrary .main {
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+}
+
+#musicLibrary .main table {
+  table-layout: auto;
+}
+
+#musicLibrary .main table tr {
+  border-bottom: 1px #333 solid;
+  height: 39px;
+}
+
+#musicLibrary .main table th, #musicLibrary .main table td {
+  position: relative;
+  padding: 4px;
+  color: #CCC;
+}
+
+#musicLibrary .main table th a, #musicLibrary .main table td a {
+  display: block;
+  padding: 6px;
+  color: #FFF;
+}
+
+#musicLibrary .main table th {
+  padding: 0;
+}
+
+#musicLibrary .main table th:after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 2px;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.2);
+  border-right: 1px solid #000;
+  cursor: ew-resize;
+}
+
+#musicLibrary .main table tbody > tr {
+  cursor: pointer;
+}
+
+#musicLibrary .main table tbody > tr:nth-of-type(odd) {
+  background-color: #111;
 }

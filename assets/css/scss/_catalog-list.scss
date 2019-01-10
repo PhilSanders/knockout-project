@@ -1,16 +1,38 @@
 /* Catalog List Styles */
 
-#catalogList {
-  height: 100vh;
-  aside,
+#musicLibrary {
   section {
-    margin-bottom: 30px;
-    padding: 10px;
+    padding: 0;
     background: #222;
-    border: 1px #333 solid;
-    border-radius: 6px;
   }
-  aside {
+  .side-nav {
+    min-width: 200px;
+    h4 {
+      padding: 0 10px;
+    }
+    .filters-menu {
+      height: calc(100% - 19px);
+      overflow-y: auto;
+      > div {
+        position: relative;
+        min-height: 100%;
+        padding: 10px;
+        &:after {
+          content: "";
+          position: absolute;
+          top: 0;
+          right: 0;
+          width: 10px;
+          height: 100%;
+          background: blueviolet;
+          opacity: 0.4;
+          cursor: ew-resize;
+          &:hover {
+            opacity: 0.8;
+          }
+        }
+      }
+    }
     .filter-group {
       margin-bottom: 20px;
       h5 {
@@ -25,7 +47,7 @@
             border-bottom-width: 0;
             text-transform: capitalize;
             &.active {
-              background: blueviolet;
+              background: rgba(56, 41, 128, 0.9);
               border-bottom-width: 0;
               color: #FFF;
             }
@@ -35,6 +57,56 @@
               border-bottom-width: 1px;
             }
           }
+        }
+      }
+    }
+  }
+  .main {
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    > div {
+      // padding: 0 10px;
+    }
+    table {
+      table-layout: auto;
+      thead {
+        // background: blueviolet;
+      }
+      tr {
+        border-bottom: 1px #333 solid;
+        height: 39px;
+      }
+      th, td {
+        position: relative;
+        padding: 4px;
+        color: #CCC;
+        a {
+          display: block;
+          padding: 6px;
+          color: #FFF;
+        }
+      }
+      th {
+        padding: 0;
+      }
+      th:after {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 2px;
+        height: 100%;
+        background: rgba(255,255,255,0.2);
+        border-right: 1px solid #000;
+        cursor: ew-resize;
+      }
+      tbody {
+        > tr {
+          cursor: pointer;
+        }
+        > tr:nth-of-type(odd) {
+          background-color: #111;
         }
       }
     }

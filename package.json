@@ -2,8 +2,9 @@
   "name": "music-library",
   "version": "0.1.0",
   "description": "PillFORM Music Library",
-  "main": "app.js",
+  "main": "main.js",
   "dependencies": {
+    "jquery": "1.12.4",
     "knockout": "^3.5.0-beta"
   },
   "devDependencies": {
@@ -11,10 +12,14 @@
     "del": "^3.0.0",
     "electron": "^4.0.1",
     "electron-connect": "^0.6.3",
+    "fs": "^0.0.1-security",
     "gulp": "^3.9.1",
     "gulp-sass": "^3.1.0",
     "gulp-useref": "^3.1.6",
-    "gulp-webserver": "^0.9.1"
+    "gulp-webserver": "^0.9.1",
+    "node-id3": "^0.1.7",
+    "path": "^0.12.7",
+    "url": "^0.11.0"
   },
   "scripts": {
     "start": "electron ."
