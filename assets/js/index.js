@@ -37,7 +37,6 @@ audioPlayer.onloadedmetadata = () => {
 
     trackTime.innerHTML = curmins + ':' + cursecs
     trackDuration.innerHTML = durmins + ':' + dursecs
-
   }
 };
 
@@ -81,6 +80,75 @@ const base64 = (filePath) => {
   });
   return songPromise;
 };
+
+const id3EditorTemplate = (item) => {
+  let htmlTemp = ''
+
+  htmlTemp = '<form class="form-horizontal">'
+           + '<div class="form-group">'
+             + '<div class="col-sm-3 text-right" for="ArtistInput"><strong>File Name</strong></div>'
+             + '<div class="col-sm-9">'
+               + item.fileName
+             + '</div>'
+           + '</div>'
+           + '<div class="form-group">'
+             + '<label class="col-sm-3 control-label" for="ArtistInput">Artist</label>'
+             + '<div class="col-sm-9">'
+               + '<input type="text" class="form-control" id="ArtistInput" placeholder="Artist name" value="' + item.artist + '">'
+             + '</div>'
+           + '</div>'
+           + '<div class="form-group">'
+             + '<label class="col-sm-3 control-label" for="TitleInput">Title</label>'
+             + '<div class="col-sm-9">'
+               + '<input type="text" class="form-control" id="TitleInput" placeholder="Song title" value="' + item.title + '">'
+             + '</div>'
+           + '</div>'
+           + '<div class="form-group">'
+             + '<label class="col-sm-3 control-label" for="AlbumInput">Album</label>'
+             + '<div class="col-sm-9">'
+               + '<input type="text" class="form-control" id="AlbumInput" placeholder="Album title" value="' + item.album + '">'
+             + '</div>'
+           + '</div>'
+           + '<div class="form-group">'
+             + '<label class="col-sm-3 control-label" for="YearInput">Year</label>'
+             + '<div class="col-sm-9">'
+               + '<input type="text" class="form-control" id="YearInput" placeholder="Year" value="' + item.year + '">'
+             + '</div>'
+           + '</div>'
+           + '<div class="form-group">'
+             + '<label class="col-sm-3 control-label" for="CopyrightInput">Copyright</label>'
+             + '<div class="col-sm-9">'
+               + '<input type="text" class="form-control" id="CopyrightInput" placeholder="Copyright" value="' + item.copyright + '">'
+             + '</div>'
+           + '</div>'
+           + '<div class="form-group">'
+             + '<label class="col-sm-3 control-label" for="UrlInput">Url</label>'
+             + '<div class="col-sm-9">'
+               + '<input type="text" class="form-control" id="UrlInput" placeholder="Url" value="' + item.url + '">'
+             + '</div>'
+           + '</div>'
+           + '<div class="form-group">'
+             + '<label class="col-sm-3 control-label" for="DescInput">Description</label>'
+             + '<div class="col-sm-9">'
+               + '<input type="text" class="form-control" id="DescInput" placeholder="Description" value="' + item.description + '">'
+             + '</div>'
+           + '</div>'
+           + '<div class="form-group">'
+             + '<label class="col-sm-3 control-label" for="GenreInput">Genre</label>'
+             + '<div class="col-sm-9">'
+               + '<input type="text" class="form-control" id="GenreInput" placeholder="Genre" value="' + item.genre + '">'
+             + '</div>'
+           + '</div>'
+           + '<div class="form-group">'
+             + '<label class="col-sm-3 control-label" for="TagsInput">Tags</label>'
+             + '<div class="col-sm-9">'
+               + '<textarea class="form-control" id="TagsInput" placeholder="Tags">' + item.tags + '</textarea>'
+             + '</div>'
+           + '</div>'
+           + '</form>';
+
+  return htmlTemp
+}
 
 const Library = new function() {
   const libCore = this;
@@ -158,14 +226,14 @@ const Library = new function() {
       libVM.filteredLibrary(libVM.getFilteredLibrary());
     }
 
-    libVM.itemClick = (elm) => {
-      const filePromise = base64(elm.filePath);
+    libVM.itemClick = (item) => {
+      const filePromise = base64(item.filePath);
 
       filePromise.then((fileData) => {
         // console.log(fileData);
         // display artist and song tile text
-        libVM.currentArtist(elm.artist)
-        libVM.currentTitle(elm.title)
+        libVM.currentArtist(item.artist)
+        libVM.currentTitle(item.title)
 
         // load audio from disk and play it
         audioSource.src = fileData
@@ -185,11 +253,10 @@ const Library = new function() {
       console.log('playing')
     }
 
-    libVM.editClicked = (elm) => {
-      console.log(elm)
-
+    libVM.editClicked = (item) => {
+      console.log(item)
       $('#modal .modal-title').html('Edit ID3 Tag')
-      $('#modal .modal-body').html('' + elm.fileName + '<br>' + elm.artist + '<br>' + elm.title + '<br>')
+      $('#modal .modal-body').html(id3EditorTemplate(item))
       $('#modal').modal('show')
     }
 
@@ -406,7 +473,7 @@ walk(libPath, (err, results) => {
       album: info.album ? info.album : 'Unreleased',
       cover: '',
       year: info.year,
-      copyright: info.copyright,
+      copyright: info.copyright ? info.copyright : '',
       url: '',
       tags: [],
       filePath: file,

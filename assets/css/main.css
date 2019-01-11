@@ -116,8 +116,8 @@ a.disabled:active {
   color: #FFF;
 }
 
-.modal .modal-content .modal-header .modal-body {
-  color: #777777;
+.modal .modal-content .modal-body {
+  color: #eeeeee;
 }
 
 /* header */

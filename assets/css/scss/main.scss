@@ -112,9 +112,9 @@ a.disabled:active {
       .modal-title {
         color: $white;
       }
-      .modal-body {
-        color: $gray-light;
-      }
+    }
+    .modal-body {
+      color: $gray-lighter;
     }
   }
 }
