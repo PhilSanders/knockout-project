@@ -8,6 +8,8 @@ const dataurl = require('dataurl')
 const ko = require('knockout')
 const mainProcess = remote.require('./main')
 const sort = remote.require('./assets/js/sort')
+const store = require('electron-store')
+const storage = new store()
 
 let libraryData = []
 let libPath = '/Users/philsanders/Desktop/PillFORM'
@@ -450,7 +452,7 @@ const Library = new function() {
 
   libCore.init = () => {
     libCore.viewModel = new libCore.libraryViewModel();
-    libCore.initCallback(libraryData);
+    libCore.initCallback(storage.get('library'));
   };
 };
 
@@ -472,7 +474,7 @@ walk(libPath, (err, results) => {
       type: 'single',
       album: info.album ? info.album : 'Unreleased',
       cover: '',
-      year: info.year,
+      year: info.year ? info.year : '',
       copyright: info.copyright ? info.copyright : '',
       url: '',
       tags: [],
@@ -482,6 +484,10 @@ walk(libPath, (err, results) => {
   })
 
   libraryData.sort(sort.sortArtists);
+  console.log(libraryData)
+
+  storage.set('library', libraryData)
+  console.log(storage.get('library'))
 
   Library.init()
 })
