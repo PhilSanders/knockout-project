@@ -3,7 +3,8 @@
 @import "variables";
 
 body {
-  background: #111;
+  background: $gray-darker;
+  color: $gray-lighter;
 }
 
 h1, h2 {
@@ -22,6 +23,10 @@ table {
   table-layout: fixed;
   width: 100%;
   border: none;
+}
+
+a {
+  transition: color 100ms linear;
 }
 
 a,
@@ -76,6 +81,42 @@ a.disabled:active {
 
 .maxvh {
   height: 100vh;
+}
+
+.btn-modify {
+  background: transparent;
+  color: $gray-light;
+  transition: color 200ms linear;
+  &:hover {
+    color: $gray-lighter;
+  }
+}
+
+.modal {
+  .modal-content {
+    background-color: $gray-darker;
+    border: 1px solid $brand-primary-dark;
+    // border: 1px solid rgba(0, 0, 0, 0.2);
+    .modal-header {
+      background-color: $brand-primary-dark;
+      border-bottom: 1px solid $brand-primary-dark;
+      .close {
+        color: $white;
+        text-shadow: 0 1px 0 $gray-base;
+        opacity: 0.6;
+        transition: opacity 200ms linear;
+        &:hover {
+          opacity: 1;
+        }
+      }
+      .modal-title {
+        color: $white;
+      }
+      .modal-body {
+        color: $gray-light;
+      }
+    }
+  }
 }
 
 @import 'header';

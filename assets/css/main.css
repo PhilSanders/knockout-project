@@ -1,5 +1,6 @@
 body {
-  background: #111;
+  background: #222222;
+  color: #eeeeee;
 }
 
 h1, h2 {
@@ -18,6 +19,10 @@ table {
   table-layout: fixed;
   width: 100%;
   border: none;
+}
+
+a {
+  transition: color 100ms linear;
 }
 
 a,
@@ -74,6 +79,45 @@ a.disabled:active {
 
 .maxvh {
   height: 100vh;
+}
+
+.btn-modify {
+  background: transparent;
+  color: #777777;
+  transition: color 200ms linear;
+}
+
+.btn-modify:hover {
+  color: #eeeeee;
+}
+
+.modal .modal-content {
+  background-color: #222222;
+  border: 1px solid #6718b0;
+}
+
+.modal .modal-content .modal-header {
+  background-color: #6718b0;
+  border-bottom: 1px solid #6718b0;
+}
+
+.modal .modal-content .modal-header .close {
+  color: #FFF;
+  text-shadow: 0 1px 0 #000;
+  opacity: 0.6;
+  transition: opacity 200ms linear;
+}
+
+.modal .modal-content .modal-header .close:hover {
+  opacity: 1;
+}
+
+.modal .modal-content .modal-header .modal-title {
+  color: #FFF;
+}
+
+.modal .modal-content .modal-header .modal-body {
+  color: #777777;
 }
 
 /* header */
@@ -227,5 +271,5 @@ header .audio-title small {
 }
 
 #musicLibrary .list table tbody > tr:nth-of-type(odd) {
-  background-color: #222222;
+  background-color: #333333;
 }
