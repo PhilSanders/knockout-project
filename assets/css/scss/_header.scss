@@ -6,12 +6,5 @@ header {
   min-height: $header-height;
   background: blueviolet;
   border-bottom: 1px solid #000;
-  h1 {
-    width: 100%;
-    text-align: center;
-    small {
-      display: block;
-      color: #FFF;
-    }
-  }
+  @import "audio-player";
 }

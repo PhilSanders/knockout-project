@@ -17,10 +17,10 @@
     <header>
         <!-- <button id="party" class="very-sweet-looking">Open</button> -->
         <!-- <input id="business" type="file" style="display: none" /> -->
-        <h1>
+        <h1 class="audio-title">
           <i id="PlayBtn" class="glyphicon glyphicon-play" data-bind="click: function() { $root.playClicked() }"></i>
           <i id="PauseBtn" class="glyphicon glyphicon-pause" data-bind="click: function() { $root.pauseClicked() }"></i>
-          <span data-bind="text: $root.currentArtist()"></span> (<span id="TrackTime"></span> / <span id="TrackDuration"></span>)
+          <span data-bind="text: $root.currentArtist()"></span> <span class="time-display">(<span id="TrackTime"></span> / <span id="TrackDuration"></span>)</span>
           <small data-bind="text: $root.currentTitle()"></small>
           <audio id="AudioPlayer">
             <source id="AudioMp3" src="" type="audio/mpeg">
@@ -30,7 +30,7 @@
     </header>
     <div class="flex-row">
       <section class="side-nav">
-        <h4>Filter By</h4>
+        <h2 class="h4 filters-title">Filter By</h2>
         <div class="filters-menu">
           <div>
           <!-- ko  foreach: { data: getFilterGroupAsList(), as: 'filterGroup' } -->

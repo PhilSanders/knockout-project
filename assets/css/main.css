@@ -84,12 +84,17 @@ header {
   border-bottom: 1px solid #000;
 }
 
-header h1 {
+header .audio-title {
   width: 100%;
+  color: #FFF;
   text-align: center;
 }
 
-header h1 small {
+header .audio-title .time-display {
+  font-size: 16px;
+}
+
+header .audio-title small {
   display: block;
   color: #FFF;
 }
@@ -113,8 +118,9 @@ header h1 small {
   min-width: 200px;
 }
 
-#musicLibrary .side-nav h4 {
+#musicLibrary .side-nav .filters-title {
   padding: 0 10px;
+  color: #FFF;
 }
 
 #musicLibrary .side-nav .filters-menu {

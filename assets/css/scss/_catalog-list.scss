@@ -13,8 +13,9 @@
   }
   .side-nav {
     min-width: 200px;
-    h4 {
+    .filters-title {
       padding: 0 10px;
+      color: #FFF;
     }
     .filters-menu {
       height: calc(100% - 19px);
@@ -110,6 +111,9 @@
       tbody {
         > tr {
           cursor: default;
+          &:hover {
+
+          }
         }
         > tr:nth-of-type(odd) {
           background-color: #111;
