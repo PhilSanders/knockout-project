@@ -1,5 +1,4 @@
 // index.js
-console.log('index.js')
 
 const BrowserWindow = require('electron').remote.BrowserWindow
 const remote = require('electron').remote

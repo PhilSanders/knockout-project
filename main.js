@@ -1,5 +1,4 @@
 // main.js
-console.log('main.js');
 
 const { electron } = require('electron')
 const { app, BrowserWindow, dialog } = require('electron')
