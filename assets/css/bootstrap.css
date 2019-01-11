@@ -1631,12 +1631,12 @@ mark,
 }
 
 .text-primary {
-  color: #337ab7;
+  color: #8A2BE2;
 }
 
 a.text-primary:hover,
 a.text-primary:focus {
-  color: #286090;
+  color: #701ac0;
 }
 
 .text-success {
@@ -1680,12 +1680,12 @@ a.text-danger:focus {
 }
 
 .bg-primary {
-  background-color: #337ab7;
+  background-color: #8A2BE2;
 }
 
 a.bg-primary:hover,
 a.bg-primary:focus {
-  background-color: #286090;
+  background-color: #701ac0;
 }
 
 .bg-success {

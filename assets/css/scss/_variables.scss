@@ -7,4 +7,28 @@
 // $font-size-base: 14px;
 // $padding-base-horizontal: 12px;
 
+//Colors
+
+$white:                  #FFF;
+
+$gray-base:              #000;
+$gray-darker:            lighten($gray-base, 13.5%); // #222
+$gray-dark:              lighten($gray-base, 20%);   // #333
+$gray:                   lighten($gray-base, 33.5%); // #555
+$gray-light:             lighten($gray-base, 46.7%); // #777
+$gray-lighter:           lighten($gray-base, 93.5%); // #eee
+
+$brand-primary:         #8A2BE2;
+$brand-primary-light:   lighten($brand-primary, 13.5%);
+$brand-primary-dark:    darken($brand-primary, 13.5%);
+
+$brand-success:         #5cb85c;
+$brand-info:            #5bc0de;
+$brand-warning:         #f0ad4e;
+$brand-danger:          #d9534f;
+
+// header
+
 $header-height: 110px;
+
+// library

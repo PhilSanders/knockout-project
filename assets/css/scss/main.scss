@@ -28,12 +28,12 @@ a,
 a:hover,
 a:focus,
 a:active {
-  color: blueviolet;
+  color: $brand-primary;
   text-decoration: none;
 }
 
 a:hover {
-  color: #b96ffd;
+  color: $brand-primary-light;
   text-decoration: none;
 }
 

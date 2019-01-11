@@ -24,12 +24,12 @@ a,
 a:hover,
 a:focus,
 a:active {
-  color: blueviolet;
+  color: #8A2BE2;
   text-decoration: none;
 }
 
 a:hover {
-  color: #b96ffd;
+  color: #ab68ea;
   text-decoration: none;
 }
 
@@ -80,7 +80,7 @@ a.disabled:active {
 header {
   display: flex;
   min-height: 110px;
-  background: blueviolet;
+  background: #8A2BE2;
   border-bottom: 1px solid #000;
 }
 
@@ -111,7 +111,7 @@ header .audio-title small {
 
 #musicLibrary section {
   padding: 0;
-  background: #222;
+  background: #222222;
 }
 
 #musicLibrary .filters {
@@ -141,7 +141,7 @@ header .audio-title small {
   right: 0;
   width: 10px;
   height: 100%;
-  background: blueviolet;
+  background: #6718b0;
   opacity: 0.4;
   cursor: ew-resize;
 }
@@ -161,13 +161,13 @@ header .audio-title small {
 #musicLibrary .filters .filter-group ul li a {
   display: block;
   padding: 4px;
-  border: 1px #333 solid;
+  border: 1px #333333 solid;
   border-bottom-width: 0;
   text-transform: capitalize;
 }
 
 #musicLibrary .filters .filter-group ul li a.active {
-  background: rgba(56, 41, 128, 0.9);
+  background: #6718b0;
   border-bottom-width: 0;
   color: #FFF;
 }
@@ -187,14 +187,14 @@ header .audio-title small {
 }
 
 #musicLibrary .list table tr {
-  border-bottom: 1px #333 solid;
+  border-bottom: 1px #333333 solid;
   height: 39px;
 }
 
 #musicLibrary .list table th, #musicLibrary .list table td {
   position: relative;
   padding: 4px;
-  color: #CCC;
+  color: #eeeeee;
 }
 
 #musicLibrary .list table th a, #musicLibrary .list table td a {
@@ -224,5 +224,5 @@ header .audio-title small {
 }
 
 #musicLibrary .list table tbody > tr:nth-of-type(odd) {
-  background-color: #111;
+  background-color: #222222;
 }

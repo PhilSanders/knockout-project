@@ -13,17 +13,17 @@
       // background: blueviolet;
     }
     tr {
-      border-bottom: 1px #333 solid;
+      border-bottom: 1px $gray-dark solid;
       height: 39px;
     }
     th, td {
       position: relative;
       padding: 4px;
-      color: #CCC;
+      color: $gray-lighter;
       a {
         display: block;
         padding: 8px;
-        color: #FFF;
+        color: $white;
       }
     }
     th {
@@ -37,7 +37,7 @@
       width: 2px;
       height: 100%;
       background: rgba(255,255,255,0.2);
-      border-right: 1px solid #000;
+      border-right: 1px solid $gray-base;
       cursor: ew-resize;
     }
     tbody {
@@ -48,7 +48,7 @@
         }
       }
       > tr:nth-of-type(odd) {
-        background-color: #111;
+        background-color: $gray-darker;
       }
     }
   }

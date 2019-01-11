@@ -1,10 +1,11 @@
 // library-filters
+@import "variables";
 
 .filters {
   min-width: 200px;
   .filters-title {
     padding: 0 10px;
-    color: #FFF;
+    color: $white;
   }
   .filters-menu {
     height: calc(100% - 19px);
@@ -20,7 +21,7 @@
         right: 0;
         width: 10px;
         height: 100%;
-        background: blueviolet;
+        background: $brand-primary-dark;
         opacity: 0.4;
         cursor: ew-resize;
         &:hover {
@@ -39,13 +40,13 @@
         a {
           display: block;
           padding: 4px;
-          border: 1px #333 solid;
+          border: 1px $gray-dark solid;
           border-bottom-width: 0;
           text-transform: capitalize;
           &.active {
-            background: rgba(56, 41, 128, 0.9);
+            background: $brand-primary-dark;
             border-bottom-width: 0;
-            color: #FFF;
+            color: $white;
           }
         }
         &:last-child {

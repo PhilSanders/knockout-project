@@ -4,7 +4,7 @@
 header {
   display: flex;
   min-height: $header-height;
-  background: blueviolet;
-  border-bottom: 1px solid #000;
+  background: $brand-primary;
+  border-bottom: 1px solid $gray-base;
   @import "audio-player";
 }
