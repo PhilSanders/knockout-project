@@ -1,10 +1,5 @@
 body {
   background: #111;
-  overflow: hidden;
-}
-
-body > div {
-  height: calc(100vh - 100px);
 }
 
 h1, h2 {
@@ -83,12 +78,32 @@ a.disabled:active {
 
 /* header */
 header {
-  min-height: 100px;
+  display: flex;
+  min-height: 110px;
   background: blueviolet;
   border-bottom: 1px solid #000;
 }
 
+header h1 {
+  width: 100%;
+  text-align: center;
+}
+
+header h1 small {
+  display: block;
+  color: #FFF;
+}
+
 /* Catalog List Styles */
+#musicLibrary {
+  height: 100vh;
+  overflow: hidden;
+}
+
+#musicLibrary > div {
+  height: calc(100vh - 110px);
+}
+
 #musicLibrary section {
   padding: 0;
   background: #222;
@@ -178,7 +193,7 @@ header {
 
 #musicLibrary .main table th a, #musicLibrary .main table td a {
   display: block;
-  padding: 6px;
+  padding: 8px;
   color: #FFF;
 }
 
@@ -199,7 +214,7 @@ header {
 }
 
 #musicLibrary .main table tbody > tr {
-  cursor: pointer;
+  cursor: default;
 }
 
 #musicLibrary .main table tbody > tr:nth-of-type(odd) {

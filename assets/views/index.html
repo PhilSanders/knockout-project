@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
- <head>
+<head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -11,79 +11,104 @@
   <!-- Connect to server process -->
   <script>require('electron-connect').client.create()</script>
   <!-- end:build -->
- </head>
- <body>
-  <header>
-    <div>
-      <button id="party" class="very-sweet-looking">Open</button>
-      <input id="business" type="file" style="display: none" />
-    </div>
-  </header>
-  <div id="musicLibrary" class="flex-row">
-    <section class="side-nav">
-      <h4>Filter By</h4>
-      <div class="filters-menu">
-        <div>
-        <!-- ko  foreach: { data: getFilterGroupAsList(), as: 'filterGroup' } -->
-         <div class="filter-group">
-          <h5 data-bind="text: filterGroup.name"></h5>
-          <ul class="unstyled-list" data-bind="foreach: { data: filterGroup.filters, as: 'filter' }">
-           <li>
-            <a href="href" data-bind="text: filter.value,
-               click: function() { $root.filterClicked(filter) },
-               css: { active: filter.active(), disabled: filter.disabled() }"></a>
-           </li>
-          </ul>
+</head>
+<body>
+  <div id="musicLibrary">
+    <header>
+        <!-- <button id="party" class="very-sweet-looking">Open</button> -->
+        <!-- <input id="business" type="file" style="display: none" /> -->
+        <h1>
+          <i id="PlayBtn" class="glyphicon glyphicon-play" data-bind="click: function() { $root.playClicked() }"></i>
+          <i id="PauseBtn" class="glyphicon glyphicon-pause" data-bind="click: function() { $root.pauseClicked() }"></i>
+          <span data-bind="text: $root.currentArtist()"></span> (<span id="TrackTime"></span> / <span id="TrackDuration"></span>)
+          <small data-bind="text: $root.currentTitle()"></small>
+          <audio id="AudioPlayer">
+            <source id="AudioMp3" src="" type="audio/mpeg">
+              Oops!.. Something Happened =(
+          </audio>
+        </h1>
+    </header>
+    <div class="flex-row">
+      <section class="side-nav">
+        <h4>Filter By</h4>
+        <div class="filters-menu">
+          <div>
+          <!-- ko  foreach: { data: getFilterGroupAsList(), as: 'filterGroup' } -->
+           <div class="filter-group">
+            <h5 data-bind="text: filterGroup.name"></h5>
+            <ul class="unstyled-list" data-bind="foreach: { data: filterGroup.filters, as: 'filter' }">
+             <li>
+              <a href="href" data-bind="text: filter.value,
+                 click: function() { $root.filterClicked(filter) },
+                 css: { active: filter.active(), disabled: filter.disabled() }"></a>
+             </li>
+            </ul>
+           </div>
+           <!-- /ko -->
          </div>
-         <!-- /ko -->
-       </div>
+        </div>
+      </section>
+      <section class="main">
+        <div>
+          <table>
+           <thead>
+            <tr>
+             <!-- <th><a href="#">Cat#</a></th> -->
+             <th><a href="#" data-bind="click: function() { $root.sortClicked('artists') }">Artist</a></th>
+             <th><a href="#" data-bind="click: function() { $root.sortClicked('titles') }">Title</a></th>
+             <th><a href="#" data-bind="click: function() { $root.sortClicked('genres') }">Genre</a></th>
+             <th><a href="#" data-bind="click: function() { $root.sortClicked('years') }">Year</a></th>
+             <!-- <th><a href="#">Tags</a></th> -->
+             <th></th>
+            </tr>
+           </thead>
+           <tbody data-bind="foreach: filteredLibrary">
+            <tr data-bind="click: function() { $root.itemClick(this) }">
+             <!-- <td data-bind="text: catNum"></td> -->
+             <td data-bind="text: artist"></td>
+             <td data-bind="text: title"></td>
+             <td data-bind="text: genre"></td>
+             <td data-bind="text: year"></td>
+             <!-- <td data-bind="foreach: { data: tags, as: 'tag' }">
+               <span data-bind="text: tag"></span>,
+             </td> -->
+             <td class="text-right">
+               <!-- <button class="btn btn-success btn-xs">
+                 <i class="glyphicon glyphicon-play"></i>
+               </button>
+               <button class="btn btn-warning btn-xs">
+                 <i class="glyphicon glyphicon-pause"></i>
+               </button> -->
+               <button class="btn btn-warning btn-xs" data-bind="click: function() { $root.editClicked(this) }, clickBubble: false" data-toggle="modal" data-target="#modal">
+                 <i class="glyphicon glyphicon-pencil"></i>
+               </button>
+             </td>
+            </tr>
+           </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+    <div id="modal" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+      <div class="modal-dialog modal-md" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="gridSystemModalLabel">Modal title</h4>
+          </div>
+          <div class="modal-body">
+            ...
+          </div>
+        </div>
       </div>
-    </section>
-    <section class="main">
-      <div>
-        <table>
-         <thead>
-          <tr>
-           <!-- <th><a href="#">Cat#</a></th> -->
-           <th><a href="#" data-bind="click: function() { $root.sortClicked('artists') }">Artist</a></th>
-           <th><a href="#" data-bind="click: function() { $root.sortClicked('titles') }">Title</a></th>
-           <th><a href="#" data-bind="click: function() { $root.sortClicked('genres') }">Genre</a></th>
-           <th><a href="#" data-bind="click: function() { $root.sortClicked('years') }">Year</a></th>
-           <!-- <th><a href="#">Tags</a></th> -->
-           <th></th>
-          </tr>
-         </thead>
-         <tbody data-bind="foreach: filteredLibrary">
-          <tr>
-           <!-- <td data-bind="text: catNum"></td> -->
-           <td data-bind="text: artist"></td>
-           <td data-bind="text: title"></td>
-           <td data-bind="text: genre"></td>
-           <td data-bind="text: year"></td>
-           <!-- <td data-bind="foreach: { data: tags, as: 'tag' }">
-             <span data-bind="text: tag"></span>,
-           </td> -->
-           <td class="text-right">
-             <button class="btn btn-success btn-xs">
-               <i class="glyphicon glyphicon-play"></i>
-             </button>
-             <button class="btn btn-warning btn-xs">
-               <i class="glyphicon glyphicon-pause"></i>
-             </button>
-           </td>
-          </tr>
-         </tbody>
-        </table>
-      </div>
-    </section>
+    </div>
   </div>
-
-  <script>window.$ = window.jQuery = require('../../node_modules/jquery/dist/jquery.min.js');</script>
-  <script src="../../node_modules/bootstrap-sass/assets/javascripts/bootstrap.min.js"></script>
 
   <script>
     require('../js/index.js')
+    window.$ = window.jQuery = require('jquery')
+    require('../../node_modules/bootstrap-sass/assets/javascripts/bootstrap.min.js')
   </script>
 
- </body>
+</body>
 </html>

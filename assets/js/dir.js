@@ -1,8 +1,7 @@
 // assets/js/dir.js
 
-const remote = require('electron').remote
-const fs = remote.require('fs')
-const path = remote.require('path')
+const fs = require('fs')
+const path = require('path')
 
 exports.walkParallel = function(dir, done) {
   let results = [];

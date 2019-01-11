@@ -1,10 +1,17 @@
 /* header */
+@import "variables";
 
 header {
-  min-height: 100px;
+  display: flex;
+  min-height: $header-height;
   background: blueviolet;
   border-bottom: 1px solid #000;
-  > div {
-
+  h1 {
+    width: 100%;
+    text-align: center;
+    small {
+      display: block;
+      color: #FFF;
+    }
   }
 }

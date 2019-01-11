@@ -5,6 +5,7 @@ const BrowserWindow = require('electron').remote.BrowserWindow
 const remote = require('electron').remote
 const fs = remote.require('fs')
 const id3 = require('node-id3')
+const dataurl = require('dataurl')
 const ko = require('knockout')
 const mainProcess = remote.require('./main')
 const sort = remote.require('./assets/js/sort')
@@ -12,12 +13,36 @@ const sort = remote.require('./assets/js/sort')
 let libraryData = []
 let libPath = '/Users/philsanders/Desktop/PillFORM'
 
-const fileDialogBtn = document.getElementById('party')
-fileDialogBtn.addEventListener('click', function() {
-  mainProcess.selectDirectory()
-})
+let audioPlayer = document.querySelector('#AudioPlayer')
+let audioSource = document.querySelector('#AudioMp3')
 
-const walk = function(dir, done) {
+// const fileDialogBtn = document.querySelector('#party')
+// fileDialogBtn.addEventListener('click', () => {
+//   mainProcess.selectDirectory()
+// })
+
+audioPlayer.onloadedmetadata = () => {
+  audioPlayer.ontimeupdate = () => {
+    const trackTime = document.querySelector('#TrackTime')
+    const trackDuration = document.querySelector('#TrackDuration')
+
+    let curmins = Math.floor(audioPlayer.currentTime / 60)
+    let cursecs = Math.floor(audioPlayer.currentTime - curmins * 60)
+    let durmins = Math.floor(audioPlayer.duration / 60)
+    let dursecs = Math.floor(audioPlayer.duration - durmins * 60)
+
+    if(cursecs < 10) { cursecs = '0' + cursecs; }
+    if(dursecs < 10) { dursecs = '0' + dursecs; }
+    if(curmins < 10) { curmins = '0' + curmins; }
+    if(durmins < 10) { durmins = '0' + durmins; }
+
+    trackTime.innerHTML = curmins + ':' + cursecs
+    trackDuration.innerHTML = durmins + ':' + dursecs
+
+  }
+};
+
+const walk = (dir, done) => {
   let results = [];
   fs.readdir(dir, function(err, list) {
     if (err)
@@ -48,22 +73,35 @@ const walk = function(dir, done) {
   });
 }
 
-const LibraryFilter = new function() {
+const base64 = (filePath) => {
+  const songPromise = new Promise((resolve, reject) => {
+    fs.readFile(filePath, (err, data) => {
+      if (err) { reject(err); }
+      resolve(dataurl.convert({ data, mimetype: 'audio/mp3' }));
+    });
+  });
+  return songPromise;
+};
+
+const Library = new function() {
   const libCore = this;
 
-  libCore.viewModel = null;
+  libCore.viewModel = null
 
   libCore.libraryViewModel = function() {
-    const libVM = this;
+    const libVM = this
 
-    libVM.libraryCoreData = [];
+    libVM.libraryCoreData = []
 
-    libVM.filterGroups = {};
+    libVM.currentArtist = ko.observable('PillFORK')
+    libVM.currentTitle = ko.observable()
+    libVM.currentFile = ko.observable()
 
-    libVM.filteredLibrary = ko.observableArray([]);
+    libVM.filterGroups = {}
+    libVM.filteredLibrary = ko.observableArray([])
 
-    libVM.getFilterGroupAsList = function() {
-      let filterGroupList = [];
+    libVM.getFilterGroupAsList = () => {
+      let filterGroupList = []
 
       for (let key in libCore.viewModel.filterGroups) {
         filterGroupList.push({
@@ -73,27 +111,27 @@ const LibraryFilter = new function() {
         });
       }
 
-      return filterGroupList;
+      return filterGroupList
     };
 
-    libVM.filterClicked = function(filter) {
+    libVM.filterClicked = (filter) => {
       //console.log(filter);
-      libCore.toggleFilter(filter);
-      libVM.setItemFlags();
-      libVM.filteredLibrary(libVM.getFilteredLibrary());
+      libCore.toggleFilter(filter)
+      libVM.setItemFlags()
+      libVM.filteredLibrary(libVM.getFilteredLibrary())
     };
 
-    libVM.setItemFlags = function() {
-      libVM.libraryCoreData.forEach(function(item) {
+    libVM.setItemFlags = () => {
+      libVM.libraryCoreData.forEach((item) => {
         item.active(false);
       });
 
-      libVM.filteredLibrary().forEach(function(item) {
+      libVM.filteredLibrary().forEach((item) => {
         item.active(false);
       });
     };
 
-    libVM.getFilteredLibrary = function() {
+    libVM.getFilteredLibrary = () => {
       let filteredLibrary = libVM.libraryCoreData;
 
       for (let key in libVM.filterGroups) {
@@ -103,7 +141,7 @@ const LibraryFilter = new function() {
       return filteredLibrary;
     };
 
-    libVM.sortClicked = function(sortType) {
+    libVM.sortClicked = (sortType) => {
       switch(sortType) {
         case 'artists':
           libVM.libraryCoreData.sort(sort.sortArtists)
@@ -120,20 +158,56 @@ const LibraryFilter = new function() {
       }
       libVM.filteredLibrary(libVM.getFilteredLibrary());
     }
+
+    libVM.itemClick = (elm) => {
+      const filePromise = base64(elm.filePath);
+
+      filePromise.then((fileData) => {
+        // console.log(fileData);
+        // display artist and song tile text
+        libVM.currentArtist(elm.artist)
+        libVM.currentTitle(elm.title)
+
+        // load audio from disk and play it
+        audioSource.src = fileData
+        audioPlayer.load()
+        audioPlayer.play()
+        console.log('playing')
+      });
+    }
+
+    libVM.pauseClicked = () => {
+      audioPlayer.pause();
+      console.log('paused')
+    }
+
+    libVM.playClicked = () => {
+      audioPlayer.play();
+      console.log('playing')
+    }
+
+    libVM.editClicked = (elm) => {
+      console.log(elm)
+
+      $('#modal .modal-title').html('Edit ID3 Tag')
+      $('#modal .modal-body').html('' + elm.fileName + '<br>' + elm.artist + '<br>' + elm.title + '<br>')
+      $('#modal').modal('show')
+    }
+
   };
 
-  libCore.toggleFilter = function(filter) {
+  libCore.toggleFilter = (filter) => {
     const filterLabel = filter.label;
     filter.active(!filter.active());
     libCore.updateFilterSelection(libCore.viewModel.filterGroups[filter.label].selected, filter);
     libCore.updateDisabledFlags();
   };
 
-  libCore.enableFilter = function(filter) {
+  libCore.enableFilter = (filter) => {
     filter.disabled(false);
   };
 
-  libCore.disableFilter = function(selectionArray, filter) {
+  libCore.disableFilter = (selectionArray, filter) => {
     filter.active(false);
     filter.disabled(true);
     libCore.updateFilterSelection(selectionArray, filter);
@@ -141,7 +215,7 @@ const LibraryFilter = new function() {
 
   libCore.applyFilters = function(filters, items) {
     // pass if it passes any filter in filterGroup
-    return items.filter(function(item) {
+    return items.filter((item) => {
       for (let i in filters) {
         const filterGroup = libCore.viewModel.filterGroups[filters[i].label];
 
@@ -153,12 +227,12 @@ const LibraryFilter = new function() {
     });
   };
 
-  libCore.filterByGroup = function(filterGroup, items) {
+  libCore.filterByGroup = (filterGroup, items) => {
     const activeFilters = libCore.viewModel.filterGroups[filterGroup].selected();
     return activeFilters.length !== 0 ? libCore.applyFilters(activeFilters, items) : items;
   };
 
-  libCore.updateFilterSelection = function(selectionArray, item) {
+  libCore.updateFilterSelection = (selectionArray, item) => {
     if (item.active()) {
       selectionArray.push(item);
     }
@@ -167,7 +241,7 @@ const LibraryFilter = new function() {
     }
   };
 
-  libCore.updateDisabledFlagsInGroup = function(filterGroupName) {
+  libCore.updateDisabledFlagsInGroup = (filterGroupName) => {
     let filteredLibrary = libCore.viewModel.libraryCoreData;
     // apply all filters in other groups
     for (let key in libCore.viewModel.filterGroups) {
@@ -177,7 +251,7 @@ const LibraryFilter = new function() {
     }
 
     const filterGroup = libCore.viewModel.filterGroups[filterGroupName];
-    filterGroup.all.forEach(function(filter) {
+    filterGroup.all.forEach((filter) => {
       // disable filter if applying it would result in an empty set
       const tempFilteredLibrary = libCore.applyFilters([filter], filteredLibrary);
       if (tempFilteredLibrary.length === 0) {
@@ -188,15 +262,15 @@ const LibraryFilter = new function() {
     });
   };
 
-  libCore.updateDisabledFlags = function() {
+  libCore.updateDisabledFlags = () => {
     for (let key in libCore.viewModel.filterGroups) {
       libCore.updateDisabledFlagsInGroup(key);
     }
   };
 
-  libCore.addFilterGroup = function(name, filters, filterMethod) {
+  libCore.addFilterGroup = (name, filters, filterMethod) => {
     libCore.viewModel.filterGroups[name] = {
-      all: filters.map(function(filter) {
+      all: filters.map((filter) => {
         filter.label = name;
         filter.active = ko.observable(false);
         filter.disabled = ko.observable(false);
@@ -207,15 +281,15 @@ const LibraryFilter = new function() {
     };
   };
 
-  libCore.getTypeFilters = function(data) {
+  libCore.getTypeFilters = (data) => {
     let typeFiltersArray = [];
 
-    data.forEach(function(item) {
+    data.forEach((item) => {
       const filter = {
         value: item.type,
       };
 
-      if (filter.value && typeFiltersArray.map(function(f){ return f.value }).indexOf(filter.value) === -1) {
+      if (filter.value && typeFiltersArray.map((f) => { return f.value }).indexOf(filter.value) === -1) {
         typeFiltersArray.push(filter);
       }
     });
@@ -223,15 +297,15 @@ const LibraryFilter = new function() {
     return typeFiltersArray;
   };
 
-  libCore.getYearFilters = function(data) {
+  libCore.getYearFilters = (data) => {
     let yearFiltersArray = [];
 
-    data.forEach(function(item) {
+    data.forEach((item) => {
       const filter = {
         value: item.year,
       };
 
-      if (filter.value && yearFiltersArray.map(function(f){ return f.value }).indexOf(filter.value) === -1) {
+      if (filter.value && yearFiltersArray.map((f) => { return f.value }).indexOf(filter.value) === -1) {
         yearFiltersArray.push(filter);
       }
     });
@@ -239,15 +313,15 @@ const LibraryFilter = new function() {
     return yearFiltersArray;
   };
 
-  libCore.getGenreFilters = function(data) {
+  libCore.getGenreFilters = (data) => {
     let genreFiltersArray = [];
 
-    data.forEach(function(item) {
+    data.forEach((item) => {
       const filter = {
         value: item.genre,
       };
 
-      if (filter.value && genreFiltersArray.map(function(f){ return f.value }).indexOf(filter.value) === -1) {
+      if (filter.value && genreFiltersArray.map((f) => { return f.value }).indexOf(filter.value) === -1) {
         genreFiltersArray.push(filter);
       }
     });
@@ -255,16 +329,16 @@ const LibraryFilter = new function() {
     return genreFiltersArray;
   };
 
-  libCore.getTagFilters = function(data) {
+  libCore.getTagFilters = (data) => {
     let tagFiltersArray = [];
 
-    data.forEach(function(item) {
-      item.tags.forEach(function(tag) {
+    data.forEach((item) => {
+      item.tags.forEach((tag) => {
         const filter = {
           value: tag,
         };
 
-        if (tag && tagFiltersArray.map(function(f){ return f.value }).indexOf(filter.value) === -1) {
+        if (tag && tagFiltersArray.map((f) => { return f.value }).indexOf(filter.value) === -1) {
           tagFiltersArray.push(filter);
         }
       });
@@ -273,31 +347,31 @@ const LibraryFilter = new function() {
     return tagFiltersArray;
   };
 
-  libCore.initCallback = function(libraryArray) {
+  libCore.initCallback = (libraryArray) => {
     // setup catalog data
-    libCore.viewModel.libraryCoreData = libraryArray.map(function(item) {
+    libCore.viewModel.libraryCoreData = libraryArray.map((item) => {
       item.active = ko.observable(true);
       return item;
     });
 
     // setup filter groups
     const typeFilters = libCore.getTypeFilters(libraryArray);
-    libCore.addFilterGroup('Type', typeFilters, function(filter, item) {
+    libCore.addFilterGroup('Type', typeFilters, (filter, item) => {
       return item.type === filter.value;
     });
 
     const yearFilters = libCore.getYearFilters(libraryArray);
-    libCore.addFilterGroup('Year', yearFilters, function(filter, item) {
+    libCore.addFilterGroup('Year', yearFilters, (filter, item) => {
       return item.year === filter.value;
     });
 
     const genreFilters = libCore.getGenreFilters(libraryArray);
-    libCore.addFilterGroup('Genre', genreFilters, function(filter, item) {
+    libCore.addFilterGroup('Genre', genreFilters, (filter, item) => {
       return item.genre === filter.value;
     });
 
     const tagFilters = libCore.getTagFilters(libraryArray);
-    libCore.addFilterGroup('Tags', tagFilters, function(filter, item) {
+    libCore.addFilterGroup('Tags', tagFilters, (filter, item) => {
       return item.tags.indexOf(filter.value) !== -1;
     });
 
@@ -308,18 +382,19 @@ const LibraryFilter = new function() {
     ko.applyBindings(libCore.viewModel, document.getElementById('musicLibrary'));
   };
 
-  libCore.init = function() {
+  libCore.init = () => {
     libCore.viewModel = new libCore.libraryViewModel();
     libCore.initCallback(libraryData);
   };
 };
 
-walk(libPath, function(err, results) {
+walk(libPath, (err, results) => {
   if (err)
     throw err;
 
-  results.forEach(function(file, n) {
-    let info = id3.read(file)
+  results.forEach((file, n) => {
+    let info = id3.read(file),
+        fileTrimmed = file.substring(1, file.length);
 
     libraryData.push({
       catNum: '',
@@ -334,11 +409,13 @@ walk(libPath, function(err, results) {
       year: info.year,
       copyright: info.copyright,
       url: '',
-      tags: []
+      tags: [],
+      filePath: file,
+      fileName: file.substr(file.lastIndexOf('\/') + 1, file.length)
     })
   })
 
   libraryData.sort(sort.sortArtists);
 
-  LibraryFilter.init()
+  Library.init()
 })

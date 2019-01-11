@@ -4,10 +4,6 @@
 
 body {
   background: #111;
-  overflow: hidden;
-  > div {
-    height: calc(100vh - 100px);
-  }
 }
 
 h1, h2 {

@@ -1,6 +1,12 @@
 /* Catalog List Styles */
+@import "variables";
 
 #musicLibrary {
+  height: 100vh;
+  overflow: hidden;
+  > div {
+    height: calc(100vh - #{$header-height});
+  }
   section {
     padding: 0;
     background: #222;
@@ -83,7 +89,7 @@
         color: #CCC;
         a {
           display: block;
-          padding: 6px;
+          padding: 8px;
           color: #FFF;
         }
       }
@@ -103,7 +109,7 @@
       }
       tbody {
         > tr {
-          cursor: pointer;
+          cursor: default;
         }
         > tr:nth-of-type(odd) {
           background-color: #111;
