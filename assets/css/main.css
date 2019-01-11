@@ -185,6 +185,10 @@ header .audio-title small {
   table-layout: auto;
 }
 
+#musicLibrary .list table thead {
+  background: #6718b0;
+}
+
 #musicLibrary .list table tr {
   border-bottom: 1px #333333 solid;
   height: 39px;

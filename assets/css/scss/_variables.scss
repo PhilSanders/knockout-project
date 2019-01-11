@@ -4,8 +4,7 @@
 
 @import "node_modules/bootstrap-sass/assets/stylesheets/bootstrap/variables";
 
-// $font-size-base: 14px;
-// $padding-base-horizontal: 12px;
+// BOOTSTRAP VARS OVERRIDES START HERE
 
 //Colors
 
@@ -26,6 +25,11 @@ $brand-success:         #5cb85c;
 $brand-info:            #5bc0de;
 $brand-warning:         #f0ad4e;
 $brand-danger:          #d9534f;
+
+// $font-size-base: 14px;
+// $padding-base-horizontal: 12px;
+
+// APP VARS START HERE
 
 // header
 
