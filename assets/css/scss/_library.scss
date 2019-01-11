@@ -11,6 +11,9 @@
     padding: 0;
     background: #222;
   }
+  .main {
+    @extend .flex-row;
+  }
   .filters {
     min-width: 200px;
     .filters-title {
@@ -68,7 +71,7 @@
       }
     }
   }
-  .main {
+  .list {
     width: 100%;
     height: 100%;
     overflow-y: auto;

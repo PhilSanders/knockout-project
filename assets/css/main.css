@@ -60,11 +60,11 @@ a.disabled:active {
   font-size: 14px;
 }
 
-.flex-row {
+.flex-row, #musicLibrary .main {
   display: flex;
 }
 
-.flex-row:before {
+.flex-row:before, #musicLibrary .main:before {
   display: block;
 }
 
@@ -176,38 +176,38 @@ header .audio-title small {
   border-bottom-width: 1px;
 }
 
-#musicLibrary .main {
+#musicLibrary .list {
   width: 100%;
   height: 100%;
   overflow-y: auto;
 }
 
-#musicLibrary .main table {
+#musicLibrary .list table {
   table-layout: auto;
 }
 
-#musicLibrary .main table tr {
+#musicLibrary .list table tr {
   border-bottom: 1px #333 solid;
   height: 39px;
 }
 
-#musicLibrary .main table th, #musicLibrary .main table td {
+#musicLibrary .list table th, #musicLibrary .list table td {
   position: relative;
   padding: 4px;
   color: #CCC;
 }
 
-#musicLibrary .main table th a, #musicLibrary .main table td a {
+#musicLibrary .list table th a, #musicLibrary .list table td a {
   display: block;
   padding: 8px;
   color: #FFF;
 }
 
-#musicLibrary .main table th {
+#musicLibrary .list table th {
   padding: 0;
 }
 
-#musicLibrary .main table th:after {
+#musicLibrary .list table th:after {
   content: '';
   position: absolute;
   top: 0;
@@ -219,10 +219,10 @@ header .audio-title small {
   cursor: ew-resize;
 }
 
-#musicLibrary .main table tbody > tr {
+#musicLibrary .list table tbody > tr {
   cursor: default;
 }
 
-#musicLibrary .main table tbody > tr:nth-of-type(odd) {
+#musicLibrary .list table tbody > tr:nth-of-type(odd) {
   background-color: #111;
 }
