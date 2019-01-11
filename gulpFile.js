@@ -4,6 +4,7 @@ const electron = require('electron-connect').server.create(),
       del = require('del'),
       gulp = require('gulp'),
       sass = require('gulp-sass'),
+      compassImporter = require('compass-importer'),
       webserver = require('gulp-webserver'),
       useref = require('gulp-useref');
 
@@ -11,6 +12,7 @@ const sassConfig = {
         inputDir: 'assets/css/scss/**/*.scss',
         outputDir: 'assets/css',
         options: {
+          importer: compassImporter,
           outputStyle: 'expanded'
         }
       };

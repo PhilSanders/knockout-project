@@ -1,5 +1,6 @@
 // Main.css
 
+@import "compass";
 @import "variables";
 
 body {
@@ -99,6 +100,8 @@ a.disabled:active {
     // border: 1px solid rgba(0, 0, 0, 0.2);
     .modal-header {
       background-color: $brand-primary-dark;
+      @include filter-gradient(#ab68ea, #8a2be2, vertical);
+      @include background-image(linear-gradient(top, rgba(171,104,234,1) 0%,rgba(138,43,226,1) 100%));
       border-bottom: 1px solid $brand-primary-dark;
       .close {
         color: $white;

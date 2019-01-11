@@ -4,7 +4,9 @@
 header {
   display: flex;
   min-height: $header-height;
-  background: $brand-primary;
+  background-color: $brand-primary;
+  @include filter-gradient(#ab68ea, #8a2be2, vertical);
+  @include background-image(linear-gradient(top, rgba(171,104,234,1) 0%,rgba(138,43,226,1) 100%));
   border-bottom: 1px solid $gray-base;
   @import "audio-player";
 }

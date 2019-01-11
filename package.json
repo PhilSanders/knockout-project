@@ -9,6 +9,7 @@
   },
   "devDependencies": {
     "bootstrap-sass": "^3.3.7",
+    "compass-importer": "^0.4.1",
     "dataurl": "^0.1.0",
     "del": "^3.0.0",
     "electron": "^4.0.1",
