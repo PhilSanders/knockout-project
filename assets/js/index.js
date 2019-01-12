@@ -2,13 +2,12 @@
 
 const BrowserWindow = require('electron').remote.BrowserWindow
 const remote = require('electron').remote
-const fs = remote.require('fs')
 const id3 = require('node-id3')
-const dataurl = require('dataurl')
 const ko = require('knockout')
 const mainProcess = remote.require('./main')
 const dir = remote.require('./assets/js/dir')
 const sort = remote.require('./assets/js/sort')
+const dataUrl = remote.require('./assets/js/base64')
 const store = require('electron-store')
 const storage = new store()
 
@@ -40,16 +39,6 @@ audioPlayer.onloadedmetadata = () => {
     trackTime.innerHTML = curmins + ':' + cursecs
     trackDuration.innerHTML = durmins + ':' + dursecs
   }
-};
-
-const base64 = (filePath) => {
-  const songPromise = new Promise((resolve, reject) => {
-    fs.readFile(filePath, (err, data) => {
-      if (err) { reject(err); }
-      resolve(dataurl.convert({ data, mimetype: 'audio/mp3' }));
-    });
-  });
-  return songPromise;
 };
 
 const id3EditorTemplate = (item) => {
@@ -198,7 +187,7 @@ const Library = new function() {
     }
 
     libVM.itemClick = (item) => {
-      const filePromise = base64(item.filePath);
+      const filePromise = dataUrl.base64(item.filePath);
 
       filePromise.then((fileData) => {
         // console.log(fileData);
