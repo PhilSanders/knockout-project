@@ -52,6 +52,16 @@ a.disabled:active {
   pointer-events: none;
 }
 
+::selection {
+  background: $brand-primary-light; /* WebKit/Blink Browsers */
+}
+
+:focus,
+.btn:focus,
+a:focus {
+  outline-color: orange;
+}
+
 .container {
   width: 100%;
   max-width: 1170px;
@@ -93,7 +103,8 @@ a.disabled:active {
   background: transparent;
   color: $gray-light;
   transition: color 200ms linear;
-  &:hover {
+  &:hover,
+  &:focus {
     color: $gray-lighter;
   }
 }

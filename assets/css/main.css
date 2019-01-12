@@ -46,6 +46,17 @@ a.disabled:active {
   pointer-events: none;
 }
 
+::selection {
+  background: #ab68ea;
+  /* WebKit/Blink Browsers */
+}
+
+:focus,
+.btn:focus,
+a:focus {
+  outline-color: orange;
+}
+
 .container {
   width: 100%;
   max-width: 1170px;
@@ -139,7 +150,7 @@ fieldset[disabled] .btn-brand-primary.focus {
   transition: color 200ms linear;
 }
 
-.btn-modify:hover {
+.btn-modify:hover, .btn-modify:focus {
   color: #eeeeee;
 }
 
