@@ -43,6 +43,7 @@
           border: 1px $gray-dark solid;
           border-bottom-width: 0;
           text-transform: capitalize;
+          transition: 200ms background linear;
           &.active {
             background: $brand-primary-dark;
             border-bottom-width: 0;
