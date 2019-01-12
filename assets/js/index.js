@@ -145,10 +145,38 @@ const Library = new function() {
     }
 
     libVM.editClicked = (item) => {
-      console.log(item)
+      // console.log(item)
       $('#modal .modal-title').html('Edit ID3 Tag')
       $('#modal .modal-body').html(id3.editorTemplate(item))
       $('#modal').modal('show')
+
+      const id3UpdateForm = document.querySelector('#Id3EditorForm')
+      const id3UpdateBtn = document.querySelector('#Id3UpdateBtn')
+
+      id3UpdateBtn.addEventListener('click', () => {
+        console.log('updating item')
+
+        const storageData = storage.get('library')
+        const storageUpdate = storageData.map((itemInStorage) => {
+          if (JSON.stringify(itemInStorage) === JSON.stringify(item)) {
+            itemInStorage.artist      = id3UpdateForm.ArtistInput.value
+            itemInStorage.title       = id3UpdateForm.TitleInput.value
+            itemInStorage.album       = id3UpdateForm.AlbumInput.value
+            itemInStorage.year        = id3UpdateForm.YearInput.value
+            itemInStorage.copyright   = id3UpdateForm.CopyrightInput.value
+            itemInStorage.url         = id3UpdateForm.UrlInput.value
+            itemInStorage.description = id3UpdateForm.DescInput.value
+            itemInStorage.genre       = id3UpdateForm.GenreInput.value
+            itemInStorage.tags        = id3UpdateForm.TagsInput.value
+          }
+          return itemInStorage;
+        })
+        console.log(storageUpdate)
+
+        storage.set('library', storageUpdate)
+        libCore.viewModel.libraryCoreData = storage.get('library')
+        libVM.filteredLibrary(libVM.getFilteredLibrary())
+      })
     }
 
   };
