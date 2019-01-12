@@ -51,7 +51,7 @@ const Library = new function() {
 
     libVM.libraryCoreData = []
 
-    libVM.currentArtist = ko.observable('PillFORK')
+    libVM.currentArtist = ko.observable()
     libVM.currentTitle = ko.observable()
     libVM.currentFile = ko.observable()
 
