@@ -150,6 +150,10 @@ const Library = new function() {
       $('#modal .modal-body').html(id3.editorTemplate(item))
       $('#modal').modal('show')
 
+      $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+      })
+
       const id3UForm = document.querySelector('#Id3EditorForm')
       const id3UpdateBtn = document.querySelector('#Id3UpdateBtn')
 

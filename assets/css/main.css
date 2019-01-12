@@ -181,6 +181,29 @@ fieldset[disabled] .btn-brand-primary.focus {
   color: #eeeeee;
 }
 
+#Id3EditorForm .form-group input[type="text"],
+#Id3EditorForm .form-group textarea {
+  color: #eeeeee;
+  background-color: #000;
+  background-image: none;
+  border-color: #333333;
+  border-radius: 6px;
+}
+
+#Id3EditorForm .form-group input[type="text"]:focus,
+#Id3EditorForm .form-group textarea:focus {
+  border-color: #6718b0;
+  -webkit-box-shadow: rgba(103, 24, 176, 0.6) 0 0 8px, rgba(171, 104, 234, 0.075) 0 1px 1px inset;
+  box-shadow: rgba(103, 24, 176, 0.6) 0 0 8px, rgba(171, 104, 234, 0.075) 0 1px 1px inset;
+}
+
+#Id3EditorForm .form-group input[type="text"].form-control[disabled],
+#Id3EditorForm .form-group textarea.form-control[disabled] {
+  color: #777777;
+  background-color: #333333;
+  cursor: text;
+}
+
 /* header */
 header {
   display: flex;
