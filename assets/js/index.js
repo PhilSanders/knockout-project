@@ -392,9 +392,9 @@ dir.walkParallel(libPath, (err, results) => {
 
   let libraryData = []
 
-  results.forEach((file, n) => {
-    let info = id3.get(file),
-        fileTrimmed = file.substring(1, file.length);
+  results.forEach((filePath, n) => {
+    let info = id3.get(filePath),
+        fileName = filePath.substr(filePath.lastIndexOf('\/') + 1, filePath.length);
 
     libraryData.push({
       catNum: '',
@@ -411,8 +411,8 @@ dir.walkParallel(libPath, (err, results) => {
       copyright: info.copyright ? info.copyright : '',
       url: '',
       tags: [],
-      filePath: file,
-      fileName: file.substr(file.lastIndexOf('\/') + 1, file.length)
+      filePath: filePath,
+      fileName: fileName
     })
   })
 
