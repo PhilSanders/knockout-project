@@ -456,7 +456,6 @@ dir.walkParallel(libPath, (err, results) => {
 
   libraryData.sort(sort.sortArtists);
   storage.set('library', libraryData)
-  console.log(storage.get('library'))
 
   Library.init()
 })
