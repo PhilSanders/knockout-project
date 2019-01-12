@@ -150,7 +150,7 @@ const Library = new function() {
       $('#modal .modal-body').html(id3.editorTemplate(item))
       $('#modal').modal('show')
 
-      const id3UpdateForm = document.querySelector('#Id3EditorForm')
+      const id3UForm = document.querySelector('#Id3EditorForm')
       const id3UpdateBtn = document.querySelector('#Id3UpdateBtn')
 
       id3UpdateBtn.addEventListener('click', () => {
@@ -159,15 +159,16 @@ const Library = new function() {
         const storageData = storage.get('library')
         const storageUpdate = storageData.map((itemInStorage) => {
           if (JSON.stringify(itemInStorage) === JSON.stringify(item)) {
-            itemInStorage.artist      = id3UpdateForm.ArtistInput.value
-            itemInStorage.title       = id3UpdateForm.TitleInput.value
-            itemInStorage.album       = id3UpdateForm.AlbumInput.value
-            itemInStorage.year        = id3UpdateForm.YearInput.value
-            itemInStorage.copyright   = id3UpdateForm.CopyrightInput.value
-            itemInStorage.url         = id3UpdateForm.UrlInput.value
-            itemInStorage.description = id3UpdateForm.DescInput.value
-            itemInStorage.genre       = id3UpdateForm.GenreInput.value
-            itemInStorage.tags        = id3UpdateForm.TagsInput.value ? [id3UpdateForm.TagsInput.value] : []
+            itemInStorage.artist      = id3UForm.ArtistInput.value ? id3UForm.ArtistInput.value : 'Unknown'
+            itemInStorage.title       = id3UForm.TitleInput.value ? id3UForm.TitleInput.value : 'Untitled'
+            itemInStorage.album       = id3UForm.AlbumInput.value ? id3UForm.AlbumInput.value : ''
+            itemInStorage.year        = id3UForm.YearInput.value ? id3UForm.YearInput.value : ''
+            itemInStorage.copyright   = id3UForm.CopyrightInput.value ? id3UForm.CopyrightInput.value : ''
+            itemInStorage.url         = id3UForm.UrlInput.value ? id3UForm.UrlInput.value : ''
+            itemInStorage.description = id3UForm.DescInput.value ? id3UForm.DescInput.value : ''
+            itemInStorage.genre       = id3UForm.GenreInput.value ? id3UForm.GenreInput.value : ''
+            itemInStorage.bpm         = id3UForm.BpmInput.value ? id3UForm.BpmInput.value : ''
+            itemInStorage.tags        = id3UForm.TagsInput.value ? [id3UForm.TagsInput.value] : []
           }
           return itemInStorage;
         })
@@ -396,8 +397,9 @@ dir.walkParallel(libPath, (err, results) => {
       title: info.title ? info.title : 'Untitled',
       description: info.comment ? info.comment.text : '',
       genre: info.genre ? info.genre : '',
+      bpm: info.bpm ? info.bpm : '',
       type: 'single',
-      album: info.album ? info.album : 'Unreleased',
+      album: info.album ? info.album : '',
       cover: '',
       year: info.year ? info.year : '',
       copyright: info.copyright ? info.copyright : '',
