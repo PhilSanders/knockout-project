@@ -9,7 +9,7 @@ exports.get = (file) => {
 exports.editorTemplate = (item) => {
   let htmlTemp = ''
 
-  htmlTemp = '<form class="form-horizontal">'
+  htmlTemp = '<form id="Id3EditorForm" class="form-horizontal">'
            + '<div class="form-group">'
              + '<div class="col-sm-3 text-right" for="ArtistInput"><strong>File Name</strong></div>'
              + '<div class="col-sm-9">'
@@ -68,6 +68,11 @@ exports.editorTemplate = (item) => {
              + '<label class="col-sm-3 control-label" for="TagsInput">Tags</label>'
              + '<div class="col-sm-9">'
                + '<textarea class="form-control" id="TagsInput" placeholder="Tags">' + item.tags + '</textarea>'
+             + '</div>'
+           + '</div>'
+           + '<div class="row">'
+             + '<div class="col-sm-12 text-right">'
+               + '<button id="Id3UpdateBtn" type="button" class="btn btn-brand-primary btn-small">Update</button>'
              + '</div>'
            + '</div>'
            + '</form>';

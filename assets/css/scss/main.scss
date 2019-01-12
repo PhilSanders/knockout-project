@@ -2,6 +2,7 @@
 
 @import "compass";
 @import "variables";
+@import "node_modules/bootstrap-sass/assets/stylesheets/bootstrap/mixins";
 
 body {
   background: $gray-darker;
@@ -84,6 +85,10 @@ a.disabled:active {
   height: 100vh;
 }
 
+.btn-brand-primary {
+  @include button-variant($white, $brand-primary, $brand-primary-light);
+}
+
 .btn-modify {
   background: transparent;
   color: $gray-light;
@@ -117,6 +122,8 @@ a.disabled:active {
       }
     }
     .modal-body {
+      max-height: calc(100vh - #{$header-height});
+      overflow-y: auto;
       color: $gray-lighter;
     }
   }
