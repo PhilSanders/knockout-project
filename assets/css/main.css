@@ -221,12 +221,12 @@ header {
   min-height: 110px;
   background-color: #8A2BE2;
   *zoom: 1;
-  filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFAB68EA', endColorstr='#FF8A2BE2');
-  background-image: -owg-linear-gradient(top, #ab68ea 0%, blueviolet 100%);
-  background-image: -webkit-linear-gradient(top, #ab68ea 0%, blueviolet 100%);
-  background-image: -moz-linear-gradient(top, #ab68ea 0%, blueviolet 100%);
-  background-image: -o-linear-gradient(top, #ab68ea 0%, blueviolet 100%);
-  background-image: linear-gradient(top, #ab68ea 0%, blueviolet 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFAB68EA', endColorstr='#FF6718B0');
+  background-image: -owg-linear-gradient(top, #ab68ea 0%, #6718b0 100%);
+  background-image: -webkit-linear-gradient(top, #ab68ea 0%, #6718b0 100%);
+  background-image: -moz-linear-gradient(top, #ab68ea 0%, #6718b0 100%);
+  background-image: -o-linear-gradient(top, #ab68ea 0%, #6718b0 100%);
+  background-image: linear-gradient(top, #ab68ea 0%, #6718b0 100%);
   border-bottom: 1px solid #000;
 }
 
