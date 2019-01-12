@@ -55,7 +55,7 @@ exports.editorTemplate = (item) => {
            + '<div class="form-group">'
              + '<label class="col-xs-3 control-label" for="UrlInput">Url</label>'
              + '<div class="col-xs-9">'
-               + '<input type="text" class="form-control input-sm" id="UrlInput" placeholder="Url" value="' + item.url + '">'
+               + '<input type="text" class="form-control input-sm" id="UrlInput" placeholder="URL" value="' + item.url + '">'
              + '</div>'
            + '</div>'
            + '<div class="form-group">'
