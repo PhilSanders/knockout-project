@@ -167,15 +167,15 @@ const Library = new function() {
             itemInStorage.url         = id3UpdateForm.UrlInput.value
             itemInStorage.description = id3UpdateForm.DescInput.value
             itemInStorage.genre       = id3UpdateForm.GenreInput.value
-            itemInStorage.tags        = id3UpdateForm.TagsInput.value
+            itemInStorage.tags        = id3UpdateForm.TagsInput.value ? [id3UpdateForm.TagsInput.value] : []
           }
           return itemInStorage;
         })
         console.log(storageUpdate)
 
         storage.set('library', storageUpdate)
-        libCore.viewModel.libraryCoreData = storage.get('library')
-        libVM.filteredLibrary(libVM.getFilteredLibrary())
+        libCore.updateCallback(storage.get('library'));
+        $('#modal').modal('hide')
       })
     }
 
@@ -332,7 +332,7 @@ const Library = new function() {
     return tagFiltersArray;
   };
 
-  libCore.initCallback = (libraryArray) => {
+  libCore.librarySetup = (libraryArray) => {
     // setup catalog data
     libCore.viewModel.libraryCoreData = libraryArray.map((item) => {
       item.active = ko.observable(true);
@@ -361,9 +361,15 @@ const Library = new function() {
     });
 
     libCore.viewModel.filteredLibrary(libCore.viewModel.getFilteredLibrary());
+  }
 
+  libCore.updateCallback = (libraryArray) => {
+    libCore.librarySetup(libraryArray);
+  }
+
+  libCore.initCallback = (libraryArray) => {
+    libCore.librarySetup(libraryArray);
     libCore.updateDisabledFlags();
-
     ko.applyBindings(libCore.viewModel, document.getElementById('musicLibrary'));
   };
 
