@@ -10,6 +10,12 @@ exports.editorTemplate = (item) => {
   let htmlTemp = ''
 
   htmlTemp = '<form id="Id3EditorForm" class="form-horizontal">'
+           + '<div class="row">'
+             + '<div class="col-xs-3 text-right" for="ArtistInput"><strong>Cover Image</strong></div>'
+             + '<div class="col-xs-9">'
+               + item.cover
+             + '</div>'
+           + '</div>'
            + '<div class="form-group">'
              + '<div class="col-xs-3 text-right" for="ArtistInput"><strong>File Name</strong></div>'
              + '<div class="col-xs-9">'

@@ -372,6 +372,8 @@ const Library = new function() {
     libCore.librarySetup(libraryArray);
     libCore.updateDisabledFlags();
     ko.applyBindings(libCore.viewModel, document.getElementById('musicLibrary'));
+
+    console.log(libCore.viewModel.filteredLibrary())
   };
 
   libCore.init = () => {
@@ -400,7 +402,7 @@ dir.walkParallel(libPath, (err, results) => {
       bpm: info.bpm ? info.bpm : '',
       type: 'single',
       album: info.album ? info.album : '',
-      cover: '',
+      cover: info.image ? info.image.imageBuffer : '',
       year: info.year ? info.year : '',
       copyright: info.copyright ? info.copyright : '',
       url: '',
