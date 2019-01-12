@@ -11,7 +11,6 @@ const sort = remote.require('./assets/js/sort')
 const store = require('electron-store')
 const storage = new store()
 
-let libraryData = []
 let libPath = '/Users/philsanders/Desktop/PillFORM'
 
 let audioPlayer = document.querySelector('#AudioPlayer')
@@ -42,7 +41,7 @@ audioPlayer.onloadedmetadata = () => {
   }
 };
 
-const walk = (dir, done) => {
+const walkLibrary = (dir, done) => {
   let results = [];
   fs.readdir(dir, function(err, list) {
     if (err)
@@ -456,9 +455,11 @@ const Library = new function() {
   };
 };
 
-walk(libPath, (err, results) => {
+walkLibrary(libPath, (err, results) => {
   if (err)
     throw err;
+
+  let libraryData = []
 
   results.forEach((file, n) => {
     let info = id3.read(file),
