@@ -21,9 +21,9 @@ gulp.task('electron', ['sasswatch'], function () {
   // Start browser process
   electron.start();
   // Restart browser process
-  gulp.watch('main.js', 'assets/js/id3.js', electron.restart);
+  gulp.watch(['main.js', 'assets/*/*'], electron.restart);
   // Reload renderer process
-  gulp.watch(['index.html','assets/*/*'], electron.reload);
+  gulp.watch(['assets/views/index.html'], electron.reload);
 });
 
 gulp.task('webserver', ['sasswatch'], function() {
