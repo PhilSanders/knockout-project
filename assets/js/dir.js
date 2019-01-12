@@ -3,16 +3,16 @@
 const fs = require('fs')
 const path = require('path')
 
-exports.walkParallel = function(dir, done) {
+exports.walkParallel = function(dir, callbackFunc) {
   let results = [];
   fs.readdir(dir, function(err, list) {
     if (err)
-      return done(err);
+      return callbackFunc(err);
 
     let pending = list.length;
 
     if (!pending)
-      return done(null, results);
+      return callbackFunc(null, results);
 
     list.forEach(function(file) {
       file = path.resolve(dir, file);
@@ -21,30 +21,30 @@ exports.walkParallel = function(dir, done) {
           exports.walkParallel(file, function(err, res) {
             results = results.concat(res);
             if (!--pending)
-              done(null, results);
+              callbackFunc(null, results);
           });
         } else {
           results.push(file);
           if (!--pending)
-            done(null, results);
+            callbackFunc(null, results);
         }
       });
     });
   });
 }
 
-exports.walkSerial = function(dir, done) {
+exports.walkSerial = function(dir, callbackFunc) {
   let results = [];
   fs.readdir(dir, function(err, list) {
     if (err)
-      return done(err);
+      return callbackFunc(err);
 
     let i = 0;
 
     (function next() {
       let file = list[i++];
       if (!file)
-        return done(null, results);
+        return callbackFunc(null, results);
 
       file = dir + '/' + file;
 
