@@ -59,7 +59,7 @@ const walkLibrary = (dir, done) => {
 
       fs.stat(file, function(err, stat) {
         if (stat && stat.isDirectory()) {
-          walk(file, function(err, res) {
+          walkLibrary(file, function(err, res) {
             results = results.concat(res);
             next();
           });
