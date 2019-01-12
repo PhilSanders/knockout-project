@@ -7,6 +7,7 @@ const id3 = require('node-id3')
 const dataurl = require('dataurl')
 const ko = require('knockout')
 const mainProcess = remote.require('./main')
+const dir = remote.require('./assets/js/dir')
 const sort = remote.require('./assets/js/sort')
 const store = require('electron-store')
 const storage = new store()
@@ -40,37 +41,6 @@ audioPlayer.onloadedmetadata = () => {
     trackDuration.innerHTML = durmins + ':' + dursecs
   }
 };
-
-const walkLibrary = (dir, done) => {
-  let results = [];
-  fs.readdir(dir, function(err, list) {
-    if (err)
-      return done(err);
-
-    let i = 0;
-
-    (function next() {
-      let file = list[i++];
-
-      if (!file)
-        return done(null, results);
-
-      file = dir + '/' + file;
-
-      fs.stat(file, function(err, stat) {
-        if (stat && stat.isDirectory()) {
-          walkLibrary(file, function(err, res) {
-            results = results.concat(res);
-            next();
-          });
-        } else {
-          results.push(file);
-          next();
-        }
-      });
-    })();
-  });
-}
 
 const base64 = (filePath) => {
   const songPromise = new Promise((resolve, reject) => {
@@ -455,7 +425,7 @@ const Library = new function() {
   };
 };
 
-walkLibrary(libPath, (err, results) => {
+dir.walkParallel(libPath, (err, results) => {
   if (err)
     throw err;
 
@@ -485,8 +455,6 @@ walkLibrary(libPath, (err, results) => {
   })
 
   libraryData.sort(sort.sortArtists);
-  console.log(libraryData)
-
   storage.set('library', libraryData)
   console.log(storage.get('library'))
 

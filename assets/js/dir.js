@@ -18,7 +18,7 @@ exports.walkParallel = function(dir, done) {
       file = path.resolve(dir, file);
       fs.stat(file, function(err, stat) {
         if (stat && stat.isDirectory()) {
-          walk(file, function(err, res) {
+          exports.walkParallel(file, function(err, res) {
             results = results.concat(res);
             if (!--pending)
               done(null, results);
@@ -50,7 +50,7 @@ exports.walkSerial = function(dir, done) {
 
       fs.stat(file, function(err, stat) {
         if (stat && stat.isDirectory()) {
-          walk(file, function(err, res) {
+          exports.walkSerial(file, function(err, res) {
             results = results.concat(res);
             next();
           });
