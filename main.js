@@ -21,7 +21,13 @@ exports.selectDirectory = function () {
 
 function createWindow () {
   // Create the browser window.
-  win = new BrowserWindow({ width: 1200, height: 600 })
+  win = new BrowserWindow({
+    width: 1200,
+    height: 600,
+    webPreferences: {
+      nodeIntegration: true
+    }
+  })
 
   // load the index.html of the app.
   win.loadFile('assets/views/index.html')
