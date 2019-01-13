@@ -338,8 +338,9 @@ const Library = new function() {
     return tagFiltersArray;
   };
 
-  libCore.FiltersSetup = (libraryData) => {
+  libCore.filtersSetup = (libraryData) => {
     // setup filter groups
+
     const typeFilters = libCore.getTypeFilters(libraryData);
     libCore.addFilterGroup('Type', typeFilters, (filter, item) => {
       return item.type === filter.value;
@@ -378,7 +379,7 @@ const Library = new function() {
   }
 
   libCore.initCallback = (libraryData) => {
-    libCore.FiltersSetup(libraryData)
+    libCore.filtersSetup(libraryData)
     libCore.librarySetup(libraryData)
     libCore.updateDisabledFlags()
     ko.applyBindings(libCore.viewModel, document.getElementById('musicLibrary'))
