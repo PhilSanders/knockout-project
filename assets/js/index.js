@@ -338,12 +338,6 @@ const Library = new function() {
   };
 
   libCore.librarySetup = (libraryArray) => {
-    // setup catalog data
-    libCore.viewModel.libraryCoreData = libraryArray.map((item) => {
-      item.active = ko.observable(true);
-      return item;
-    });
-
     // setup filter groups
     const typeFilters = libCore.getTypeFilters(libraryArray);
     libCore.addFilterGroup('Type', typeFilters, (filter, item) => {
@@ -363,6 +357,12 @@ const Library = new function() {
     const tagFilters = libCore.getTagFilters(libraryArray);
     libCore.addFilterGroup('Tags', tagFilters, (filter, item) => {
       return item.tags.indexOf(filter.value) !== -1;
+    });
+
+    // setup library core data
+    libCore.viewModel.libraryCoreData = libraryArray.map((item) => {
+      item.active = ko.observable(true);
+      return item;
     });
 
     libCore.viewModel.filteredLibrary(libCore.viewModel.getFilteredLibrary());
