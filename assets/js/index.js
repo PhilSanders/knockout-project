@@ -393,8 +393,8 @@ dir.walkParallel(libPath, (err, results) => {
   let libraryData = []
 
   results.forEach((filePath, n) => {
-    let info = id3.get(filePath),
-        fileName = filePath.substr(filePath.lastIndexOf('\/') + 1, filePath.length);
+    const info = id3.get(filePath),
+          fileName = filePath.substr(filePath.lastIndexOf('\/') + 1, filePath.length);
 
     libraryData.push({
       catNum: '',
