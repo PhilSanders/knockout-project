@@ -389,7 +389,7 @@ const Library = new function() {
   libCore.updateCallback = (libraryData) => {
     libCore.librarySetup(libraryData)
     libCore.updateDisabledFlags()
-    console.log(storage.get('library'))
+    // console.log(storage.get('library'))
   }
 
   libCore.initCallback = (libraryData) => {
@@ -413,8 +413,6 @@ dir.walkParallel(libPath, callbackFunc = (err, results) => {
 
   results.forEach((filePath) => {
     const fileName = filePath.substr(filePath.lastIndexOf('\/') + 1, filePath.length)
-
-    // console.log(fileName.split('.').pop());
 
     if (fileName.split('.').pop() === 'mp3') {
       const info = id3.get(filePath)
