@@ -119,20 +119,14 @@ const Library = new function() {
     }
 
     libVM.itemClick = (item) => {
-      const filePromise = dataUrl.base64(item.filePath);
-
-      filePromise.then((fileData) => {
-        // console.log(fileData);
-        // display artist and song tile text
-        libVM.currentArtist(item.artist)
-        libVM.currentTitle(item.title)
-
-        // load audio from disk and play it
-        audioSource.src = fileData
-        audioPlayer.load()
-        audioPlayer.play()
-        console.log('playing')
-      });
+      // update audio player artist and song tile text display
+      libVM.currentArtist(item.artist)
+      libVM.currentTitle(item.title)
+      // load base64 audio buffer and play it
+      audioSource.src = item.fileBuffer
+      audioPlayer.load()
+      audioPlayer.play()
+      console.log('playing')
     }
 
     libVM.pauseClicked = () => {
@@ -372,6 +366,26 @@ const Library = new function() {
     libCore.viewModel.filteredLibrary(libCore.viewModel.getFilteredLibrary())
   }
 
+  libCore.storeBase64 = (libraryData) => { // Asynchronous Process
+    let finished = []
+
+    libraryData.forEach((libItem, n) => {
+      const promise = dataUrl.base64(libItem.filePath);
+
+      promise.then((fileBuffer) => {
+        libraryData.map((item) => {
+          if (JSON.stringify(libItem) === JSON.stringify(item)) {
+            item.fileBuffer = fileBuffer
+          }
+          return item
+        })
+        finished.push(n);
+
+        finished.length === libraryData.length ? console.log(true) : ''
+      })
+    })
+  }
+
   libCore.updateCallback = (libraryData) => {
     libCore.librarySetup(libraryData)
     libCore.updateDisabledFlags()
@@ -379,6 +393,7 @@ const Library = new function() {
   }
 
   libCore.initCallback = (libraryData) => {
+    libCore.storeBase64(libraryData)
     libCore.filtersSetup(libraryData)
     libCore.librarySetup(libraryData)
     libCore.updateDisabledFlags()
@@ -396,35 +411,39 @@ dir.walkParallel(libPath, callbackFunc = (err, results) => {
   if (err)
     throw err;
 
-  results.forEach((filePath, n) => {
-    const info = id3.get(filePath),
-          fileName = filePath.substr(filePath.lastIndexOf('\/') + 1, filePath.length);
+  results.forEach((filePath) => {
+    const fileName = filePath.substr(filePath.lastIndexOf('\/') + 1, filePath.length)
 
-    libraryTempData.push({
-      catNum: '',
-      compilationId: null,
-      artist: info.artist ? info.artist : 'Unknown',
-      title: info.title ? info.title : 'Untitled',
-      description: info.comment ? info.comment.text : '',
-      genre: info.genre ? info.genre : '',
-      bpm: info.bpm ? info.bpm : '',
-      type: 'single',
-      album: info.album ? info.album : '',
-      cover: info.image ? info.image.imageBuffer : '',
-      year: info.year ? info.year : '',
-      copyright: info.copyright ? info.copyright : '',
-      url: '',
-      tags: [],
-      filePath: filePath,
-      fileName: fileName
-    })
+    // console.log(fileName.split('.').pop());
+
+    if (fileName.split('.').pop() === 'mp3') {
+      const info = id3.get(filePath)
+
+      libraryTempData.push({
+        catNum: '',
+        compilationId: null,
+        artist: info.artist ? info.artist : 'Unknown',
+        title: info.title ? info.title : 'Untitled',
+        description: info.comment ? info.comment.text : '',
+        genre: info.genre ? info.genre : '',
+        bpm: info.bpm ? info.bpm : '',
+        type: 'single',
+        album: info.album ? info.album : '',
+        cover: info.image ? info.image.imageBuffer : '',
+        year: info.year ? info.year : '',
+        copyright: info.copyright ? info.copyright : '',
+        url: '',
+        tags: [],
+        fileBuffer: null,
+        filePath: filePath,
+        fileName: fileName
+      })
+    }
   })
 
   libraryTempData.sort(sort.sortArtists)
   storage.set('library', libraryTempData)
   libraryTempData = []
-
-  // console.log(storage.get('library'))
 
   Library.init()
 })
