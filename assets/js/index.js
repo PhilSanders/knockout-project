@@ -372,6 +372,9 @@ const Library = new function() {
     libraryData.forEach((libItem, n) => {
       const promise = dataUrl.base64(libItem.filePath);
 
+      const progressBar = document.querySelector('#ModalProgressBar')
+      progressBar.style.width = '50%'
+
       promise.then((fileBuffer) => {
         libraryData.map((item) => {
           if (JSON.stringify(libItem) === JSON.stringify(item)) {
@@ -379,9 +382,9 @@ const Library = new function() {
           }
           return item
         })
-        finished.push(n);
 
-        finished.length === libraryData.length ? console.log(true) : ''
+        finished.push(n);
+        finished.length === libraryData.length ? $('#modal').modal('hide') : '' // hide the wait modal
       })
     })
   }
@@ -402,6 +405,18 @@ const Library = new function() {
   };
 
   libCore.init = () => {
+    const progressBarHtml = '<div class="progress">'
+                              + '<div id="ModalProgressBar" class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">'
+                              + '</div>'
+                            + '</div>'
+
+    $('#modal .modal-title').html('Please wait...')
+    $('#modal .modal-body').html('<p>Reading: ' + libPath + '</p>' + progressBarHtml)
+    $('#modal').modal('show')
+
+    const progressBar = document.querySelector('#ModalProgressBar')
+    progressBar.style.width = '0%'
+
     libCore.viewModel = new libCore.libraryViewModel()
     libCore.initCallback(storage.get('library'))
   };
