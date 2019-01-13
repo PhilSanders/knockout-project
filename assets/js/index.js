@@ -338,7 +338,7 @@ const Library = new function() {
     return tagFiltersArray;
   };
 
-  libCore.librarySetup = (libraryData) => {
+  libCore.FiltersSetup = (libraryData) => {
     // setup filter groups
     const typeFilters = libCore.getTypeFilters(libraryData);
     libCore.addFilterGroup('Type', typeFilters, (filter, item) => {
@@ -359,7 +359,9 @@ const Library = new function() {
     libCore.addFilterGroup('Tags', tagFilters, (filter, item) => {
       return item.tags.indexOf(filter.value) !== -1;
     });
+  }
 
+  libCore.librarySetup = (libraryData) => {
     // setup library core data
     libCore.viewModel.libraryCoreData = libraryData.map((item) => {
       item.active = ko.observable(true);
@@ -376,6 +378,7 @@ const Library = new function() {
   }
 
   libCore.initCallback = (libraryData) => {
+    libCore.FiltersSetup(libraryData)
     libCore.librarySetup(libraryData)
     libCore.updateDisabledFlags()
     ko.applyBindings(libCore.viewModel, document.getElementById('musicLibrary'))
