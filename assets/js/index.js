@@ -11,6 +11,7 @@ const id3 = remote.require('./assets/js/id3')
 const store = require('electron-store')
 const storage = new store()
 
+let libraryTempData = []
 let libPath = '/Users/philsanders/Desktop/PillFORM'
 
 let audioPlayer = document.querySelector('#AudioPlayer')
@@ -176,10 +177,10 @@ const Library = new function() {
           }
           return itemInStorage;
         })
-        console.log(storageUpdate)
+        //  console.log(storageUpdate)
 
         storage.set('library', storageUpdate)
-        libCore.updateCallback(storage.get('library'));
+        libCore.updateCallback(storageUpdate)
         $('#modal').modal('hide')
       })
     }
@@ -337,66 +338,68 @@ const Library = new function() {
     return tagFiltersArray;
   };
 
-  libCore.librarySetup = (libraryArray) => {
-    // setup catalog data
-    libCore.viewModel.libraryCoreData = libraryArray.map((item) => {
-      item.active = ko.observable(true);
-      return item;
-    });
-
+  libCore.FiltersSetup = (libraryData) => {
     // setup filter groups
-    const typeFilters = libCore.getTypeFilters(libraryArray);
+    const typeFilters = libCore.getTypeFilters(libraryData);
     libCore.addFilterGroup('Type', typeFilters, (filter, item) => {
       return item.type === filter.value;
     });
 
-    const yearFilters = libCore.getYearFilters(libraryArray);
+    const yearFilters = libCore.getYearFilters(libraryData);
     libCore.addFilterGroup('Year', yearFilters, (filter, item) => {
       return item.year === filter.value;
     });
 
-    const genreFilters = libCore.getGenreFilters(libraryArray);
+    const genreFilters = libCore.getGenreFilters(libraryData);
     libCore.addFilterGroup('Genre', genreFilters, (filter, item) => {
       return item.genre === filter.value;
     });
 
-    const tagFilters = libCore.getTagFilters(libraryArray);
+    const tagFilters = libCore.getTagFilters(libraryData);
     libCore.addFilterGroup('Tags', tagFilters, (filter, item) => {
       return item.tags.indexOf(filter.value) !== -1;
     });
-
-    libCore.viewModel.filteredLibrary(libCore.viewModel.getFilteredLibrary());
   }
 
-  libCore.updateCallback = (libraryArray) => {
-    libCore.librarySetup(libraryArray);
+  libCore.librarySetup = (libraryData) => {
+    // setup library core data
+    libCore.viewModel.libraryCoreData = libraryData.map((item) => {
+      item.active = ko.observable(true);
+      return item;
+    });
+
+    libCore.viewModel.filteredLibrary(libCore.viewModel.getFilteredLibrary())
   }
 
-  libCore.initCallback = (libraryArray) => {
-    libCore.librarySetup(libraryArray);
-    libCore.updateDisabledFlags();
-    ko.applyBindings(libCore.viewModel, document.getElementById('musicLibrary'));
+  libCore.updateCallback = (libraryData) => {
+    libCore.librarySetup(libraryData)
+    libCore.updateDisabledFlags()
+    console.log(storage.get('library'))
+  }
 
+  libCore.initCallback = (libraryData) => {
+    libCore.FiltersSetup(libraryData)
+    libCore.librarySetup(libraryData)
+    libCore.updateDisabledFlags()
+    ko.applyBindings(libCore.viewModel, document.getElementById('musicLibrary'))
     console.log(libCore.viewModel.filteredLibrary())
   };
 
   libCore.init = () => {
-    libCore.viewModel = new libCore.libraryViewModel();
-    libCore.initCallback(storage.get('library'));
+    libCore.viewModel = new libCore.libraryViewModel()
+    libCore.initCallback(storage.get('library'))
   };
 };
 
-dir.walkParallel(libPath, (err, results) => {
+dir.walkParallel(libPath, callbackFunc = (err, results) => {
   if (err)
     throw err;
 
-  let libraryData = []
-
   results.forEach((filePath, n) => {
-    let info = id3.get(filePath),
-        fileName = filePath.substr(filePath.lastIndexOf('\/') + 1, filePath.length);
+    const info = id3.get(filePath),
+          fileName = filePath.substr(filePath.lastIndexOf('\/') + 1, filePath.length);
 
-    libraryData.push({
+    libraryTempData.push({
       catNum: '',
       compilationId: null,
       artist: info.artist ? info.artist : 'Unknown',
@@ -416,8 +419,11 @@ dir.walkParallel(libPath, (err, results) => {
     })
   })
 
-  libraryData.sort(sort.sortArtists);
-  storage.set('library', libraryData)
+  libraryTempData.sort(sort.sortArtists)
+  storage.set('library', libraryTempData)
+  libraryTempData = []
+
+  // console.log(storage.get('library'))
 
   Library.init()
 })
