@@ -112,6 +112,9 @@ a:focus {
 .progress {
   .progress-bar {
     background-color: $brand-primary-light;
+    span {
+      color: $brand-primary-dark;
+    }
   }
 }
 
