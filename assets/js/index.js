@@ -11,6 +11,7 @@ const id3 = remote.require('./assets/js/id3')
 const store = require('electron-store')
 const storage = new store()
 
+let libraryTempData = []
 let libPath = '/Users/philsanders/Desktop/PillFORM'
 
 let audioPlayer = document.querySelector('#AudioPlayer')
@@ -40,6 +41,14 @@ audioPlayer.onloadedmetadata = () => {
     trackDuration.innerHTML = durmins + ':' + dursecs
   }
 };
+
+const waitFor = (ms) => new Promise(r => setTimeout(r, ms))
+
+async function asyncForEach(array, callback) {
+  for (let index = 0; index < array.length; index++) {
+    await callback(array[index], index, array);
+  }
+}
 
 const Library = new function() {
   const libCore = this;
@@ -118,20 +127,14 @@ const Library = new function() {
     }
 
     libVM.itemClick = (item) => {
-      const filePromise = dataUrl.base64(item.filePath);
-
-      filePromise.then((fileData) => {
-        // console.log(fileData);
-        // display artist and song tile text
-        libVM.currentArtist(item.artist)
-        libVM.currentTitle(item.title)
-
-        // load audio from disk and play it
-        audioSource.src = fileData
-        audioPlayer.load()
-        audioPlayer.play()
-        console.log('playing')
-      });
+      // update audio player artist and song tile text display
+      libVM.currentArtist(item.artist)
+      libVM.currentTitle(item.title)
+      // load base64 audio buffer and play it
+      audioSource.src = item.fileBuffer
+      audioPlayer.load()
+      audioPlayer.play()
+      console.log('playing')
     }
 
     libVM.pauseClicked = () => {
@@ -176,10 +179,10 @@ const Library = new function() {
           }
           return itemInStorage;
         })
-        console.log(storageUpdate)
+        //  console.log(storageUpdate)
 
         storage.set('library', storageUpdate)
-        libCore.updateCallback(storage.get('library'));
+        libCore.updateCallback(storageUpdate)
         $('#modal').modal('hide')
       })
     }
@@ -337,87 +340,134 @@ const Library = new function() {
     return tagFiltersArray;
   };
 
-  libCore.librarySetup = (libraryArray) => {
-    // setup catalog data
-    libCore.viewModel.libraryCoreData = libraryArray.map((item) => {
-      item.active = ko.observable(true);
-      return item;
-    });
-
+  libCore.filtersSetup = (libraryData) => {
     // setup filter groups
-    const typeFilters = libCore.getTypeFilters(libraryArray);
+
+    const typeFilters = libCore.getTypeFilters(libraryData);
     libCore.addFilterGroup('Type', typeFilters, (filter, item) => {
       return item.type === filter.value;
     });
 
-    const yearFilters = libCore.getYearFilters(libraryArray);
+    const yearFilters = libCore.getYearFilters(libraryData);
     libCore.addFilterGroup('Year', yearFilters, (filter, item) => {
       return item.year === filter.value;
     });
 
-    const genreFilters = libCore.getGenreFilters(libraryArray);
+    const genreFilters = libCore.getGenreFilters(libraryData);
     libCore.addFilterGroup('Genre', genreFilters, (filter, item) => {
       return item.genre === filter.value;
     });
 
-    const tagFilters = libCore.getTagFilters(libraryArray);
+    const tagFilters = libCore.getTagFilters(libraryData);
     libCore.addFilterGroup('Tags', tagFilters, (filter, item) => {
       return item.tags.indexOf(filter.value) !== -1;
     });
-
-    libCore.viewModel.filteredLibrary(libCore.viewModel.getFilteredLibrary());
   }
 
-  libCore.updateCallback = (libraryArray) => {
-    libCore.librarySetup(libraryArray);
+  libCore.librarySetup = (libraryData) => {
+    // setup library core data
+    libCore.viewModel.libraryCoreData = libraryData.map((item) => {
+      item.active = ko.observable(true);
+      return item;
+    });
+
+    libCore.viewModel.filteredLibrary(libCore.viewModel.getFilteredLibrary())
   }
 
-  libCore.initCallback = (libraryArray) => {
-    libCore.librarySetup(libraryArray);
-    libCore.updateDisabledFlags();
-    ko.applyBindings(libCore.viewModel, document.getElementById('musicLibrary'));
+  libCore.storeBase64 = (libraryData) => { // Asynchronous Process
+    const progressBar = document.querySelector('#ModalProgressBar')
+    const progressAmount = document.querySelector('#ModalProgressBar span')
+    let finished = []
 
+    asyncForEach(libraryData, async (libItem, n) => {
+      const promise = dataUrl.base64(libItem.filePath);
+      promise.then((fileBuffer) => {
+        libraryData.map((item) => {
+          if (JSON.stringify(libItem) === JSON.stringify(item)) {
+            item.fileBuffer = fileBuffer
+          }
+          return item
+        })
+
+        finished.push(libItem[n]);
+        const progressAmntDone = Math.floor(100 *  finished.length / libraryData.length) + '%'
+        progressAmount.innerHTML = progressAmntDone
+        progressBar.style.width = progressAmntDone
+
+        // console.log(progressBar.style.width);
+        finished.length === libraryData.length ? window.setTimeout(() => {$('#modal').modal('hide')}, 3000) : '' // hide the wait modal
+      })
+
+      await waitFor(100);
+    })
+  }
+
+  libCore.updateCallback = (libraryData) => {
+    libCore.librarySetup(libraryData)
+    libCore.updateDisabledFlags()
+    // console.log(storage.get('library'))
+  }
+
+  libCore.initCallback = (libraryData) => {
+    libCore.storeBase64(libraryData)
+    libCore.filtersSetup(libraryData)
+    libCore.librarySetup(libraryData)
+    libCore.updateDisabledFlags()
+    ko.applyBindings(libCore.viewModel, document.getElementById('musicLibrary'))
     console.log(libCore.viewModel.filteredLibrary())
   };
 
   libCore.init = () => {
-    libCore.viewModel = new libCore.libraryViewModel();
-    libCore.initCallback(storage.get('library'));
+    const progressBarHtml = '<div class="progress">'
+                              + '<div id="ModalProgressBar" class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">'
+                                + '<span></span>'
+                              + '</div>'
+                            + '</div>'
+
+    $('#modal .modal-title').html('Please wait...')
+    $('#modal .modal-body').html('<p>Reading: ' + libPath + '</p>' + progressBarHtml)
+    $('#modal').modal('show')
+
+    libCore.viewModel = new libCore.libraryViewModel()
+    libCore.initCallback(storage.get('library'))
   };
 };
 
-dir.walkParallel(libPath, (err, results) => {
+dir.walkParallel(libPath, callbackFunc = (err, results) => {
   if (err)
     throw err;
 
-  let libraryData = []
+  results.forEach((filePath) => {
+    const fileName = filePath.substr(filePath.lastIndexOf('\/') + 1, filePath.length)
 
-  results.forEach((filePath, n) => {
-    let info = id3.get(filePath),
-        fileName = filePath.substr(filePath.lastIndexOf('\/') + 1, filePath.length);
+    if (fileName.split('.').pop() === 'mp3') {
+      const info = id3.get(filePath)
 
-    libraryData.push({
-      catNum: '',
-      compilationId: null,
-      artist: info.artist ? info.artist : 'Unknown',
-      title: info.title ? info.title : 'Untitled',
-      description: info.comment ? info.comment.text : '',
-      genre: info.genre ? info.genre : '',
-      bpm: info.bpm ? info.bpm : '',
-      type: 'single',
-      album: info.album ? info.album : '',
-      cover: info.image ? info.image.imageBuffer : '',
-      year: info.year ? info.year : '',
-      copyright: info.copyright ? info.copyright : '',
-      url: '',
-      tags: [],
-      filePath: filePath,
-      fileName: fileName
-    })
+      libraryTempData.push({
+        catNum: '',
+        compilationId: null,
+        artist: info.artist ? info.artist : 'Unknown',
+        title: info.title ? info.title : 'Untitled',
+        description: info.comment ? info.comment.text : '',
+        genre: info.genre ? info.genre : '',
+        bpm: info.bpm ? info.bpm : '',
+        type: 'single',
+        album: info.album ? info.album : '',
+        cover: info.image ? info.image.imageBuffer : '',
+        year: info.year ? info.year : '',
+        copyright: info.copyright ? info.copyright : '',
+        url: '',
+        tags: [],
+        fileBuffer: null,
+        filePath: filePath,
+        fileName: fileName
+      })
+    }
   })
 
-  libraryData.sort(sort.sortArtists);
-  storage.set('library', libraryData)
+  libraryTempData.sort(sort.sortArtists)
+  storage.set('library', libraryTempData)
+  libraryTempData = []
 
   Library.init()
 })

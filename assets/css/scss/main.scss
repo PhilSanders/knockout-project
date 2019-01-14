@@ -109,6 +109,15 @@ a:focus {
   }
 }
 
+.progress {
+  .progress-bar {
+    background-color: $brand-primary-light;
+    span {
+      color: $brand-primary-dark;
+    }
+  }
+}
+
 .modal {
   .modal-content {
     background-color: $gray-darker;
