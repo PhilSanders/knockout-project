@@ -42,6 +42,14 @@ audioPlayer.onloadedmetadata = () => {
   }
 };
 
+const waitFor = (ms) => new Promise(r => setTimeout(r, ms))
+
+async function asyncForEach(array, callback) {
+  for (let index = 0; index < array.length; index++) {
+    await callback(array[index], index, array);
+  }
+}
+
 const Library = new function() {
   const libCore = this;
 
@@ -367,14 +375,12 @@ const Library = new function() {
   }
 
   libCore.storeBase64 = (libraryData) => { // Asynchronous Process
+    const progressBar = document.querySelector('#ModalProgressBar')
+    const progressAmount = document.querySelector('#ModalProgressBar span')
     let finished = []
 
-    libraryData.forEach((libItem, n) => {
+    asyncForEach(libraryData, async (libItem, n) => {
       const promise = dataUrl.base64(libItem.filePath);
-
-      const progressBar = document.querySelector('#ModalProgressBar')
-      progressBar.style.width = '50%'
-
       promise.then((fileBuffer) => {
         libraryData.map((item) => {
           if (JSON.stringify(libItem) === JSON.stringify(item)) {
@@ -383,9 +389,16 @@ const Library = new function() {
           return item
         })
 
-        finished.push(n);
-        finished.length === libraryData.length ? $('#modal').modal('hide') : '' // hide the wait modal
+        finished.push(libItem[n]);
+        const progressAmntDone = Math.floor(100 *  finished.length / libraryData.length) + '%'
+        progressAmount.innerHTML = progressAmntDone
+        progressBar.style.width = progressAmntDone
+
+        // console.log(progressBar.style.width);
+        finished.length === libraryData.length ? window.setTimeout(() => {$('#modal').modal('hide')}, 3000) : '' // hide the wait modal
       })
+
+      await waitFor(100);
     })
   }
 
@@ -407,15 +420,13 @@ const Library = new function() {
   libCore.init = () => {
     const progressBarHtml = '<div class="progress">'
                               + '<div id="ModalProgressBar" class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">'
+                                + '<span></span>'
                               + '</div>'
                             + '</div>'
 
     $('#modal .modal-title').html('Please wait...')
     $('#modal .modal-body').html('<p>Reading: ' + libPath + '</p>' + progressBarHtml)
     $('#modal').modal('show')
-
-    const progressBar = document.querySelector('#ModalProgressBar')
-    progressBar.style.width = '0%'
 
     libCore.viewModel = new libCore.libraryViewModel()
     libCore.initCallback(storage.get('library'))

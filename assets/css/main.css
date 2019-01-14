@@ -154,6 +154,10 @@ fieldset[disabled] .btn-brand-primary.focus {
   color: #eeeeee;
 }
 
+.progress .progress-bar {
+  background-color: #ab68ea;
+}
+
 .modal .modal-content {
   background-color: #222222;
   border: 1px solid #6718b0;
