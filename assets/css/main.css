@@ -95,26 +95,26 @@ a:focus {
 .btn-brand-primary {
   color: #FFF;
   background-color: #8A2BE2;
-  border-color: #ab68ea;
+  border-color: #8A2BE2;
 }
 
 .btn-brand-primary:focus, .btn-brand-primary.focus {
   color: #FFF;
   background-color: #701ac0;
-  border-color: #6c19b9;
+  border-color: #49117c;
 }
 
 .btn-brand-primary:hover {
   color: #FFF;
   background-color: #701ac0;
-  border-color: #8e32e3;
+  border-color: #6b19b7;
 }
 
 .btn-brand-primary:active, .btn-brand-primary.active,
 .open > .btn-brand-primary.dropdown-toggle {
   color: #FFF;
   background-color: #701ac0;
-  border-color: #8e32e3;
+  border-color: #6b19b7;
 }
 
 .btn-brand-primary:active:hover, .btn-brand-primary:active:focus, .btn-brand-primary:active.focus, .btn-brand-primary.active:hover, .btn-brand-primary.active:focus, .btn-brand-primary.active.focus,
@@ -123,7 +123,7 @@ a:focus {
 .open > .btn-brand-primary.dropdown-toggle.focus {
   color: #FFF;
   background-color: #5e16a0;
-  border-color: #6c19b9;
+  border-color: #49117c;
 }
 
 .btn-brand-primary:active, .btn-brand-primary.active,
@@ -136,7 +136,7 @@ fieldset[disabled] .btn-brand-primary:hover,
 fieldset[disabled] .btn-brand-primary:focus,
 fieldset[disabled] .btn-brand-primary.focus {
   background-color: #8A2BE2;
-  border-color: #ab68ea;
+  border-color: #8A2BE2;
 }
 
 .btn-brand-primary .badge {
@@ -259,7 +259,7 @@ header .audio-title small {
 }
 
 #musicLibrary > div {
-  height: calc(100vh - 110px);
+  height: calc(100vh - 110px - 45px);
 }
 
 #musicLibrary section {
@@ -277,7 +277,7 @@ header .audio-title small {
 }
 
 #musicLibrary .filters .filters-menu {
-  height: calc(100% - 19px);
+  height: calc(100% - 39px);
   overflow-y: auto;
 }
 
@@ -383,4 +383,33 @@ header .audio-title small {
 
 #musicLibrary .list table tbody > tr:nth-of-type(odd) {
   background-color: #333333;
+}
+
+footer {
+  background: #6718b0;
+  height: 45px;
+}
+
+footer > div {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+}
+
+footer > div > div {
+  white-space: nowrap;
+}
+
+footer > div .console-log {
+  padding-top: 10px;
+  padding-left: 10px;
+  padding-right: 10px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #ab68ea;
+}
+
+footer > div .footer-menu {
+  padding-top: 7px;
 }

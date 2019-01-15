@@ -96,7 +96,7 @@ a:focus {
 }
 
 .btn-brand-primary {
-  @include button-variant($white, $brand-primary, $brand-primary-light);
+  @include button-variant($white, $brand-primary, $brand-primary);
 }
 
 .btn-modify {
@@ -172,5 +172,6 @@ a:focus {
   }
 }
 
-@import 'header';
-@import 'library';
+@import "header";
+@import "library";
+@import "footer";

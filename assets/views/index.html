@@ -95,6 +95,26 @@
         </div>
       </section>
     </div>
+    <footer>
+      <div>
+        <div id="ConsoleLog" class="console-log">
+          <span data-toggle="tooltip" data-placement="top" data-trigger="hover" title="Console log lorem ipsum commrad radical lazy yatzee etnies spam monster reclous">...</span>
+        </div>
+        <div class="footer-menu">
+          <ul class="list-unstyled list-inline">
+            <li>
+              <button class="btn btn-sm btn-brand-primary">Library</button>
+            </li>
+            <li>
+              <button class="btn btn-sm btn-brand-primary">Playlist</button>
+            </li>
+            <li>
+              <button class="btn btn-sm btn-brand-primary">Perferences</button>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </footer>
   </div>
   <div id="modal" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
     <div class="modal-dialog modal-md" role="document">
@@ -115,6 +135,10 @@
     window.$ = window.jQuery = require('jquery')
     require('../../node_modules/bootstrap-sass/assets/javascripts/bootstrap.min.js')
     require('../js/index.js')
+
+    $(function () {
+      $('[data-toggle="tooltip"]').tooltip()
+    })
   </script>
 
 </body>

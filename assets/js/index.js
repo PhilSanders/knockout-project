@@ -17,6 +17,8 @@ let libPath = '/Users/philsanders/Desktop/PillFORM'
 let audioPlayer = document.querySelector('#AudioPlayer')
 let audioSource = document.querySelector('#AudioMp3')
 
+const consoleOut = document.querySelector("#ConsoleLog span")
+
 // const fileDialogBtn = document.querySelector('#party')
 // fileDialogBtn.addEventListener('click', () => {
 //   mainProcess.selectDirectory()
@@ -40,6 +42,12 @@ audioPlayer.onloadedmetadata = () => {
     trackTime.innerHTML = curmins + ':' + cursecs
     trackDuration.innerHTML = durmins + ':' + dursecs
   }
+  audioPlayer.onplay = () => {
+    consoleOut.innerHTML = 'Playing'
+  }
+  audioPlayer.onpause = () => {
+    consoleOut.innerHTML = 'Paused'
+  }
 };
 
 const waitFor = (ms) => new Promise(r => setTimeout(r, ms))
@@ -49,6 +57,12 @@ async function asyncForEach(array, callback) {
     await callback(array[index], index, array);
   }
 }
+
+const progressBarHtml = '<div class="progress">'
+                          + '<div id="ModalProgressBar" class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">'
+                            + '<span></span>'
+                          + '</div>'
+                        + '</div>'
 
 const Library = new function() {
   const libCore = this;
@@ -127,24 +141,24 @@ const Library = new function() {
     }
 
     libVM.itemClick = (item) => {
-      // update audio player artist and song tile text display
-      libVM.currentArtist(item.artist)
-      libVM.currentTitle(item.title)
-      // load base64 audio buffer and play it
-      audioSource.src = item.fileBuffer
-      audioPlayer.load()
-      audioPlayer.play()
-      console.log('playing')
+      const promise = dataUrl.base64(item.filePath);
+      promise.then((fileBuffer) => {
+        // update audio player artist and song tile text display
+        libVM.currentArtist(item.artist)
+        libVM.currentTitle(item.title)
+        // load base64 audio buffer and play it
+        audioSource.src = fileBuffer
+        audioPlayer.load()
+        audioPlayer.play()
+      })
     }
 
     libVM.pauseClicked = () => {
       audioPlayer.pause();
-      console.log('paused')
     }
 
     libVM.playClicked = () => {
       audioPlayer.play();
-      console.log('playing')
     }
 
     libVM.editClicked = (item) => {
@@ -377,28 +391,33 @@ const Library = new function() {
   libCore.storeBase64 = (libraryData) => { // Asynchronous Process
     const progressBar = document.querySelector('#ModalProgressBar')
     const progressAmount = document.querySelector('#ModalProgressBar span')
-    let finished = []
+    let finishedBuffers = []
 
     asyncForEach(libraryData, async (libItem, n) => {
       const promise = dataUrl.base64(libItem.filePath);
-      promise.then((fileBuffer) => {
-        libraryData.map((item) => {
-          if (JSON.stringify(libItem) === JSON.stringify(item)) {
-            item.fileBuffer = fileBuffer
-          }
-          return item
-        })
 
-        finished.push(libItem[n]);
-        const progressAmntDone = Math.floor(100 *  finished.length / libraryData.length) + '%'
+      consoleOut.innerHTML = 'Reading: ' + libItem.filePath + '...';
+
+      promise.then((fileBuffer) => {
+        // console.log('audio.' + libItem.fileBufferId)
+        let key = libItem.fileBufferId;
+        finishedBuffers.push({[key]: fileBuffer});
+
+        const progressAmntDone = Math.floor(100 *  finishedBuffers.length / libraryData.length) + '%'
         progressAmount.innerHTML = progressAmntDone
         progressBar.style.width = progressAmntDone
 
         // console.log(progressBar.style.width);
-        finished.length === libraryData.length ? window.setTimeout(() => {$('#modal').modal('hide')}, 3000) : '' // hide the wait modal
+        finishedBuffers.length === libraryData.length ? window.setTimeout(() => {
+          console.log(finishedBuffers);
+          // storage.set('audio', finishedBuffers);
+          // console.log(storage.get('audio'));
+          consoleOut.innerHTML = 'Ready';
+          $('#modal').modal('hide');
+        }, 3000) : null;
       })
 
-      await waitFor(100);
+      await waitFor(1000);
     })
   }
 
@@ -409,21 +428,16 @@ const Library = new function() {
   }
 
   libCore.initCallback = (libraryData) => {
-    libCore.storeBase64(libraryData)
     libCore.filtersSetup(libraryData)
     libCore.librarySetup(libraryData)
     libCore.updateDisabledFlags()
     ko.applyBindings(libCore.viewModel, document.getElementById('musicLibrary'))
-    console.log(libCore.viewModel.filteredLibrary())
+    // console.log(libCore.viewModel.filteredLibrary())
+
+    libCore.storeBase64(libraryData) // TODO more testing of storage
   };
 
   libCore.init = () => {
-    const progressBarHtml = '<div class="progress">'
-                              + '<div id="ModalProgressBar" class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">'
-                                + '<span></span>'
-                              + '</div>'
-                            + '</div>'
-
     $('#modal .modal-title').html('Please wait...')
     $('#modal .modal-body').html('<p>Reading: ' + libPath + '</p>' + progressBarHtml)
     $('#modal').modal('show')
@@ -433,41 +447,50 @@ const Library = new function() {
   };
 };
 
-dir.walkParallel(libPath, callbackFunc = (err, results) => {
-  if (err)
-    throw err;
+storage.clear()
 
-  results.forEach((filePath) => {
-    const fileName = filePath.substr(filePath.lastIndexOf('\/') + 1, filePath.length)
+$('#modal .modal-title').html('...')
+$('#modal .modal-body').html('<p>Preparing system...</p>' + progressBarHtml)
+$('#modal').modal('show')
 
-    if (fileName.split('.').pop() === 'mp3') {
-      const info = id3.get(filePath)
+window.setTimeout(() => {
+  dir.walkParallel(libPath, (err, results) => {
+    if (err)
+      throw err;
 
-      libraryTempData.push({
-        catNum: '',
-        compilationId: null,
-        artist: info.artist ? info.artist : 'Unknown',
-        title: info.title ? info.title : 'Untitled',
-        description: info.comment ? info.comment.text : '',
-        genre: info.genre ? info.genre : '',
-        bpm: info.bpm ? info.bpm : '',
-        type: 'single',
-        album: info.album ? info.album : '',
-        cover: info.image ? info.image.imageBuffer : '',
-        year: info.year ? info.year : '',
-        copyright: info.copyright ? info.copyright : '',
-        url: '',
-        tags: [],
-        fileBuffer: null,
-        filePath: filePath,
-        fileName: fileName
-      })
-    }
+    results.forEach((filePath, id) => {
+      const fileName = filePath.substr(filePath.lastIndexOf('\/') + 1, filePath.length)
+
+      if (fileName.split('.').pop() === 'mp3') {
+        const info = id3.get(filePath)
+
+        libraryTempData.push({
+          catNum: '',
+          compilationId: null,
+          artist: info.artist ? info.artist : 'Unknown',
+          title: info.title ? info.title : 'Untitled',
+          description: info.comment ? info.comment.text : '',
+          genre: info.genre ? info.genre : '',
+          bpm: info.bpm ? info.bpm : '',
+          type: 'single',
+          album: info.album ? info.album : '',
+          cover: info.image ? info.image.imageBuffer : '',
+          year: info.year ? info.year : '',
+          copyright: info.copyright ? info.copyright : '',
+          url: '',
+          tags: [],
+          fileBufferId: id,
+          filePath: filePath,
+          fileName: fileName
+        })
+      }
+    })
+    console.log(libraryTempData);
+
+    libraryTempData.sort(sort.sortArtists)
+    storage.set('library', libraryTempData)
+    libraryTempData = []
+
+    Library.init()
   })
-
-  libraryTempData.sort(sort.sortArtists)
-  storage.set('library', libraryTempData)
-  libraryTempData = []
-
-  Library.init()
-})
+}, 2000)

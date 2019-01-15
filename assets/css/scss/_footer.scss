@@ -1,0 +1,26 @@
+// footer
+
+footer {
+  background: $brand-primary-dark;
+  height: $footer-height;
+  > div {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+    > div {
+      white-space: nowrap;
+    }
+    .console-log {
+      padding-top: 10px;
+      padding-left: 10px;
+      padding-right: 10px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: $brand-primary-light;
+    }
+    .footer-menu {
+      padding-top: 7px;
+    }
+  }
+}

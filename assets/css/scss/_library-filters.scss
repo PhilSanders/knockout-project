@@ -8,7 +8,7 @@
     color: $white;
   }
   .filters-menu {
-    height: calc(100% - 19px);
+    height: calc(100% - #{$library-head-height});
     overflow-y: auto;
     > div {
       position: relative;
