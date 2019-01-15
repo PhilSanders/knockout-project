@@ -18,7 +18,10 @@ let audioPlayer = document.querySelector('#AudioPlayer')
 let audioSource = document.querySelector('#AudioMp3')
 
 const consoleOut = document.querySelector("#ConsoleLog span")
-
+const updateConsole = (text) => {
+  // consoleOut.title = text
+  consoleOut.innerHTML = text
+}
 // const fileDialogBtn = document.querySelector('#party')
 // fileDialogBtn.addEventListener('click', () => {
 //   mainProcess.selectDirectory()
@@ -42,13 +45,13 @@ audioPlayer.onloadedmetadata = () => {
     trackTime.innerHTML = curmins + ':' + cursecs
     trackDuration.innerHTML = durmins + ':' + dursecs
   }
-  audioPlayer.onplay = () => {
-    consoleOut.innerHTML = 'Playing'
-  }
-  audioPlayer.onpause = () => {
-    consoleOut.innerHTML = 'Paused'
-  }
-};
+}
+audioPlayer.onplay = () => {
+  updateConsole('<i class="glyphicon glyphicon-play"></i> Playing')
+}
+audioPlayer.onpause = () => {
+  updateConsole('<i class="glyphicon glyphicon-pause"></i> Paused')
+}
 
 const waitFor = (ms) => new Promise(r => setTimeout(r, ms))
 
@@ -396,7 +399,7 @@ const Library = new function() {
     asyncForEach(libraryData, async (libItem, n) => {
       const promise = dataUrl.base64(libItem.filePath);
 
-      consoleOut.innerHTML = 'Reading: ' + libItem.filePath + '...';
+      updateConsole('<i class="glyphicon glyphicon-refresh"></i> Reading: ' + libItem.filePath + '...');
 
       promise.then((fileBuffer) => {
         // console.log('audio.' + libItem.fileBufferId)
@@ -412,7 +415,7 @@ const Library = new function() {
           console.log(finishedBuffers);
           // storage.set('audio', finishedBuffers);
           // console.log(storage.get('audio'));
-          consoleOut.innerHTML = 'Ready';
+          updateConsole('<i class="glyphicon glyphicon-stop"></i> Ready');
           $('#modal').modal('hide');
         }, 3000) : null;
       })
