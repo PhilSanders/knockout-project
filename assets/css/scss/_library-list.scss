@@ -28,6 +28,7 @@
     }
     th {
       padding: 0;
+      -webkit-user-select: none;
     }
     th:after {
       content: '';

@@ -2,6 +2,7 @@
 
 const BrowserWindow = require('electron').remote.BrowserWindow
 const remote = require('electron').remote
+const { Menu, MenuItem } = remote
 const ko = require('knockout')
 const mainProcess = remote.require('./main')
 const dir = remote.require('./assets/js/dir')
@@ -52,6 +53,17 @@ audioPlayer.onplay = () => {
 audioPlayer.onpause = () => {
   updateConsole('<i class="glyphicon glyphicon-pause"></i> Paused')
 }
+
+const menu = new Menu()
+menu.append(new MenuItem({ label: 'MenuItem1', click() { console.log('item 1 clicked') } }))
+menu.append(new MenuItem({ type: 'separator' }))
+menu.append(new MenuItem({ label: 'MenuItem2', type: 'checkbox', checked: true }))
+
+window.addEventListener('contextmenu', (e) => {
+  e.preventDefault()
+  console.log(e);
+  menu.popup({ window: remote.getCurrentWindow() })
+}, false)
 
 const waitFor = (ms) => new Promise(r => setTimeout(r, ms))
 
@@ -399,7 +411,7 @@ const Library = new function() {
     asyncForEach(libraryData, async (libItem, n) => {
       const promise = dataUrl.base64(libItem.filePath);
 
-      updateConsole('<i class="glyphicon glyphicon-refresh"></i> Reading: ' + libItem.filePath);
+      updateConsole('<a href="#"><i class="glyphicon glyphicon-refresh"></i> Reading: ' + libItem.filePath + '</a>');
 
       promise.then((fileBuffer) => {
         // console.log('audio.' + libItem.fileBufferId)
@@ -452,8 +464,8 @@ const Library = new function() {
 
 storage.clear()
 
-$('#modal .modal-title').html('...')
-$('#modal .modal-body').html('<p>Preparing system...</p>' + progressBarHtml)
+$('#modal .modal-title').html('Please wait...')
+$('#modal .modal-body').html('<p>Preparing system...</p>')
 $('#modal').modal('show')
 
 window.setTimeout(() => {

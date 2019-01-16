@@ -3,6 +3,8 @@
 
 header {
   display: flex;
+  -webkit-user-select: none;
+  -webkit-app-region: drag;
   min-height: $header-height;
   background-color: $brand-primary;
   @include filter-gradient($brand-primary-light, $brand-primary-dark, vertical);

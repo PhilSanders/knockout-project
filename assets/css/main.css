@@ -168,6 +168,8 @@ fieldset[disabled] .btn-brand-primary.focus {
 }
 
 .modal .modal-content .modal-header {
+  -webkit-user-select: none;
+  -webkit-app-region: drag;
   background-color: #6718b0;
   *zoom: 1;
   filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFAB68EA', endColorstr='#FF8A2BE2');
@@ -226,6 +228,8 @@ fieldset[disabled] .btn-brand-primary.focus {
 /* header */
 header {
   display: flex;
+  -webkit-user-select: none;
+  -webkit-app-region: drag;
   min-height: 110px;
   background-color: #8A2BE2;
   *zoom: 1;
@@ -375,6 +379,7 @@ header .audio-title small {
 
 #musicLibrary .list table th {
   padding: 0;
+  -webkit-user-select: none;
 }
 
 #musicLibrary .list table th:after {
@@ -400,6 +405,8 @@ header .audio-title small {
 footer {
   background: #6718b0;
   height: 45px;
+  -webkit-user-select: none;
+  -webkit-app-region: drag;
 }
 
 footer > div {

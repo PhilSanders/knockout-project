@@ -4,6 +4,8 @@
 footer {
   background: $brand-primary-dark;
   height: $footer-height;
+  -webkit-user-select: none;
+  -webkit-app-region: drag;
   > div {
     display: flex;
     flex-direction: row;
