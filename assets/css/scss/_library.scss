@@ -11,8 +11,16 @@
     padding: 0;
     background: $gray-darker;
   }
-  .main {
+  .tab-panel {
     @extend .flex-row;
+    position: absolute;
+    height: 100%;
+    overflow-y: auto;
+    left: -1000%;
+    &.active {
+      position: relative;
+      left: 0;
+    }
   }
   @import "library-filters";
   @import "library-list";

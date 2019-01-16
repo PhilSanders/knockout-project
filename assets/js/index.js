@@ -399,7 +399,7 @@ const Library = new function() {
     asyncForEach(libraryData, async (libItem, n) => {
       const promise = dataUrl.base64(libItem.filePath);
 
-      updateConsole('<i class="glyphicon glyphicon-refresh"></i> Reading: ' + libItem.filePath + '...');
+      updateConsole('<i class="glyphicon glyphicon-refresh"></i> Reading: ' + libItem.filePath);
 
       promise.then((fileBuffer) => {
         // console.log('audio.' + libItem.fileBufferId)
@@ -496,4 +496,4 @@ window.setTimeout(() => {
 
     Library.init()
   })
-}, 2000)
+}, 1000)

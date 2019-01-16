@@ -76,11 +76,11 @@ a:focus {
   font-size: 14px;
 }
 
-.flex-row, #musicLibrary .main {
+.flex-row, #musicLibrary .tab-panel {
   display: flex;
 }
 
-.flex-row:before, #musicLibrary .main:before {
+.flex-row:before, #musicLibrary .tab-panel:before {
   display: block;
 }
 
@@ -267,6 +267,18 @@ header .audio-title small {
   background: #222222;
 }
 
+#musicLibrary .tab-panel {
+  position: absolute;
+  height: 100%;
+  overflow-y: auto;
+  left: -1000%;
+}
+
+#musicLibrary .tab-panel.active {
+  position: relative;
+  left: 0;
+}
+
 #musicLibrary .filters {
   min-width: 200px;
 }
@@ -395,6 +407,7 @@ footer > div {
   flex-direction: row;
   justify-content: space-between;
   width: 100%;
+  height: 100%;
 }
 
 footer > div > div {
@@ -412,4 +425,33 @@ footer > div .console-log {
 
 footer > div .footer-menu {
   padding-top: 7px;
+  padding-right: 10px;
+}
+
+footer > div .footer-menu .nav-tabs {
+  border-bottom: none;
+  white-space: nowrap;
+}
+
+footer > div .footer-menu .nav-tabs > li {
+  float: none;
+  display: inline-block;
+}
+
+footer > div .footer-menu .nav-tabs > li > a {
+  padding: 4px 15px;
+  background-color: #8A2BE2;
+  border-color: #6718b0;
+  border-radius: 3px;
+  color: #ab68ea;
+}
+
+footer > div .footer-menu .nav-tabs > li > a:hover {
+  color: #eeeeee;
+}
+
+footer > div .footer-menu .nav-tabs > li.active a {
+  background-color: #ab68ea;
+  border-color: #ab68ea;
+  color: #FFF;
 }
