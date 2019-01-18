@@ -5,6 +5,7 @@
   "main": "main.js",
   "dependencies": {
     "jquery": "1.12.4",
+    "jquery-table-fixed-header": "^1.1.4",
     "knockout": "^3.5.0-beta"
   },
   "devDependencies": {

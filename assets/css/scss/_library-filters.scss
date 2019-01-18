@@ -2,7 +2,7 @@
 @import "variables";
 
 .filters {
-  min-width: 200px;
+  min-width: $filter-menu-width;
   .filters-title {
     padding: 0 10px;
     color: $white;

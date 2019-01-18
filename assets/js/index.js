@@ -215,7 +215,6 @@ const Library = new function() {
         $('#modal').modal('hide')
       })
     }
-
   };
 
   libCore.toggleFilter = (filter) => {
@@ -411,7 +410,7 @@ const Library = new function() {
     asyncForEach(libraryData, async (libItem, n) => {
       const promise = dataUrl.base64(libItem.filePath);
 
-      updateConsole('<a href="#"><i class="glyphicon glyphicon-refresh"></i> Reading: ' + libItem.filePath + '</a>');
+      updateConsole('<i class="glyphicon glyphicon-refresh"></i> Reading: ' + libItem.filePath);
 
       promise.then((fileBuffer) => {
         // console.log('audio.' + libItem.fileBufferId)
@@ -450,6 +449,12 @@ const Library = new function() {
     // console.log(libCore.viewModel.filteredLibrary())
 
     libCore.storeBase64(libraryData) // TODO more testing of storage
+
+    $(document).ready(function() {
+      $('table').tableFixedHeader({
+        scrollContainer: '.scroll-area'
+      })
+    })
   };
 
   libCore.init = () => {

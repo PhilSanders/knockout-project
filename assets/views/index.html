@@ -55,7 +55,7 @@
           </div>
         </section>
         <section class="list">
-          <div>
+          <div class="scroll-area">
             <table>
               <thead>
                 <tr>
@@ -73,7 +73,7 @@
                     <a href="#" data-bind="click: function() { $root.sortClicked('years') }">Year</a>
                   </th>
                   <!-- <th><a href="#">Tags</a></th> -->
-                  <th></th>
+                  <th>&nbsp;</th>
                 </tr>
               </thead>
               <tbody data-bind="foreach: filteredLibrary">
@@ -106,7 +106,7 @@
     <footer>
       <div>
         <div id="ConsoleLog" class="console-log">
-          <span title="Console log lorem ipsum commrad radical lazy yatzee etnies spam monster reclous">Preparing system...</span>
+          <span>Preparing system...</span>
         </div>
         <div class="footer-menu">
           <ul class="nav nav-tabs">
@@ -140,14 +140,11 @@
   </div>
 
   <script>
-    window.$ = window.jQuery = require('jquery')
+    window.$ = window.jQuery = module.$ = module.jQuery = require('jquery')
     require('../../node_modules/bootstrap-sass/assets/javascripts/bootstrap.min.js')
     require('../js/index.js')
-
-    $(function () {
-      $('[data-toggle="tooltip"]').tooltip()
-    })
   </script>
+  <script src="../../node_modules/jquery-table-fixed-header/dist/jquery-table-fixed-header.min.js"></script>
 
 </body>
 </html>
