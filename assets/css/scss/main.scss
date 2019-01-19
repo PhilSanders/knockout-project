@@ -56,6 +56,19 @@ a.disabled:active {
   background: $brand-primary-light; /* WebKit/Blink Browsers */
 }
 
+// ::-webkit-scrollbar {
+//   width: 10px;
+// }
+//
+// ::-webkit-scrollbar-track {
+//   -webkit-box-shadow: inset 0 0 6px $brand-primary-dark;
+// }
+//
+// ::-webkit-scrollbar-thumb {
+//   background-color: $brand-primary;
+//   outline: 1px solid $brand-primary-light;
+// }
+
 :focus,
 .btn:focus,
 a:focus {
@@ -126,9 +139,9 @@ a:focus {
     .modal-header {
       -webkit-user-select: none;
       -webkit-app-region: drag;
-      background-color: $brand-primary-dark;
-      @include filter-gradient(#ab68ea, #8a2be2, vertical);
-      @include background-image(linear-gradient(top, rgba(171,104,234,1) 0%,rgba(138,43,226,1) 100%));
+      background-color: $brand-primary;
+      @include filter-gradient($brand-primary-light, $brand-primary, vertical);
+      @include background-image(linear-gradient(top, $brand-primary-light 0%, $brand-primary 30%));
       border-bottom: 1px solid $brand-primary-dark;
       .close {
         color: $white;

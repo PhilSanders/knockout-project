@@ -2,7 +2,7 @@
 @import "variables";
 
 footer {
-  background: $brand-primary-dark;
+  background: $brand-primary;
   height: $footer-height;
   -webkit-user-select: none;
   -webkit-app-region: drag;
@@ -21,7 +21,7 @@ footer {
       padding-right: 10px;
       overflow: hidden;
       text-overflow: ellipsis;
-      color: $brand-primary-light;
+      color: $gray-lighter;
     }
     .footer-menu {
       padding-top: 7px;
@@ -37,15 +37,15 @@ footer {
             background-color: $brand-primary;
             border-color:  $brand-primary-dark;
             border-radius: 3px;
-            color: $brand-primary-light;
+            color: $gray-lighter;
             &:hover {
-              color: $gray-lighter;
+              color: $white;
             }
           }
           &.active {
             a {
               background-color: $brand-primary-light;
-              border-color:  $brand-primary-light;
+              border-color:  $brand-primary-dark;
               color: $white;
             }
           }

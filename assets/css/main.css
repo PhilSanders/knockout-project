@@ -170,14 +170,14 @@ fieldset[disabled] .btn-brand-primary.focus {
 .modal .modal-content .modal-header {
   -webkit-user-select: none;
   -webkit-app-region: drag;
-  background-color: #6718b0;
+  background-color: #8A2BE2;
   *zoom: 1;
   filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFAB68EA', endColorstr='#FF8A2BE2');
-  background-image: -owg-linear-gradient(top, #ab68ea 0%, blueviolet 100%);
-  background-image: -webkit-linear-gradient(top, #ab68ea 0%, blueviolet 100%);
-  background-image: -moz-linear-gradient(top, #ab68ea 0%, blueviolet 100%);
-  background-image: -o-linear-gradient(top, #ab68ea 0%, blueviolet 100%);
-  background-image: linear-gradient(top, #ab68ea 0%, blueviolet 100%);
+  background-image: -owg-linear-gradient(top, #ab68ea 0%, #8A2BE2 30%);
+  background-image: -webkit-linear-gradient(top, #ab68ea 0%, #8A2BE2 30%);
+  background-image: -moz-linear-gradient(top, #ab68ea 0%, #8A2BE2 30%);
+  background-image: -o-linear-gradient(top, #ab68ea 0%, #8A2BE2 30%);
+  background-image: linear-gradient(top, #ab68ea 0%, #8A2BE2 30%);
   border-bottom: 1px solid #6718b0;
 }
 
@@ -233,12 +233,12 @@ header {
   min-height: 110px;
   background-color: #8A2BE2;
   *zoom: 1;
-  filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFAB68EA', endColorstr='#FF6718B0');
-  background-image: -owg-linear-gradient(top, #ab68ea 0%, #6718b0 100%);
-  background-image: -webkit-linear-gradient(top, #ab68ea 0%, #6718b0 100%);
-  background-image: -moz-linear-gradient(top, #ab68ea 0%, #6718b0 100%);
-  background-image: -o-linear-gradient(top, #ab68ea 0%, #6718b0 100%);
-  background-image: linear-gradient(top, #ab68ea 0%, #6718b0 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFAB68EA', endColorstr='#FF8A2BE2');
+  background-image: -owg-linear-gradient(top, #ab68ea 0%, blueviolet 30%);
+  background-image: -webkit-linear-gradient(top, #ab68ea 0%, blueviolet 30%);
+  background-image: -moz-linear-gradient(top, #ab68ea 0%, blueviolet 30%);
+  background-image: -o-linear-gradient(top, #ab68ea 0%, blueviolet 30%);
+  background-image: linear-gradient(top, #ab68ea 0%, blueviolet 30%);
   border-bottom: 1px solid #000;
 }
 
@@ -287,12 +287,29 @@ header .audio-title small {
 }
 
 #musicLibrary .filters {
+  position: relative;
   min-width: 200px;
+  border-right: 1px solid #333333;
+}
+
+#musicLibrary .filters:after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 5px;
+  height: 100%;
+  background: #8A2BE2;
+  cursor: col-resize;
 }
 
 #musicLibrary .filters .filters-title {
+  margin: 0;
   padding: 0 10px;
+  height: 39px;
+  background-color: #8A2BE2;
   color: #FFF;
+  line-height: 2;
 }
 
 #musicLibrary .filters .filters-menu {
@@ -303,23 +320,7 @@ header .audio-title small {
 #musicLibrary .filters .filters-menu > div {
   position: relative;
   min-height: 100%;
-  padding: 10px;
-}
-
-#musicLibrary .filters .filters-menu > div:after {
-  content: "";
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 10px;
-  height: 100%;
-  background: #6718b0;
-  opacity: 0.4;
-  cursor: ew-resize;
-}
-
-#musicLibrary .filters .filters-menu > div:after:hover {
-  opacity: 0.8;
+  padding: 10px calc(10px + 5px) 10px 10px;
 }
 
 #musicLibrary .filters .filter-group {
@@ -399,6 +400,7 @@ header .audio-title small {
   height: 100%;
   background: rgba(255, 255, 255, 0.2);
   border-right: 1px solid #000;
+  cursor: col-resize;
 }
 
 #musicLibrary .list table tbody {
@@ -415,7 +417,7 @@ header .audio-title small {
 }
 
 footer {
-  background: #6718b0;
+  background: #8A2BE2;
   height: 45px;
   -webkit-user-select: none;
   -webkit-app-region: drag;
@@ -439,7 +441,7 @@ footer > div .console-log {
   padding-right: 10px;
   overflow: hidden;
   text-overflow: ellipsis;
-  color: #ab68ea;
+  color: #eeeeee;
 }
 
 footer > div .footer-menu {
@@ -462,15 +464,15 @@ footer > div .footer-menu .nav-tabs > li > a {
   background-color: #8A2BE2;
   border-color: #6718b0;
   border-radius: 3px;
-  color: #ab68ea;
+  color: #eeeeee;
 }
 
 footer > div .footer-menu .nav-tabs > li > a:hover {
-  color: #eeeeee;
+  color: #FFF;
 }
 
 footer > div .footer-menu .nav-tabs > li.active a {
   background-color: #ab68ea;
-  border-color: #ab68ea;
+  border-color: #6718b0;
   color: #FFF;
 }

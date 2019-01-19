@@ -7,8 +7,8 @@ header {
   -webkit-app-region: drag;
   min-height: $header-height;
   background-color: $brand-primary;
-  @include filter-gradient($brand-primary-light, $brand-primary-dark, vertical);
-  @include background-image(linear-gradient(top, rgba($brand-primary-light,1) 0%,rgba($brand-primary-dark,1) 100%));
+  @include filter-gradient($brand-primary-light, $brand-primary, vertical);
+  @include background-image(linear-gradient(top, rgba($brand-primary-light, 1) 0%,rgba($brand-primary, 1) 30%));
   border-bottom: 1px solid $gray-base;
   @import "audio-player";
 }
