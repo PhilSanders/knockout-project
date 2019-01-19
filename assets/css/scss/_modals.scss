@@ -1,0 +1,34 @@
+// boostrap modal overrides
+
+.modal {
+  .modal-content {
+    background-color: $gray-darker;
+    border: 1px solid $brand-primary-dark;
+    // border: 1px solid rgba(0, 0, 0, 0.2);
+    .modal-header {
+      -webkit-user-select: none;
+      -webkit-app-region: drag;
+      background-color: $brand-primary;
+      @include filter-gradient($brand-primary-light, $brand-primary, vertical);
+      @include background-image(linear-gradient(top, $brand-primary-light 0%, $brand-primary 30%));
+      border-bottom: 1px solid $brand-primary-dark;
+      .close {
+        color: $white;
+        text-shadow: 0 1px 0 $gray-base;
+        opacity: 0.6;
+        transition: opacity 200ms linear;
+        &:hover {
+          opacity: 1;
+        }
+      }
+      .modal-title {
+        color: $white;
+      }
+    }
+    .modal-body {
+      max-height: calc(100vh - #{$header-height});
+      overflow-y: auto;
+      color: $gray-lighter;
+    }
+  }
+}

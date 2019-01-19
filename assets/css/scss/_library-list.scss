@@ -47,12 +47,15 @@
       overflow-y: auto;
       > tr {
         cursor: default;
-        &:hover {
-
+        &:nth-of-type(odd) {
+          background-color: $gray-dark;
         }
-      }
-      > tr:nth-of-type(odd) {
-        background-color: $gray-dark;
+        &:hover {
+          background-color: rgba($brand-primary-dark, 0.5);
+        }
+        > td:last-child {
+          text-align: center;
+        }
       }
     }
   }

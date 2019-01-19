@@ -416,6 +416,14 @@ header .audio-title small {
   background-color: #333333;
 }
 
+#musicLibrary .list table tbody > tr:hover {
+  background-color: rgba(103, 24, 176, 0.5);
+}
+
+#musicLibrary .list table tbody > tr > td:last-child {
+  text-align: center;
+}
+
 footer {
   background: #8A2BE2;
   height: 45px;
