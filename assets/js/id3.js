@@ -2,6 +2,10 @@
 
 const id3 = require('node-id3')
 
+exports.update = (tags, file, callbackFunc) => {
+  return id3.update(tags, file, callbackFunc)
+}
+
 exports.get = (file) => {
   return id3.read(file)
 }

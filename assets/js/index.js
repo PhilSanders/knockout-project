@@ -122,6 +122,42 @@ const sorterClicked = (sortType) => {
   Library.viewModel.filteredLibrary(Library.viewModel.getFilteredLibrary());
 }
 
+const writeId3Tag = (item) => {
+  // console.log(item)
+
+  //  Define the tags for your file using the ID (e.g. APIC) or the alias (see at bottom)
+  let tags = {
+    artist: item.artist,
+    title: item.title,
+    album: item.album,
+    year: item.year,
+    copyright: item.copyright,
+    url: item.url,
+    comment: item.description,
+    genre: item.genre,
+    bpm: item.bpm
+    // APIC: "./example/mia_cover.jpg",
+    // TRCK: "27"
+  }
+
+  // console.log(tags)
+
+  //  Create a ID3-Frame buffer from passed tags
+  //  Synchronous
+  // let ID3FrameBuffer = NodeID3.create(tags)   //  Returns ID3-Frame buffer
+  //  Asynchronous
+  // NodeID3.create(tags, function(frame) {  })
+
+  //  Write ID3-Frame into (.mp3) file
+  // let success = NodeID3.write(tags, file) //  Returns true/false or, if buffer passed as file, the tagged buffer
+  // NodeID3.write(tags, file, function(err, buffer) {  }) //  Buffer is only returned if a buffer was passed as file
+
+  //  Update existing ID3-Frame with new/edited tags
+  let success = id3.update(tags, item.filePath) //  Returns true/false or, if buffer passed as file, the tagged buffer
+  // success.then((data) => { console.log(data) })
+  // NodeID3.update(tags, file, function(err, buffer) {  })  //  Buffer is only returned if a buffer was passed as file
+}
+
 const Library = new function() {
   const libCore = this;
 
@@ -238,10 +274,11 @@ const Library = new function() {
 
               itemInStorage.tags = tagsArray ? tagsArray : []
             }
+            // also write the id3 tag
+            writeId3Tag(itemInStorage);
           }
           return itemInStorage;
         })
-        console.log(storageUpdate)
 
         storage.set('library', storageUpdate)
         libCore.updateCallback(storageUpdate)
@@ -517,50 +554,55 @@ const Library = new function() {
   };
 };
 
-storage.clear()
+// storage.clear()
 
 $('#modal .modal-title').html('Please wait...')
 $('#modal .modal-body').html('<p>Preparing system...</p>')
 $('#modal').modal('show')
 
 window.setTimeout(() => {
-  dir.walkParallel(libPath, (err, results) => {
-    if (err)
-      throw err;
+  if (!storage.get('library')) {
+    dir.walkParallel(libPath, (err, results) => {
+      if (err)
+        throw err;
 
-    results.forEach((filePath, id) => {
-      const fileName = filePath.substr(filePath.lastIndexOf('\/') + 1, filePath.length)
+      results.forEach((filePath, id) => {
+        const fileName = filePath.substr(filePath.lastIndexOf('\/') + 1, filePath.length)
 
-      if (fileName.split('.').pop() === 'mp3') {
-        const info = id3.get(filePath)
+        if (fileName.split('.').pop() === 'mp3') {
+          const info = id3.get(filePath)
 
-        libraryTempData.push({
-          catNum: '',
-          compilationId: null,
-          artist: info.artist ? info.artist : 'Unknown',
-          title: info.title ? info.title : 'Untitled',
-          description: info.comment ? info.comment.text : '',
-          genre: info.genre ? info.genre : '',
-          bpm: info.bpm ? info.bpm : '',
-          type: 'single',
-          album: info.album ? info.album : '',
-          cover: info.image ? info.image.imageBuffer : '',
-          year: info.year ? info.year : '',
-          copyright: info.copyright ? info.copyright : '',
-          url: '',
-          tags: [],
-          fileBufferId: id,
-          filePath: filePath,
-          fileName: fileName
-        })
-      }
+          libraryTempData.push({
+            catNum: '',
+            compilationId: null,
+            artist: info.artist ? info.artist : 'Unknown',
+            title: info.title ? info.title : 'Untitled',
+            description: info.comment ? info.comment.text : '',
+            genre: info.genre ? info.genre : '',
+            bpm: info.bpm ? info.bpm : '',
+            type: 'single',
+            album: info.album ? info.album : '',
+            cover: info.image ? info.image.imageBuffer : '',
+            year: info.year ? info.year : '',
+            copyright: info.copyright ? info.copyright : '',
+            url: '',
+            tags: [],
+            fileBufferId: id,
+            filePath: filePath,
+            fileName: fileName
+          })
+        }
+      })
+      // console.log(libraryTempData);
+
+      libraryTempData.sort(sort.sortArtists)
+      storage.set('library', libraryTempData)
+      libraryTempData = []
+
+      Library.init()
     })
-    console.log(libraryTempData);
-
-    libraryTempData.sort(sort.sortArtists)
-    storage.set('library', libraryTempData)
-    libraryTempData = []
-
+  }
+  else {
     Library.init()
-  })
+  }
 }, 1000)
