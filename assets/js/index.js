@@ -79,6 +79,24 @@ const progressBarHtml = '<div class="progress">'
                           + '</div>'
                         + '</div>'
 
+const sorterClicked = (sortType) => {
+  switch(sortType) {
+    case 'artists':
+      Library.viewModel.libraryCoreData.sort(sort.sortArtists)
+      break;
+    case 'titles':
+      Library.viewModel.libraryCoreData.sort(sort.sortTitles)
+      break;
+    case 'genres':
+      Library.viewModel.libraryCoreData.sort(sort.sortGenres)
+      break;
+    case 'years':
+      Library.viewModel.libraryCoreData.sort(sort.sortYears)
+      break;
+  }
+  Library.viewModel.filteredLibrary(Library.viewModel.getFilteredLibrary());
+}
+
 const Library = new function() {
   const libCore = this;
 
@@ -115,6 +133,9 @@ const Library = new function() {
       libCore.toggleFilter(filter)
       libVM.setItemFlags()
       libVM.filteredLibrary(libVM.getFilteredLibrary())
+
+      $(window).trigger('resize');
+      console.log('filter');
     };
 
     libVM.setItemFlags = () => {
@@ -136,24 +157,6 @@ const Library = new function() {
 
       return filteredLibrary;
     };
-
-    libVM.sortClicked = (sortType) => {
-      switch(sortType) {
-        case 'artists':
-          libVM.libraryCoreData.sort(sort.sortArtists)
-          break;
-        case 'titles':
-          libVM.libraryCoreData.sort(sort.sortTitles)
-          break;
-        case 'genres':
-          libVM.libraryCoreData.sort(sort.sortGenres)
-          break;
-        case 'years':
-          libVM.libraryCoreData.sort(sort.sortYears)
-          break;
-      }
-      libVM.filteredLibrary(libVM.getFilteredLibrary());
-    }
 
     libVM.itemClick = (item) => {
       const promise = dataUrl.base64(item.filePath);
@@ -448,11 +451,16 @@ const Library = new function() {
     ko.applyBindings(libCore.viewModel, document.getElementById('musicLibrary'))
     // console.log(libCore.viewModel.filteredLibrary())
 
-    libCore.storeBase64(libraryData) // TODO more testing of storage
+    // front load audio files
+    libCore.storeBase64(libraryData) // TODO do more testing with storage, currently only for show...
 
+    // sets up fixed position table header
     $(document).ready(function() {
       $('table').tableFixedHeader({
         scrollContainer: '.scroll-area'
+      })
+      $('table th a').on('click', (elm) => {
+        sorterClicked(elm.currentTarget.dataset.sorter)
       })
     })
   };

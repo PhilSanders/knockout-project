@@ -61,19 +61,19 @@
                 <tr>
                   <!-- <th><a href="#">Cat#</a></th> -->
                   <th>
-                    <a href="#" data-bind="click: function() { $root.sortClicked('artists') }">Artist</a>
+                    <a href="#" data-sorter="artists">Artist</a>
                   </th>
                   <th>
-                    <a href="#" data-bind="click: function() { $root.sortClicked('titles') }">Title</a>
+                    <a href="#" data-sorter="titles">Title</a>
                   </th>
                   <th>
-                    <a href="#" data-bind="click: function() { $root.sortClicked('genres') }">Genre</a>
+                    <a href="#" data-sorter="genres">Genre</a>
                   </th>
                   <th>
-                    <a href="#" data-bind="click: function() { $root.sortClicked('years') }">Year</a>
+                    <a href="#" data-sorter="years">Year</a>
                   </th>
                   <!-- <th><a href="#">Tags</a></th> -->
-                  <th>&nbsp;</th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody data-bind="foreach: filteredLibrary">
