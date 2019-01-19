@@ -13,7 +13,7 @@ const store = require('electron-store')
 const storage = new store()
 
 let libraryTempData = []
-let libPath = '/Users/philsanders/Desktop/PillFORM'
+let libPath = 'assets/mp3'
 
 let audioPlayer = document.querySelector('#AudioPlayer')
 let audioSource = document.querySelector('#AudioMp3')
