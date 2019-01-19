@@ -77,7 +77,7 @@
                 </tr>
               </thead>
               <tbody data-bind="foreach: filteredLibrary">
-                <tr data-bind="click: function() { $root.itemClick(this) }">
+                <tr class="item" data-bind="click: function() { $root.itemClick(this) }">
                   <!-- <td data-bind="text: catNum"></td> -->
                   <td data-bind="text: artist"></td>
                   <td data-bind="text: title"></td>

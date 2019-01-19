@@ -55,14 +55,24 @@ audioPlayer.onpause = () => {
 }
 
 const menu = new Menu()
-menu.append(new MenuItem({ label: 'MenuItem1', click() { console.log('item 1 clicked') } }))
-menu.append(new MenuItem({ type: 'separator' }))
-menu.append(new MenuItem({ label: 'MenuItem2', type: 'checkbox', checked: true }))
+menu.append(new MenuItem({ id: 1, label: 'Play', click() { console.log('clicked play') } }))
+menu.append(new MenuItem({ id: 2, label: 'Edit', click() { console.log('clicked edit') } }))
+menu.append(new MenuItem({ id: 3, type:  'separator' }))
+menu.append(new MenuItem({ id: 4, label: 'Favorite', type: 'checkbox', checked: false }))
 
 window.addEventListener('contextmenu', (e) => {
   e.preventDefault()
-  console.log(e);
-  menu.popup({ window: remote.getCurrentWindow() })
+  let tr = false;
+  for(let i = 0; i < e.path.length; i++) {
+    if (e.path[i].className == 'item') {
+      tr = true;
+      break;
+    }
+  }
+  if (tr) {
+    console.log(menu.getMenuItemById(1));
+    menu.popup({ window: remote.getCurrentWindow() })
+  }
 }, false)
 
 const waitFor = (ms) => new Promise(r => setTimeout(r, ms))
