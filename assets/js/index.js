@@ -54,15 +54,40 @@ audioPlayer.onpause = () => {
   updateConsole('<i class="glyphicon glyphicon-pause"></i> Paused')
 }
 
+let contextMenuRef; // this should always be an html element (tr)
+
 const menu = new Menu()
-menu.append(new MenuItem({ label: 'MenuItem1', click() { console.log('item 1 clicked') } }))
-menu.append(new MenuItem({ type: 'separator' }))
-menu.append(new MenuItem({ label: 'MenuItem2', type: 'checkbox', checked: true }))
+menu.append(new MenuItem({ id: 1, label: 'Play', click() { menuPlayClicked() } }))
+menu.append(new MenuItem({ id: 2, label: 'Edit', click() { menuEditClicked() } }))
+menu.append(new MenuItem({ id: 3, type:  'separator' }))
+menu.append(new MenuItem({ id: 4, label: 'Favorite', type: 'checkbox', checked: false }))
+
+menu.on('menu-will-close', () => {
+  console.log('content mneu closed');
+  contentMenuRef = null;
+})
+
+const menuPlayClicked = () => {
+  contextMenuRef.children[0].children[0].click();
+}
+
+const menuEditClicked = () => {
+  contextMenuRef.children[contextMenuRef.cells.length - 1].children[0].click();
+}
 
 window.addEventListener('contextmenu', (e) => {
   e.preventDefault()
-  console.log(e);
-  menu.popup({ window: remote.getCurrentWindow() })
+  let tr;
+  for(let i = 0; i < e.path.length; i++) {
+    if (e.path[i].className === 'item') {
+      tr = e.path[i];
+      break;
+    }
+  }
+  if (tr) {
+    contextMenuRef = tr;
+    menu.popup({ window: remote.getCurrentWindow() })
+  }
 }, false)
 
 const waitFor = (ms) => new Promise(r => setTimeout(r, ms))
@@ -97,6 +122,42 @@ const sorterClicked = (sortType) => {
   Library.viewModel.filteredLibrary(Library.viewModel.getFilteredLibrary());
 }
 
+const writeId3Tag = (item) => {
+  // console.log(item)
+
+  //  Define the tags for your file using the ID (e.g. APIC) or the alias (see at bottom)
+  let tags = {
+    artist: item.artist,
+    title: item.title,
+    album: item.album,
+    year: item.year,
+    copyright: item.copyright,
+    url: item.url,
+    comment: item.description,
+    genre: item.genre,
+    bpm: item.bpm
+    // APIC: "./example/mia_cover.jpg",
+    // TRCK: "27"
+  }
+
+  // console.log(tags)
+
+  //  Create a ID3-Frame buffer from passed tags
+  //  Synchronous
+  // let ID3FrameBuffer = NodeID3.create(tags)   //  Returns ID3-Frame buffer
+  //  Asynchronous
+  // NodeID3.create(tags, function(frame) {  })
+
+  //  Write ID3-Frame into (.mp3) file
+  // let success = NodeID3.write(tags, file) //  Returns true/false or, if buffer passed as file, the tagged buffer
+  // NodeID3.write(tags, file, function(err, buffer) {  }) //  Buffer is only returned if a buffer was passed as file
+
+  //  Update existing ID3-Frame with new/edited tags
+  let success = id3.update(tags, item.filePath) //  Returns true/false or, if buffer passed as file, the tagged buffer
+  // success.then((data) => { console.log(data) })
+  // NodeID3.update(tags, file, function(err, buffer) {  })  //  Buffer is only returned if a buffer was passed as file
+}
+
 const Library = new function() {
   const libCore = this;
 
@@ -111,17 +172,17 @@ const Library = new function() {
     libVM.currentTitle = ko.observable()
     libVM.currentFile = ko.observable()
 
-    libVM.filterGroups = {}
+    libVM.filterGroups = ko.observableArray()
     libVM.filteredLibrary = ko.observableArray([])
 
     libVM.getFilterGroupAsList = () => {
       let filterGroupList = []
 
-      for (let key in libCore.viewModel.filterGroups) {
+      for (let key in libCore.viewModel.filterGroups()) {
         filterGroupList.push({
           name: key,
-          filters: libCore.viewModel.filterGroups[key].all,
-          selected: libCore.viewModel.filterGroups[key].selected
+          filters: libCore.viewModel.filterGroups()[key].all,
+          selected: libCore.viewModel.filterGroups()[key].selected
         });
       }
 
@@ -135,7 +196,7 @@ const Library = new function() {
       libVM.filteredLibrary(libVM.getFilteredLibrary())
 
       $(window).trigger('resize');
-      console.log('filter');
+      // console.log('filter');
     };
 
     libVM.setItemFlags = () => {
@@ -151,7 +212,7 @@ const Library = new function() {
     libVM.getFilteredLibrary = () => {
       let filteredLibrary = libVM.libraryCoreData;
 
-      for (let key in libVM.filterGroups) {
+      for (let key in libVM.filterGroups()) {
         filteredLibrary = libCore.filterByGroup(key, filteredLibrary);
       }
 
@@ -207,11 +268,17 @@ const Library = new function() {
             itemInStorage.description = id3UForm.DescInput.value ? id3UForm.DescInput.value : ''
             itemInStorage.genre       = id3UForm.GenreInput.value ? id3UForm.GenreInput.value : ''
             itemInStorage.bpm         = id3UForm.BpmInput.value ? id3UForm.BpmInput.value : ''
-            itemInStorage.tags        = id3UForm.TagsInput.value ? [id3UForm.TagsInput.value] : []
+            if (id3UForm.TagsInput.value) {
+              const tagsStr = id3UForm.TagsInput.value.replace(/,\s*$/, ""),
+                    tagsArray = tagsStr.split(',');
+
+              itemInStorage.tags = tagsArray ? tagsArray : []
+            }
+            // also write the id3 tag
+            writeId3Tag(itemInStorage);
           }
           return itemInStorage;
         })
-        //  console.log(storageUpdate)
 
         storage.set('library', storageUpdate)
         libCore.updateCallback(storageUpdate)
@@ -223,7 +290,7 @@ const Library = new function() {
   libCore.toggleFilter = (filter) => {
     const filterLabel = filter.label;
     filter.active(!filter.active());
-    libCore.updateFilterSelection(libCore.viewModel.filterGroups[filter.label].selected, filter);
+    libCore.updateFilterSelection(libCore.viewModel.filterGroups()[filter.label].selected, filter);
     libCore.updateDisabledFlags();
   };
 
@@ -241,7 +308,7 @@ const Library = new function() {
     // pass if it passes any filter in filterGroup
     return items.filter((item) => {
       for (let i in filters) {
-        const filterGroup = libCore.viewModel.filterGroups[filters[i].label];
+        const filterGroup = libCore.viewModel.filterGroups()[filters[i].label];
 
         if (filterGroup.filterMethod(filters[i], item)) {
           return true;
@@ -252,7 +319,7 @@ const Library = new function() {
   };
 
   libCore.filterByGroup = (filterGroup, items) => {
-    const activeFilters = libCore.viewModel.filterGroups[filterGroup].selected();
+    const activeFilters = libCore.viewModel.filterGroups()[filterGroup].selected();
     return activeFilters.length !== 0 ? libCore.applyFilters(activeFilters, items) : items;
   };
 
@@ -268,13 +335,13 @@ const Library = new function() {
   libCore.updateDisabledFlagsInGroup = (filterGroupName) => {
     let filteredLibrary = libCore.viewModel.libraryCoreData;
     // apply all filters in other groups
-    for (let key in libCore.viewModel.filterGroups) {
+    for (let key in libCore.viewModel.filterGroups()) {
       if (key !== filterGroupName) {
         filteredLibrary = libCore.filterByGroup(key, filteredLibrary);
       }
     }
 
-    const filterGroup = libCore.viewModel.filterGroups[filterGroupName];
+    const filterGroup = libCore.viewModel.filterGroups()[filterGroupName];
     filterGroup.all.forEach((filter) => {
       // disable filter if applying it would result in an empty set
       const tempFilteredLibrary = libCore.applyFilters([filter], filteredLibrary);
@@ -287,13 +354,13 @@ const Library = new function() {
   };
 
   libCore.updateDisabledFlags = () => {
-    for (let key in libCore.viewModel.filterGroups) {
+    for (let key in libCore.viewModel.filterGroups()) {
       libCore.updateDisabledFlagsInGroup(key);
     }
   };
 
   libCore.addFilterGroup = (name, filters, filterMethod) => {
-    libCore.viewModel.filterGroups[name] = {
+    libCore.viewModel.filterGroups()[name] = {
       all: filters.map((filter) => {
         filter.label = name;
         filter.active = ko.observable(false);
@@ -371,6 +438,16 @@ const Library = new function() {
     return tagFiltersArray;
   };
 
+  libCore.repopulateTagFilters = (libraryData) => {
+    const tagFilters = libCore.getTagFilters(libraryData);
+
+    libCore.addFilterGroup('Tags', tagFilters, (filter, item) => {
+      return item.tags.indexOf(filter.value) !== -1;
+    });
+
+    libCore.viewModel.filterGroups(libCore.viewModel.filterGroups())
+  }
+
   libCore.filtersSetup = (libraryData) => {
     // setup filter groups
 
@@ -426,7 +503,7 @@ const Library = new function() {
 
         // console.log(progressBar.style.width);
         finishedBuffers.length === libraryData.length ? window.setTimeout(() => {
-          console.log(finishedBuffers);
+          // console.log(finishedBuffers);
           // storage.set('audio', finishedBuffers);
           // console.log(storage.get('audio'));
           updateConsole('<i class="glyphicon glyphicon-stop"></i> Ready');
@@ -439,8 +516,10 @@ const Library = new function() {
   }
 
   libCore.updateCallback = (libraryData) => {
+    libCore.repopulateTagFilters(libraryData)
     libCore.librarySetup(libraryData)
     libCore.updateDisabledFlags()
+    $(window).trigger('resize');
     // console.log(storage.get('library'))
   }
 
@@ -475,50 +554,55 @@ const Library = new function() {
   };
 };
 
-storage.clear()
+// storage.clear()
 
 $('#modal .modal-title').html('Please wait...')
 $('#modal .modal-body').html('<p>Preparing system...</p>')
 $('#modal').modal('show')
 
 window.setTimeout(() => {
-  dir.walkParallel(libPath, (err, results) => {
-    if (err)
-      throw err;
+  if (!storage.get('library')) {
+    dir.walkParallel(libPath, (err, results) => {
+      if (err)
+        throw err;
 
-    results.forEach((filePath, id) => {
-      const fileName = filePath.substr(filePath.lastIndexOf('\/') + 1, filePath.length)
+      results.forEach((filePath, id) => {
+        const fileName = filePath.substr(filePath.lastIndexOf('\/') + 1, filePath.length)
 
-      if (fileName.split('.').pop() === 'mp3') {
-        const info = id3.get(filePath)
+        if (fileName.split('.').pop() === 'mp3') {
+          const info = id3.get(filePath)
 
-        libraryTempData.push({
-          catNum: '',
-          compilationId: null,
-          artist: info.artist ? info.artist : 'Unknown',
-          title: info.title ? info.title : 'Untitled',
-          description: info.comment ? info.comment.text : '',
-          genre: info.genre ? info.genre : '',
-          bpm: info.bpm ? info.bpm : '',
-          type: 'single',
-          album: info.album ? info.album : '',
-          cover: info.image ? info.image.imageBuffer : '',
-          year: info.year ? info.year : '',
-          copyright: info.copyright ? info.copyright : '',
-          url: '',
-          tags: [],
-          fileBufferId: id,
-          filePath: filePath,
-          fileName: fileName
-        })
-      }
+          libraryTempData.push({
+            catNum: '',
+            compilationId: null,
+            artist: info.artist ? info.artist : 'Unknown',
+            title: info.title ? info.title : 'Untitled',
+            description: info.comment ? info.comment.text : '',
+            genre: info.genre ? info.genre : '',
+            bpm: info.bpm ? info.bpm : '',
+            type: 'single',
+            album: info.album ? info.album : '',
+            cover: info.image ? info.image.imageBuffer : '',
+            year: info.year ? info.year : '',
+            copyright: info.copyright ? info.copyright : '',
+            url: '',
+            tags: [],
+            fileBufferId: id,
+            filePath: filePath,
+            fileName: fileName
+          })
+        }
+      })
+      // console.log(libraryTempData);
+
+      libraryTempData.sort(sort.sortArtists)
+      storage.set('library', libraryTempData)
+      libraryTempData = []
+
+      Library.init()
     })
-    console.log(libraryTempData);
-
-    libraryTempData.sort(sort.sortArtists)
-    storage.set('library', libraryTempData)
-    libraryTempData = []
-
+  }
+  else {
     Library.init()
-  })
+  }
 }, 1000)

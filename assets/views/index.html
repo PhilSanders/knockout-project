@@ -59,6 +59,7 @@
             <table>
               <thead>
                 <tr>
+                  <th></th>
                   <!-- <th><a href="#">Cat#</a></th> -->
                   <th>
                     <a href="#" data-sorter="artists">Artist</a>
@@ -72,20 +73,24 @@
                   <th>
                     <a href="#" data-sorter="years">Year</a>
                   </th>
-                  <!-- <th><a href="#">Tags</a></th> -->
+                  <th><a href="#">Tags</a></th>
                   <th></th>
                 </tr>
               </thead>
               <tbody data-bind="foreach: filteredLibrary">
-                <tr data-bind="click: function() { $root.itemClick(this) }">
+                <tr class="item">
+                  <td>
+                    <button class="btn btn-success btn-xs" data-bind="click: function() { $root.itemClick(this) }">
+                      <i class="glyphicon glyphicon-play"></i>
+                    </button>
+                  </td>
                   <!-- <td data-bind="text: catNum"></td> -->
                   <td data-bind="text: artist"></td>
                   <td data-bind="text: title"></td>
                   <td data-bind="text: genre"></td>
                   <td data-bind="text: year"></td>
-                  <!-- <td data-bind="foreach: { data: tags, as: 'tag' }"> <span data-bind="text: tag"></span>, </td> -->
-                  <td class="text-right">
-                    <!-- <button class="btn btn-success btn-xs"> <i class="glyphicon glyphicon-play"></i> </button> <button class="btn btn-warning btn-xs"> <i class="glyphicon glyphicon-pause"></i> </button> -->
+                  <td data-bind="foreach: { data: tags, as: 'tag' }"> <span data-bind="text: tag"></span><!-- ko if: $index < (tags.length - 1) --><span>,&nbsp;</span><!-- /ko --></td>
+                  <td>
                     <button class="btn btn-modify btn-xs" data-bind="click: function() { $root.editClicked(this) }, clickBubble: false">
                       <i class="glyphicon glyphicon-pencil"></i>
                     </button>
