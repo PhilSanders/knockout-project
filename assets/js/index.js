@@ -54,23 +54,38 @@ audioPlayer.onpause = () => {
   updateConsole('<i class="glyphicon glyphicon-pause"></i> Paused')
 }
 
+let contextMenuRef; // this should always be an html element (tr)
+
 const menu = new Menu()
-menu.append(new MenuItem({ id: 1, label: 'Play', click() { console.log('clicked play') } }))
-menu.append(new MenuItem({ id: 2, label: 'Edit', click() { console.log('clicked edit') } }))
+menu.append(new MenuItem({ id: 1, label: 'Play', click() { menuPlayClicked() } }))
+menu.append(new MenuItem({ id: 2, label: 'Edit', click() { menuEditClicked() } }))
 menu.append(new MenuItem({ id: 3, type:  'separator' }))
 menu.append(new MenuItem({ id: 4, label: 'Favorite', type: 'checkbox', checked: false }))
 
+menu.on('menu-will-close', () => {
+  console.log('content mneu closed');
+  contentMenuRef = null;
+})
+
+const menuPlayClicked = () => {
+  contextMenuRef.children[0].children[0].click();
+}
+
+const menuEditClicked = () => {
+  contextMenuRef.children[contextMenuRef.cells.length - 1].children[0].click();
+}
+
 window.addEventListener('contextmenu', (e) => {
   e.preventDefault()
-  let tr = false;
+  let tr;
   for(let i = 0; i < e.path.length; i++) {
-    if (e.path[i].className == 'item') {
-      tr = true;
+    if (e.path[i].className === 'item') {
+      tr = e.path[i];
       break;
     }
   }
   if (tr) {
-    console.log(menu.getMenuItemById(1));
+    contextMenuRef = tr;
     menu.popup({ window: remote.getCurrentWindow() })
   }
 }, false)
