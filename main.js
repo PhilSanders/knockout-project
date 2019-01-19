@@ -6,16 +6,16 @@ const { electron, app, BrowserWindow, dialog, Menu } = require('electron')
 // be closed automatically when the JavaScript object is garbage collected.
 let win, libPath, library
 
-exports.selectDirectory = function () {
+exports.selectDirectory = function (callbackFunc) {
   dialog.showOpenDialog(win, {
     properties: ['openDirectory']
-  }, function (path) {
-      if (path !== undefined) {
-          // handle files
-          console.log(path)
-          libPath = path
-      }
-  })
+  }, callbackFunc)
+}
+
+exports.selectImage = function (callbackFunc) {
+  dialog.showOpenDialog(win, {
+    properties: ['openFile']
+  }, callbackFunc)
 }
 
 const template = [

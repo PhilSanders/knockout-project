@@ -23,6 +23,7 @@ const updateConsole = (text) => {
   // consoleOut.title = text
   consoleOut.innerHTML = text
 }
+
 // const fileDialogBtn = document.querySelector('#party')
 // fileDialogBtn.addEventListener('click', () => {
 //   mainProcess.selectDirectory()
@@ -135,8 +136,8 @@ const writeId3Tag = (item) => {
     url: item.url,
     comment: item.description,
     genre: item.genre,
-    bpm: item.bpm
-    // APIC: "./example/mia_cover.jpg",
+    bpm: item.bpm,
+    APIC: item.cover,
     // TRCK: "27"
   }
 
@@ -156,6 +157,33 @@ const writeId3Tag = (item) => {
   let success = id3.update(tags, item.filePath) //  Returns true/false or, if buffer passed as file, the tagged buffer
   // success.then((data) => { console.log(data) })
   // NodeID3.update(tags, file, function(err, buffer) {  })  //  Buffer is only returned if a buffer was passed as file
+}
+
+const encode = (input) => {
+    var keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+    var output = "";
+    var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
+    var i = 0;
+
+    while (i < input.length) {
+        chr1 = input[i++];
+        chr2 = i < input.length ? input[i++] : Number.NaN; // Not sure if the index
+        chr3 = i < input.length ? input[i++] : Number.NaN; // checks are needed here
+
+        enc1 = chr1 >> 2;
+        enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
+        enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
+        enc4 = chr3 & 63;
+
+        if (isNaN(chr2)) {
+            enc3 = enc4 = 64;
+        } else if (isNaN(chr3)) {
+            enc4 = 64;
+        }
+        output += keyStr.charAt(enc1) + keyStr.charAt(enc2) +
+                  keyStr.charAt(enc3) + keyStr.charAt(enc4);
+    }
+    return output;
 }
 
 const Library = new function() {
@@ -220,7 +248,7 @@ const Library = new function() {
     };
 
     libVM.itemClick = (item) => {
-      const promise = dataUrl.base64(item.filePath);
+      const promise = dataUrl.base64(item.filePath, 'audio/mp3');
       promise.then((fileBuffer) => {
         // update audio player artist and song tile text display
         libVM.currentArtist(item.artist)
@@ -246,6 +274,24 @@ const Library = new function() {
       $('#modal .modal-body').html(id3.editorTemplate(item))
       $('#modal').modal('show')
 
+      const fileDialogBtn = document.querySelector('#FileBtn')
+      const coverInput = document.querySelector('#CoverInput')
+      const coverImg = document.querySelector('#CoverImage')
+
+      if (item.cover) {
+        console.log(item.cover);
+        const arrayBuffer = item.cover.data;
+        const bytes = new Uint8Array(arrayBuffer);
+        coverImg.src = 'data:image/png;base64,' + encode(bytes)
+      }
+
+      fileDialogBtn.addEventListener('click', (e) => {
+        e.preventDefault()
+        mainProcess.selectImage((filePaths) => {
+          coverInput.value = filePaths ? filePaths[0] : ''
+        })
+      })
+
       $(function () {
         $('[data-toggle="tooltip"]').tooltip()
       })
@@ -262,6 +308,7 @@ const Library = new function() {
             itemInStorage.artist      = id3UForm.ArtistInput.value ? id3UForm.ArtistInput.value : 'Unknown'
             itemInStorage.title       = id3UForm.TitleInput.value ? id3UForm.TitleInput.value : 'Untitled'
             itemInStorage.album       = id3UForm.AlbumInput.value ? id3UForm.AlbumInput.value : ''
+            itemInStorage.cover       = id3UForm.CoverInput.value ? id3UForm.CoverInput.value : ''
             itemInStorage.year        = id3UForm.YearInput.value ? id3UForm.YearInput.value : ''
             itemInStorage.copyright   = id3UForm.CopyrightInput.value ? id3UForm.CopyrightInput.value : ''
             itemInStorage.url         = id3UForm.UrlInput.value ? id3UForm.UrlInput.value : ''
@@ -488,7 +535,7 @@ const Library = new function() {
     let finishedBuffers = []
 
     asyncForEach(libraryData, async (libItem, n) => {
-      const promise = dataUrl.base64(libItem.filePath);
+      const promise = dataUrl.base64(libItem.filePath, 'audio/mp3');
 
       updateConsole('<i class="glyphicon glyphicon-refresh"></i> Reading: ' + libItem.filePath);
 
@@ -554,7 +601,7 @@ const Library = new function() {
   };
 };
 
-// storage.clear()
+storage.clear()
 
 $('#modal .modal-title').html('Please wait...')
 $('#modal .modal-body').html('<p>Preparing system...</p>')
