@@ -280,7 +280,7 @@ const Library = new function() {
 
       if (item.cover) {
         console.log(item.cover);
-        const arrayBuffer = item.cover.data;
+        const arrayBuffer = id3.get(item.filePath).image.imageBuffer;
         const bytes = new Uint8Array(arrayBuffer);
         coverImg.src = 'data:image/png;base64,' + encode(bytes)
       }
@@ -601,7 +601,7 @@ const Library = new function() {
   };
 };
 
-storage.clear()
+// storage.clear()
 
 $('#modal .modal-title').html('Please wait...')
 $('#modal .modal-body').html('<p>Preparing system...</p>')
