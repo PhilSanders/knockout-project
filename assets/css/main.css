@@ -343,6 +343,10 @@ header .audio-title small {
   -webkit-user-select: none;
 }
 
+#musicLibrary .list table th:first-child, #musicLibrary .list table th:last-child {
+  width: 40px !important;
+}
+
 #musicLibrary .list table th:after {
   content: '';
   position: absolute;
@@ -353,6 +357,10 @@ header .audio-title small {
   background: rgba(255, 255, 255, 0.2);
   border-right: 1px solid #000;
   cursor: col-resize;
+}
+
+#musicLibrary .list table td:first-child, #musicLibrary .list table td:last-child {
+  text-align: center;
 }
 
 #musicLibrary .list table tbody {

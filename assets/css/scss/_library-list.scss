@@ -30,17 +30,27 @@
     th {
       padding: 0;
       -webkit-user-select: none;
+      &:first-child,
+      &:last-child {
+        width: 40px !important;
+      }
+      &:after {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 2px;
+        height: 100%;
+        background: rgba(255,255,255,0.2);
+        border-right: 1px solid $gray-base;
+        cursor: col-resize;
+      }
     }
-    th:after {
-      content: '';
-      position: absolute;
-      top: 0;
-      right: 0;
-      width: 2px;
-      height: 100%;
-      background: rgba(255,255,255,0.2);
-      border-right: 1px solid $gray-base;
-      cursor: col-resize;
+    td {
+      &:first-child,
+      &:last-child {
+        text-align: center;
+      }
     }
     tbody {
       height: 100%;
