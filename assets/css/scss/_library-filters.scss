@@ -2,32 +2,34 @@
 @import "variables";
 
 .filters {
-  min-width: 200px;
+  position: relative;
+  min-width: $filter-menu-width;
+  border-right: 1px solid $gray-dark;
+  &:after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: $filters-side-width;
+    height: 100%;
+    background: $brand-primary;
+    cursor: col-resize;
+  }
   .filters-title {
+    margin: 0;
     padding: 0 10px;
+    height: $library-head-height;
+    background-color: $brand-primary;
     color: $white;
+    line-height: 2;
   }
   .filters-menu {
-    height: calc(100% - 19px);
+    height: calc(100% - #{$library-head-height});
     overflow-y: auto;
     > div {
       position: relative;
       min-height: 100%;
-      padding: 10px;
-      &:after {
-        content: "";
-        position: absolute;
-        top: 0;
-        right: 0;
-        width: 10px;
-        height: 100%;
-        background: $brand-primary-dark;
-        opacity: 0.4;
-        cursor: ew-resize;
-        &:hover {
-          opacity: 0.8;
-        }
-      }
+      padding: 10px calc(10px + #{$filters-side-width}) 10px 10px;
     }
   }
   .filter-group {

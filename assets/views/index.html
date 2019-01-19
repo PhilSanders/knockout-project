@@ -33,68 +33,96 @@
         </audio>
       </h1>
     </header>
-    <div class="main">
-      <section class="filters">
-        <h2 class="h4 filters-title">Filter By</h2>
-        <div class="filters-menu">
-          <div>
-            <!-- ko foreach: { data: getFilterGroupAsList(), as: 'filterGroup' } -->
-            <div class="filter-group">
-              <h5 data-bind="text: filterGroup.name"></h5>
-              <ul class="unstyled-list" data-bind="foreach: { data: filterGroup.filters, as: 'filter' }">
-                <li>
-                  <a href="href" data-bind="text: filter.value,
-               click: function() { $root.filterClicked(filter) },
-               css: { active: filter.active(), disabled: filter.disabled() }"></a>
-                </li>
-              </ul>
+    <div class="tab-content">
+      <div id="LibraryView" class="main tab-panel fade in active">
+        <section class="filters">
+          <h2 class="h4 filters-title">Filter By</h2>
+          <div class="filters-menu">
+            <div>
+              <!-- ko foreach: { data: getFilterGroupAsList(), as: 'filterGroup' } -->
+              <div class="filter-group">
+                <h5 data-bind="text: filterGroup.name"></h5>
+                <ul class="unstyled-list" data-bind="foreach: { data: filterGroup.filters, as: 'filter' }">
+                  <li>
+                    <a href="href" data-bind="text: filter.value,
+                 click: function() { $root.filterClicked(filter) },
+                 css: { active: filter.active(), disabled: filter.disabled() }"></a>
+                  </li>
+                </ul>
+              </div>
+              <!-- /ko -->
             </div>
-            <!-- /ko -->
           </div>
-        </div>
-      </section>
-      <section class="list">
-        <div>
-          <table>
-            <thead>
-              <tr>
-                <!-- <th><a href="#">Cat#</a></th> -->
-                <th>
-                  <a href="#" data-bind="click: function() { $root.sortClicked('artists') }">Artist</a>
-                </th>
-                <th>
-                  <a href="#" data-bind="click: function() { $root.sortClicked('titles') }">Title</a>
-                </th>
-                <th>
-                  <a href="#" data-bind="click: function() { $root.sortClicked('genres') }">Genre</a>
-                </th>
-                <th>
-                  <a href="#" data-bind="click: function() { $root.sortClicked('years') }">Year</a>
-                </th>
-                <!-- <th><a href="#">Tags</a></th> -->
-                <th></th>
-              </tr>
-            </thead>
-            <tbody data-bind="foreach: filteredLibrary">
-              <tr data-bind="click: function() { $root.itemClick(this) }">
-                <!-- <td data-bind="text: catNum"></td> -->
-                <td data-bind="text: artist"></td>
-                <td data-bind="text: title"></td>
-                <td data-bind="text: genre"></td>
-                <td data-bind="text: year"></td>
-                <!-- <td data-bind="foreach: { data: tags, as: 'tag' }"> <span data-bind="text: tag"></span>, </td> -->
-                <td class="text-right">
-                  <!-- <button class="btn btn-success btn-xs"> <i class="glyphicon glyphicon-play"></i> </button> <button class="btn btn-warning btn-xs"> <i class="glyphicon glyphicon-pause"></i> </button> -->
-                  <button class="btn btn-modify btn-xs" data-bind="click: function() { $root.editClicked(this) }, clickBubble: false">
-                    <i class="glyphicon glyphicon-pencil"></i>
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
+        </section>
+        <section class="list">
+          <div class="scroll-area">
+            <table>
+              <thead>
+                <tr>
+                  <!-- <th><a href="#">Cat#</a></th> -->
+                  <th>
+                    <a href="#" data-sorter="artists">Artist</a>
+                  </th>
+                  <th>
+                    <a href="#" data-sorter="titles">Title</a>
+                  </th>
+                  <th>
+                    <a href="#" data-sorter="genres">Genre</a>
+                  </th>
+                  <th>
+                    <a href="#" data-sorter="years">Year</a>
+                  </th>
+                  <!-- <th><a href="#">Tags</a></th> -->
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody data-bind="foreach: filteredLibrary">
+                <tr data-bind="click: function() { $root.itemClick(this) }">
+                  <!-- <td data-bind="text: catNum"></td> -->
+                  <td data-bind="text: artist"></td>
+                  <td data-bind="text: title"></td>
+                  <td data-bind="text: genre"></td>
+                  <td data-bind="text: year"></td>
+                  <!-- <td data-bind="foreach: { data: tags, as: 'tag' }"> <span data-bind="text: tag"></span>, </td> -->
+                  <td class="text-right">
+                    <!-- <button class="btn btn-success btn-xs"> <i class="glyphicon glyphicon-play"></i> </button> <button class="btn btn-warning btn-xs"> <i class="glyphicon glyphicon-pause"></i> </button> -->
+                    <button class="btn btn-modify btn-xs" data-bind="click: function() { $root.editClicked(this) }, clickBubble: false">
+                      <i class="glyphicon glyphicon-pencil"></i>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+      <div id="PlaylistView" class="tab-panel fade">
+        <h2>Playlist</h2>
+      </div>
+      <div id="PreferencesView" class="tab-panel fade">
+        <h2>Preferences</h2>
+      </div>
     </div>
+    <footer>
+      <div>
+        <div id="ConsoleLog" class="console-log">
+          <span>Preparing system...</span>
+        </div>
+        <div class="footer-menu">
+          <ul class="nav nav-tabs">
+            <li class="active">
+              <a href="#LibraryView" class="btn btn-sm btn-brand-primary" data-toggle="tab">Library</a>
+            </li>
+            <li>
+              <a href="#PlaylistView" class="btn btn-sm btn-brand-primary" data-toggle="tab">Playlist</a>
+            </li>
+            <li>
+              <a href="#PreferencesView" class="btn btn-sm btn-brand-primary" data-toggle="tab">Perferences</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </footer>
   </div>
   <div id="modal" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
     <div class="modal-dialog modal-md" role="document">
@@ -112,10 +140,11 @@
   </div>
 
   <script>
-    window.$ = window.jQuery = require('jquery')
+    window.$ = window.jQuery = module.$ = module.jQuery = require('jquery')
     require('../../node_modules/bootstrap-sass/assets/javascripts/bootstrap.min.js')
     require('../js/index.js')
   </script>
+  <script src="../../node_modules/jquery-table-fixed-header/dist/jquery-table-fixed-header.min.js"></script>
 
 </body>
 </html>

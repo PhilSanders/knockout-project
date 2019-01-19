@@ -1,0 +1,72 @@
+// html general
+
+body {
+  background: $gray-darker;
+  color: $gray-lighter;
+}
+
+h1, h2 {
+  color: #FFF;
+}
+
+h3, h4 ,h5 ,h6 {
+  color: #AAA;
+}
+
+aside {
+  height: 100%;
+}
+
+table {
+  table-layout: fixed;
+  width: 100%;
+  border: none;
+}
+
+a {
+  transition: color 100ms linear;
+}
+
+a,
+a:hover,
+a:focus,
+a:active {
+  color: $brand-primary;
+  text-decoration: none;
+}
+
+a:hover {
+  color: $brand-primary-light;
+  text-decoration: none;
+}
+
+a.disabled,
+a.disabled:hover,
+a.disabled:focus,
+a.disabled:active {
+  color: rgba(170,170,170, 0.4);
+  pointer-events: none;
+}
+
+:focus,
+.btn:focus,
+a:focus {
+  outline-color: orange;
+}
+
+::selection {
+  background: $brand-primary-light; /* WebKit/Blink Browsers */
+}
+
+// ::-webkit-scrollbar {
+//   width: 10px;
+// }
+//
+// ::-webkit-scrollbar-track {
+//   -webkit-box-shadow: inset 0 0 6px $brand-primary-dark;
+// }
+//
+// ::-webkit-scrollbar-thumb {
+//   background-color: $brand-primary;
+//   outline: 1px solid $brand-primary-light;
+// }

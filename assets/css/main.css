@@ -76,11 +76,11 @@ a:focus {
   font-size: 14px;
 }
 
-.flex-row, #musicLibrary .main {
+.flex-row, #musicLibrary .tab-panel {
   display: flex;
 }
 
-.flex-row:before, #musicLibrary .main:before {
+.flex-row:before, #musicLibrary .tab-panel:before {
   display: block;
 }
 
@@ -95,26 +95,26 @@ a:focus {
 .btn-brand-primary {
   color: #FFF;
   background-color: #8A2BE2;
-  border-color: #ab68ea;
+  border-color: #8A2BE2;
 }
 
 .btn-brand-primary:focus, .btn-brand-primary.focus {
   color: #FFF;
   background-color: #701ac0;
-  border-color: #6c19b9;
+  border-color: #49117c;
 }
 
 .btn-brand-primary:hover {
   color: #FFF;
   background-color: #701ac0;
-  border-color: #8e32e3;
+  border-color: #6b19b7;
 }
 
 .btn-brand-primary:active, .btn-brand-primary.active,
 .open > .btn-brand-primary.dropdown-toggle {
   color: #FFF;
   background-color: #701ac0;
-  border-color: #8e32e3;
+  border-color: #6b19b7;
 }
 
 .btn-brand-primary:active:hover, .btn-brand-primary:active:focus, .btn-brand-primary:active.focus, .btn-brand-primary.active:hover, .btn-brand-primary.active:focus, .btn-brand-primary.active.focus,
@@ -123,7 +123,7 @@ a:focus {
 .open > .btn-brand-primary.dropdown-toggle.focus {
   color: #FFF;
   background-color: #5e16a0;
-  border-color: #6c19b9;
+  border-color: #49117c;
 }
 
 .btn-brand-primary:active, .btn-brand-primary.active,
@@ -136,7 +136,7 @@ fieldset[disabled] .btn-brand-primary:hover,
 fieldset[disabled] .btn-brand-primary:focus,
 fieldset[disabled] .btn-brand-primary.focus {
   background-color: #8A2BE2;
-  border-color: #ab68ea;
+  border-color: #8A2BE2;
 }
 
 .btn-brand-primary .badge {
@@ -168,14 +168,16 @@ fieldset[disabled] .btn-brand-primary.focus {
 }
 
 .modal .modal-content .modal-header {
-  background-color: #6718b0;
+  -webkit-user-select: none;
+  -webkit-app-region: drag;
+  background-color: #8A2BE2;
   *zoom: 1;
   filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFAB68EA', endColorstr='#FF8A2BE2');
-  background-image: -owg-linear-gradient(top, #ab68ea 0%, blueviolet 100%);
-  background-image: -webkit-linear-gradient(top, #ab68ea 0%, blueviolet 100%);
-  background-image: -moz-linear-gradient(top, #ab68ea 0%, blueviolet 100%);
-  background-image: -o-linear-gradient(top, #ab68ea 0%, blueviolet 100%);
-  background-image: linear-gradient(top, #ab68ea 0%, blueviolet 100%);
+  background-image: -owg-linear-gradient(top, #ab68ea 0%, #8A2BE2 30%);
+  background-image: -webkit-linear-gradient(top, #ab68ea 0%, #8A2BE2 30%);
+  background-image: -moz-linear-gradient(top, #ab68ea 0%, #8A2BE2 30%);
+  background-image: -o-linear-gradient(top, #ab68ea 0%, #8A2BE2 30%);
+  background-image: linear-gradient(top, #ab68ea 0%, #8A2BE2 30%);
   border-bottom: 1px solid #6718b0;
 }
 
@@ -226,15 +228,17 @@ fieldset[disabled] .btn-brand-primary.focus {
 /* header */
 header {
   display: flex;
+  -webkit-user-select: none;
+  -webkit-app-region: drag;
   min-height: 110px;
   background-color: #8A2BE2;
   *zoom: 1;
-  filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFAB68EA', endColorstr='#FF6718B0');
-  background-image: -owg-linear-gradient(top, #ab68ea 0%, #6718b0 100%);
-  background-image: -webkit-linear-gradient(top, #ab68ea 0%, #6718b0 100%);
-  background-image: -moz-linear-gradient(top, #ab68ea 0%, #6718b0 100%);
-  background-image: -o-linear-gradient(top, #ab68ea 0%, #6718b0 100%);
-  background-image: linear-gradient(top, #ab68ea 0%, #6718b0 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFAB68EA', endColorstr='#FF8A2BE2');
+  background-image: -owg-linear-gradient(top, #ab68ea 0%, blueviolet 30%);
+  background-image: -webkit-linear-gradient(top, #ab68ea 0%, blueviolet 30%);
+  background-image: -moz-linear-gradient(top, #ab68ea 0%, blueviolet 30%);
+  background-image: -o-linear-gradient(top, #ab68ea 0%, blueviolet 30%);
+  background-image: linear-gradient(top, #ab68ea 0%, blueviolet 30%);
   border-bottom: 1px solid #000;
 }
 
@@ -259,7 +263,7 @@ header .audio-title small {
 }
 
 #musicLibrary > div {
-  height: calc(100vh - 110px);
+  height: calc(100vh - 110px - 45px);
 }
 
 #musicLibrary section {
@@ -267,40 +271,56 @@ header .audio-title small {
   background: #222222;
 }
 
+#musicLibrary .tab-panel {
+  position: absolute;
+  height: 0;
+  width: 0;
+  overflow-y: auto;
+  left: -1000%;
+}
+
+#musicLibrary .tab-panel.active {
+  position: relative;
+  left: 0;
+  height: 100%;
+  width: 100%;
+}
+
 #musicLibrary .filters {
+  position: relative;
   min-width: 200px;
+  border-right: 1px solid #333333;
+}
+
+#musicLibrary .filters:after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 5px;
+  height: 100%;
+  background: #8A2BE2;
+  cursor: col-resize;
 }
 
 #musicLibrary .filters .filters-title {
+  margin: 0;
   padding: 0 10px;
+  height: 39px;
+  background-color: #8A2BE2;
   color: #FFF;
+  line-height: 2;
 }
 
 #musicLibrary .filters .filters-menu {
-  height: calc(100% - 19px);
+  height: calc(100% - 39px);
   overflow-y: auto;
 }
 
 #musicLibrary .filters .filters-menu > div {
   position: relative;
   min-height: 100%;
-  padding: 10px;
-}
-
-#musicLibrary .filters .filters-menu > div:after {
-  content: "";
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 10px;
-  height: 100%;
-  background: #6718b0;
-  opacity: 0.4;
-  cursor: ew-resize;
-}
-
-#musicLibrary .filters .filters-menu > div:after:hover {
-  opacity: 0.8;
+  padding: 10px calc(10px + 5px) 10px 10px;
 }
 
 #musicLibrary .filters .filter-group {
@@ -333,6 +353,11 @@ header .audio-title small {
 #musicLibrary .list {
   width: 100%;
   height: 100%;
+}
+
+#musicLibrary .list .scroll-area {
+  height: 100%;
+  width: 100%;
   overflow-y: auto;
 }
 
@@ -363,6 +388,7 @@ header .audio-title small {
 
 #musicLibrary .list table th {
   padding: 0;
+  -webkit-user-select: none;
 }
 
 #musicLibrary .list table th:after {
@@ -374,7 +400,12 @@ header .audio-title small {
   height: 100%;
   background: rgba(255, 255, 255, 0.2);
   border-right: 1px solid #000;
-  cursor: ew-resize;
+  cursor: col-resize;
+}
+
+#musicLibrary .list table tbody {
+  height: 100%;
+  overflow-y: auto;
 }
 
 #musicLibrary .list table tbody > tr {
@@ -383,4 +414,73 @@ header .audio-title small {
 
 #musicLibrary .list table tbody > tr:nth-of-type(odd) {
   background-color: #333333;
+}
+
+#musicLibrary .list table tbody > tr:hover {
+  background-color: rgba(103, 24, 176, 0.5);
+}
+
+#musicLibrary .list table tbody > tr > td:last-child {
+  text-align: center;
+}
+
+footer {
+  background: #8A2BE2;
+  height: 45px;
+  -webkit-user-select: none;
+  -webkit-app-region: drag;
+}
+
+footer > div {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+  height: 100%;
+}
+
+footer > div > div {
+  white-space: nowrap;
+}
+
+footer > div .console-log {
+  padding-top: 10px;
+  padding-left: 10px;
+  padding-right: 10px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #eeeeee;
+}
+
+footer > div .footer-menu {
+  padding-top: 7px;
+  padding-right: 10px;
+}
+
+footer > div .footer-menu .nav-tabs {
+  border-bottom: none;
+  white-space: nowrap;
+}
+
+footer > div .footer-menu .nav-tabs > li {
+  float: none;
+  display: inline-block;
+}
+
+footer > div .footer-menu .nav-tabs > li > a {
+  padding: 4px 15px;
+  background-color: #8A2BE2;
+  border-color: #6718b0;
+  border-radius: 3px;
+  color: #eeeeee;
+}
+
+footer > div .footer-menu .nav-tabs > li > a:hover {
+  color: #FFF;
+}
+
+footer > div .footer-menu .nav-tabs > li.active a {
+  background-color: #ab68ea;
+  border-color: #6718b0;
+  color: #FFF;
 }

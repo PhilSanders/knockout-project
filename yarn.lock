@@ -1984,6 +1984,18 @@ isstream@~0.1.2:
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/isstream/-/isstream-0.1.2.tgz#47e63f7af55afa6f92e1500e690eb8b8529c099a"
 
+jquery-table-fixed-header@^1.1.4:
+  version "1.1.4"
+  resolved "https://registry.yarnpkg.com/jquery-table-fixed-header/-/jquery-table-fixed-header-1.1.4.tgz#b4d6f4d3f2aa36885e5a028e0ceda5626ee18266"
+  integrity sha512-b/mvfmupk/8seehcP1oJ996p8XMRGK1nOjAtfCx8hxiRZXRBecFzZr8IHIMiIMgsbMPAOvDpz7FZcsRdqSmyfA==
+  dependencies:
+    jquery "*"
+
+jquery@*:
+  version "3.3.1"
+  resolved "https://registry.yarnpkg.com/jquery/-/jquery-3.3.1.tgz#958ce29e81c9790f31be7792df5d4d95fc57fbca"
+  integrity sha512-Ubldcmxp5np52/ENotGxlLe6aGMvmF4R8S6tZjsP6Knsaxd/xp3Zrh50cG93lR6nPXyUFwzN3ZSOQI0wRJNdGg==
+
 jquery@1.12.4:
   version "1.12.4"
   resolved "https://registry.yarnpkg.com/jquery/-/jquery-1.12.4.tgz#01e1dfba290fe73deba77ceeacb0f9ba2fec9e0c"

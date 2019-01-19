@@ -31,9 +31,15 @@ $brand-danger:          #d9534f;
 // APP VARS START HERE
 
 // header
-$header-height: 110px;
+$header-height: 110px !default;
+
+// footer
+$footer-height: 45px !default;
 
 // library
+$filter-menu-width: 200px !default;
+$filters-side-width: 5px !default;
 
 // Id3 Editor
-$input-field-border-radius: 6px;
+$input-field-border-radius: 6px !default;
+$library-head-height: 39px !default;

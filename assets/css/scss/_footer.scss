@@ -1,0 +1,56 @@
+// footer
+@import "variables";
+
+footer {
+  background: $brand-primary;
+  height: $footer-height;
+  -webkit-user-select: none;
+  -webkit-app-region: drag;
+  > div {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+    height: 100%;
+    > div {
+      white-space: nowrap;
+    }
+    .console-log {
+      padding-top: 10px;
+      padding-left: 10px;
+      padding-right: 10px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: $gray-lighter;
+    }
+    .footer-menu {
+      padding-top: 7px;
+      padding-right: 10px;
+      .nav-tabs {
+        border-bottom: none;
+        white-space: nowrap;
+        > li {
+          float: none;
+          display: inline-block;
+          > a {
+            padding: 4px 15px;
+            background-color: $brand-primary;
+            border-color:  $brand-primary-dark;
+            border-radius: 3px;
+            color: $gray-lighter;
+            &:hover {
+              color: $white;
+            }
+          }
+          &.active {
+            a {
+              background-color: $brand-primary-light;
+              border-color:  $brand-primary-dark;
+              color: $white;
+            }
+          }
+        }
+      }
+    }
+  }
+}
