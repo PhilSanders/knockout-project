@@ -1,95 +1,46 @@
-body {
-  background: #222222;
-  color: #eeeeee;
-}
-
-h1, h2 {
-  color: #FFF;
-}
-
-h3, h4, h5, h6 {
-  color: #AAA;
-}
-
-aside {
-  height: 100%;
-}
-
-table {
-  table-layout: fixed;
-  width: 100%;
-  border: none;
-}
-
-a {
-  transition: color 100ms linear;
-}
-
-a,
-a:hover,
-a:focus,
-a:active {
-  color: #8A2BE2;
-  text-decoration: none;
-}
-
-a:hover {
-  color: #ab68ea;
-  text-decoration: none;
-}
-
-a.disabled,
-a.disabled:hover,
-a.disabled:focus,
-a.disabled:active {
-  color: rgba(170, 170, 170, 0.4);
-  pointer-events: none;
-}
-
-::selection {
-  background: #ab68ea;
-  /* WebKit/Blink Browsers */
-}
-
-:focus,
-.btn:focus,
-a:focus {
-  outline-color: orange;
-}
-
 .container {
   width: 100%;
   max-width: 1170px;
 }
 
-.unstyled-list {
-  list-style: none;
-  padding: 0;
+.modal .modal-content {
+  background-color: #222222;
+  border: 1px solid #6718b0;
 }
 
-.list-inline {
-  font-size: 0;
+.modal .modal-content .modal-header {
+  -webkit-user-select: none;
+  -webkit-app-region: drag;
+  background-color: #8A2BE2;
+  *zoom: 1;
+  filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFAB68EA', endColorstr='#FF8A2BE2');
+  background-image: -owg-linear-gradient(top, #ab68ea 0%, #8A2BE2 30%);
+  background-image: -webkit-linear-gradient(top, #ab68ea 0%, #8A2BE2 30%);
+  background-image: -moz-linear-gradient(top, #ab68ea 0%, #8A2BE2 30%);
+  background-image: -o-linear-gradient(top, #ab68ea 0%, #8A2BE2 30%);
+  background-image: linear-gradient(top, #ab68ea 0%, #8A2BE2 30%);
+  border-bottom: 1px solid #6718b0;
 }
 
-.list-inline li {
-  display: inline-block;
-  font-size: 14px;
+.modal .modal-content .modal-header .close {
+  color: #FFF;
+  text-shadow: 0 1px 0 #000;
+  opacity: 0.6;
+  transition: opacity 200ms linear;
 }
 
-.flex-row, #musicLibrary .tab-panel {
-  display: flex;
+.modal .modal-content .modal-header .close:hover {
+  opacity: 1;
 }
 
-.flex-row:before, #musicLibrary .tab-panel:before {
-  display: block;
+.modal .modal-content .modal-header .modal-title {
+  color: #FFF;
 }
 
-.flex-wrap {
-  flex-wrap: wrap;
-}
-
-.maxvh {
-  height: 100vh;
+.modal .modal-content .modal-body {
+  max-height: calc(100vh - 110px);
+  overflow-y: auto;
+  color: #eeeeee;
 }
 
 .btn-brand-primary {
@@ -162,67 +113,68 @@ fieldset[disabled] .btn-brand-primary.focus {
   color: #6718b0;
 }
 
-.modal .modal-content {
-  background-color: #222222;
-  border: 1px solid #6718b0;
-}
-
-.modal .modal-content .modal-header {
-  -webkit-user-select: none;
-  -webkit-app-region: drag;
+.tooltip-inner {
   background-color: #8A2BE2;
-  *zoom: 1;
-  filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFAB68EA', endColorstr='#FF8A2BE2');
-  background-image: -owg-linear-gradient(top, #ab68ea 0%, #8A2BE2 30%);
-  background-image: -webkit-linear-gradient(top, #ab68ea 0%, #8A2BE2 30%);
-  background-image: -moz-linear-gradient(top, #ab68ea 0%, #8A2BE2 30%);
-  background-image: -o-linear-gradient(top, #ab68ea 0%, #8A2BE2 30%);
-  background-image: linear-gradient(top, #ab68ea 0%, #8A2BE2 30%);
-  border-bottom: 1px solid #6718b0;
-}
-
-.modal .modal-content .modal-header .close {
-  color: #FFF;
-  text-shadow: 0 1px 0 #000;
-  opacity: 0.6;
-  transition: opacity 200ms linear;
-}
-
-.modal .modal-content .modal-header .close:hover {
-  opacity: 1;
-}
-
-.modal .modal-content .modal-header .modal-title {
   color: #FFF;
 }
 
-.modal .modal-content .modal-body {
-  max-height: calc(100vh - 110px);
-  overflow-y: auto;
+body {
+  background: #222222;
   color: #eeeeee;
 }
 
-#Id3EditorForm .form-group input[type="text"],
-#Id3EditorForm .form-group textarea {
-  color: #eeeeee;
-  background-color: #000;
-  background-image: none;
-  border-color: #333333;
-  border-radius: 6px;
+h1, h2 {
+  color: #FFF;
 }
 
-#Id3EditorForm .form-group input[type="text"]:focus,
-#Id3EditorForm .form-group textarea:focus {
-  border-color: #6718b0;
-  -webkit-box-shadow: rgba(103, 24, 176, 0.6) 0 0 8px, rgba(171, 104, 234, 0.075) 0 1px 1px inset;
-  box-shadow: rgba(103, 24, 176, 0.6) 0 0 8px, rgba(171, 104, 234, 0.075) 0 1px 1px inset;
+h3, h4, h5, h6 {
+  color: #AAA;
 }
 
-#Id3EditorForm .form-group input[type="text"].form-control[disabled],
-#Id3EditorForm .form-group textarea.form-control[disabled] {
-  color: #777777;
-  background-color: #333333;
-  cursor: text;
+aside {
+  height: 100%;
+}
+
+table {
+  table-layout: fixed;
+  width: 100%;
+  border: none;
+}
+
+a {
+  transition: color 100ms linear;
+}
+
+a,
+a:hover,
+a:focus,
+a:active {
+  color: #8A2BE2;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #ab68ea;
+  text-decoration: none;
+}
+
+a.disabled,
+a.disabled:hover,
+a.disabled:focus,
+a.disabled:active {
+  color: rgba(170, 170, 170, 0.4);
+  pointer-events: none;
+}
+
+:focus,
+.btn:focus,
+a:focus {
+  outline-color: orange;
+}
+
+::selection {
+  background: #ab68ea;
+  /* WebKit/Blink Browsers */
 }
 
 /* header */
@@ -424,6 +376,29 @@ header .audio-title small {
   text-align: center;
 }
 
+#Id3EditorForm .form-group input[type="text"],
+#Id3EditorForm .form-group textarea {
+  color: #eeeeee;
+  background-color: #000;
+  background-image: none;
+  border-color: #333333;
+  border-radius: 6px;
+}
+
+#Id3EditorForm .form-group input[type="text"]:focus,
+#Id3EditorForm .form-group textarea:focus {
+  border-color: #6718b0;
+  -webkit-box-shadow: rgba(103, 24, 176, 0.6) 0 0 8px, rgba(171, 104, 234, 0.075) 0 1px 1px inset;
+  box-shadow: rgba(103, 24, 176, 0.6) 0 0 8px, rgba(171, 104, 234, 0.075) 0 1px 1px inset;
+}
+
+#Id3EditorForm .form-group input[type="text"].form-control[disabled],
+#Id3EditorForm .form-group textarea.form-control[disabled] {
+  color: #777777;
+  background-color: #333333;
+  cursor: text;
+}
+
 footer {
   background: #8A2BE2;
   height: 45px;
@@ -483,4 +458,34 @@ footer > div .footer-menu .nav-tabs > li.active a {
   background-color: #ab68ea;
   border-color: #6718b0;
   color: #FFF;
+}
+
+.unstyled-list {
+  list-style: none;
+  padding: 0;
+}
+
+.list-inline {
+  font-size: 0;
+}
+
+.list-inline li {
+  display: inline-block;
+  font-size: 14px;
+}
+
+.flex-row, #musicLibrary .tab-panel {
+  display: flex;
+}
+
+.flex-row:before, #musicLibrary .tab-panel:before {
+  display: block;
+}
+
+.flex-wrap {
+  flex-wrap: wrap;
+}
+
+.maxvh {
+  height: 100vh;
 }

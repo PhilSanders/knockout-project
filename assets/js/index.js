@@ -13,7 +13,7 @@ const store = require('electron-store')
 const storage = new store()
 
 let libraryTempData = []
-let libPath = '/Users/philsanders/Desktop/PillFORM'
+let libPath = 'assets/mp3'
 
 let audioPlayer = document.querySelector('#AudioPlayer')
 let audioSource = document.querySelector('#AudioMp3')
@@ -181,7 +181,7 @@ const Library = new function() {
 
     libVM.editClicked = (item) => {
       // console.log(item)
-      $('#modal .modal-title').html('Edit ID3 Tag')
+      $('#modal .modal-title').html('Edit Info')
       $('#modal .modal-body').html(id3.editorTemplate(item))
       $('#modal').modal('show')
 
