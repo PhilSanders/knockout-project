@@ -4,7 +4,7 @@
 @import "variables"; // bootstrap vars
 @import "node_modules/bootstrap-sass/assets/stylesheets/bootstrap/mixins"; // bootstrap mixins
 
-@import "bootstrap";
+@import "bootstrap-main";
 @import "html";
 
 @import "header";
@@ -38,27 +38,4 @@
 
 .maxvh {
   height: 100vh;
-}
-
-.btn-brand-primary {
-  @include button-variant($white, $brand-primary, $brand-primary);
-}
-
-.btn-modify {
-  background: transparent;
-  color: $gray-light;
-  transition: color 200ms linear;
-  &:hover,
-  &:focus {
-    color: $gray-lighter;
-  }
-}
-
-.progress {
-  .progress-bar {
-    background-color: $brand-primary-light;
-    span {
-      color: $brand-primary-dark;
-    }
-  }
 }

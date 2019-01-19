@@ -1,0 +1,36 @@
+// bootstrap overrides
+
+.container {
+  width: 100%;
+  max-width: 1170px;
+}
+
+@import "modals";
+
+.btn-brand-primary {
+  @include button-variant($white, $brand-primary, $brand-primary);
+}
+
+.btn-modify {
+  background: transparent;
+  color: $gray-light;
+  transition: color 200ms linear;
+  &:hover,
+  &:focus {
+    color: $gray-lighter;
+  }
+}
+
+.progress {
+  .progress-bar {
+    background-color: $brand-primary-light;
+    span {
+      color: $brand-primary-dark;
+    }
+  }
+}
+
+.tooltip-inner {
+  background-color: $brand-primary;
+  color: $white;
+}
