@@ -136,17 +136,17 @@ const Library = new function() {
     libVM.currentTitle = ko.observable()
     libVM.currentFile = ko.observable()
 
-    libVM.filterGroups = {}
+    libVM.filterGroups = ko.observableArray()
     libVM.filteredLibrary = ko.observableArray([])
 
     libVM.getFilterGroupAsList = () => {
       let filterGroupList = []
 
-      for (let key in libCore.viewModel.filterGroups) {
+      for (let key in libCore.viewModel.filterGroups()) {
         filterGroupList.push({
           name: key,
-          filters: libCore.viewModel.filterGroups[key].all,
-          selected: libCore.viewModel.filterGroups[key].selected
+          filters: libCore.viewModel.filterGroups()[key].all,
+          selected: libCore.viewModel.filterGroups()[key].selected
         });
       }
 
@@ -160,7 +160,7 @@ const Library = new function() {
       libVM.filteredLibrary(libVM.getFilteredLibrary())
 
       $(window).trigger('resize');
-      console.log('filter');
+      // console.log('filter');
     };
 
     libVM.setItemFlags = () => {
@@ -176,7 +176,7 @@ const Library = new function() {
     libVM.getFilteredLibrary = () => {
       let filteredLibrary = libVM.libraryCoreData;
 
-      for (let key in libVM.filterGroups) {
+      for (let key in libVM.filterGroups()) {
         filteredLibrary = libCore.filterByGroup(key, filteredLibrary);
       }
 
@@ -232,11 +232,16 @@ const Library = new function() {
             itemInStorage.description = id3UForm.DescInput.value ? id3UForm.DescInput.value : ''
             itemInStorage.genre       = id3UForm.GenreInput.value ? id3UForm.GenreInput.value : ''
             itemInStorage.bpm         = id3UForm.BpmInput.value ? id3UForm.BpmInput.value : ''
-            itemInStorage.tags        = id3UForm.TagsInput.value ? [id3UForm.TagsInput.value] : []
+            if (id3UForm.TagsInput.value) {
+              const tagsStr = id3UForm.TagsInput.value.replace(/,\s*$/, ""),
+                    tagsArray = tagsStr.split(',');
+
+              itemInStorage.tags = tagsArray ? tagsArray : []
+            }
           }
           return itemInStorage;
         })
-        //  console.log(storageUpdate)
+        console.log(storageUpdate)
 
         storage.set('library', storageUpdate)
         libCore.updateCallback(storageUpdate)
@@ -248,7 +253,7 @@ const Library = new function() {
   libCore.toggleFilter = (filter) => {
     const filterLabel = filter.label;
     filter.active(!filter.active());
-    libCore.updateFilterSelection(libCore.viewModel.filterGroups[filter.label].selected, filter);
+    libCore.updateFilterSelection(libCore.viewModel.filterGroups()[filter.label].selected, filter);
     libCore.updateDisabledFlags();
   };
 
@@ -266,7 +271,7 @@ const Library = new function() {
     // pass if it passes any filter in filterGroup
     return items.filter((item) => {
       for (let i in filters) {
-        const filterGroup = libCore.viewModel.filterGroups[filters[i].label];
+        const filterGroup = libCore.viewModel.filterGroups()[filters[i].label];
 
         if (filterGroup.filterMethod(filters[i], item)) {
           return true;
@@ -277,7 +282,7 @@ const Library = new function() {
   };
 
   libCore.filterByGroup = (filterGroup, items) => {
-    const activeFilters = libCore.viewModel.filterGroups[filterGroup].selected();
+    const activeFilters = libCore.viewModel.filterGroups()[filterGroup].selected();
     return activeFilters.length !== 0 ? libCore.applyFilters(activeFilters, items) : items;
   };
 
@@ -293,13 +298,13 @@ const Library = new function() {
   libCore.updateDisabledFlagsInGroup = (filterGroupName) => {
     let filteredLibrary = libCore.viewModel.libraryCoreData;
     // apply all filters in other groups
-    for (let key in libCore.viewModel.filterGroups) {
+    for (let key in libCore.viewModel.filterGroups()) {
       if (key !== filterGroupName) {
         filteredLibrary = libCore.filterByGroup(key, filteredLibrary);
       }
     }
 
-    const filterGroup = libCore.viewModel.filterGroups[filterGroupName];
+    const filterGroup = libCore.viewModel.filterGroups()[filterGroupName];
     filterGroup.all.forEach((filter) => {
       // disable filter if applying it would result in an empty set
       const tempFilteredLibrary = libCore.applyFilters([filter], filteredLibrary);
@@ -312,13 +317,13 @@ const Library = new function() {
   };
 
   libCore.updateDisabledFlags = () => {
-    for (let key in libCore.viewModel.filterGroups) {
+    for (let key in libCore.viewModel.filterGroups()) {
       libCore.updateDisabledFlagsInGroup(key);
     }
   };
 
   libCore.addFilterGroup = (name, filters, filterMethod) => {
-    libCore.viewModel.filterGroups[name] = {
+    libCore.viewModel.filterGroups()[name] = {
       all: filters.map((filter) => {
         filter.label = name;
         filter.active = ko.observable(false);
@@ -396,6 +401,16 @@ const Library = new function() {
     return tagFiltersArray;
   };
 
+  libCore.repopulateTagFilters = (libraryData) => {
+    const tagFilters = libCore.getTagFilters(libraryData);
+
+    libCore.addFilterGroup('Tags', tagFilters, (filter, item) => {
+      return item.tags.indexOf(filter.value) !== -1;
+    });
+
+    libCore.viewModel.filterGroups(libCore.viewModel.filterGroups())
+  }
+
   libCore.filtersSetup = (libraryData) => {
     // setup filter groups
 
@@ -451,7 +466,7 @@ const Library = new function() {
 
         // console.log(progressBar.style.width);
         finishedBuffers.length === libraryData.length ? window.setTimeout(() => {
-          console.log(finishedBuffers);
+          // console.log(finishedBuffers);
           // storage.set('audio', finishedBuffers);
           // console.log(storage.get('audio'));
           updateConsole('<i class="glyphicon glyphicon-stop"></i> Ready');
@@ -464,8 +479,10 @@ const Library = new function() {
   }
 
   libCore.updateCallback = (libraryData) => {
+    libCore.repopulateTagFilters(libraryData)
     libCore.librarySetup(libraryData)
     libCore.updateDisabledFlags()
+    $(window).trigger('resize');
     // console.log(storage.get('library'))
   }
 
