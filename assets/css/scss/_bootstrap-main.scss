@@ -5,7 +5,7 @@
   max-width: 1170px;
 }
 
-@import "modals";
+@import "bootstrap-modals";
 
 .btn-brand-primary {
   @include button-variant($white, $brand-primary, $brand-primary);

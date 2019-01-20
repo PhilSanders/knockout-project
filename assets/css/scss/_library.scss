@@ -35,11 +35,18 @@
     .title {
       margin: 0;
       font-size: 60px;
-      color: $gray;
+      color: $gray-dark;
       text-align: right;
     }
     .body {
-
+      margin-top: -30px;
+    }
+  }
+  .preferences {
+    .file-path {
+      display: block;
+      padding: 10px 0 0;
+      color: $gray-light;
     }
   }
 }

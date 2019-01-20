@@ -18,7 +18,7 @@ exports.editorTemplate = (item) => {
              + '<label class="col-xs-3 control-label">Cover Image</label>'
              + '<div class="col-xs-9">'
                + '<img id="CoverImage" src="">'
-               + '<div class="col-xs-12">'
+               + '<div>'
                  + '<button id="FileBtn" class="btn btn-brand-primary btn-sm btn-rounded">Browse File</button>'
                  + '<input id="CoverInput" type="hidden" value="" />'
                + '</div>'

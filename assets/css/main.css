@@ -3,6 +3,10 @@
   max-width: 1170px;
 }
 
+.modal .modal-dialog {
+  padding: 30px;
+}
+
 .modal .modal-content {
   background-color: #222222;
   border: 1px solid #6718b0;
@@ -38,7 +42,7 @@
 }
 
 .modal .modal-content .modal-body {
-  max-height: calc(100vh - 110px);
+  max-height: calc(100vh - 110px - 30px);
   overflow-y: auto;
   color: #eeeeee;
 }
@@ -398,8 +402,19 @@ header .audio-title small {
 .main .playlist .title {
   margin: 0;
   font-size: 60px;
-  color: #555555;
+  color: #333333;
   text-align: right;
+}
+
+.main .preferences .body,
+.main .playlist .body {
+  margin-top: -30px;
+}
+
+.main .preferences .file-path {
+  display: block;
+  padding: 10px 0 0;
+  color: #777777;
 }
 
 #Id3EditorForm .form-group input[type="text"],

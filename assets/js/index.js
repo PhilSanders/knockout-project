@@ -12,8 +12,11 @@ const id3 = remote.require('./assets/js/id3')
 const store = require('electron-store')
 const storage = new store()
 
+const defaultLibPath = './mp3'
+
+let libPath
 let libraryTempData = []
-let libPath = 'mp3'
+let libPathInput
 
 let audioPlayer = document.querySelector('#AudioPlayer')
 let audioSource = document.querySelector('#AudioMp3')
@@ -27,9 +30,76 @@ const updateConsole = (text) => {
 const dirDialogBtn = document.querySelector('#DirInput')
 dirDialogBtn.addEventListener('click', () => {
   mainProcess.selectDirectory((path) => {
-    console.log(path)
+    if (path) {
+      storage.set('preferences.libraryPath', path[0])
+      updateLibPath()
+    }
   })
 })
+
+const updateLibPath = () => {
+  console.log('update preferences')
+  // const libraryData = storage.get('library')
+
+  audioPlayer.pause()
+
+  $('#modal .modal-title').html('Please wait...')
+  $('#modal .modal-body').html('<p>Preparing system...</p>')
+  $('#modal').modal('show')
+
+  libPathInput.innerHTML = storage.get('preferences.libraryPath')
+
+  window.setTimeout(() => {
+    dir.walkParallel(storage.get('preferences.libraryPath'), (err, results) => {
+      if (err)
+        throw err;
+
+      results.forEach((filePath, id) => {
+        const fileName = filePath.substr(filePath.lastIndexOf('\/') + 1, filePath.length)
+
+        if (fileName.split('.').pop() === 'mp3') {
+          const info = id3.get(filePath)
+
+          libraryTempData.push({
+            catNum: '',
+            compilationId: null,
+            artist: info.artist ? info.artist : 'Unknown',
+            title: info.title ? info.title : 'Untitled',
+            description: info.comment ? info.comment.text : '',
+            genre: info.genre ? info.genre : '',
+            bpm: info.bpm ? info.bpm : '',
+            type: 'single',
+            album: info.album ? info.album : '',
+            cover: info.image ? info.image.imageBuffer : '',
+            year: info.year ? info.year : '',
+            copyright: info.copyright ? info.copyright : '',
+            url: '',
+            tags: [],
+            fileBufferId: id,
+            filePath: filePath,
+            fileName: fileName
+          })
+        }
+      })
+      // console.log(libraryTempData);
+
+      libraryTempData.sort(sort.sortArtists)
+      storage.set('library', libraryTempData)
+      libraryTempData = []
+
+      Library.filtersSetup(storage.get('library'))
+      Library.librarySetup(storage.get('library'))
+      Library.updateDisabledFlags()
+
+      Library.viewModel.filteredLibrary(Library.viewModel.getFilteredLibrary())
+      Library.viewModel.filterGroups(Library.viewModel.filterGroups())
+
+      updateConsole('<i class="glyphicon glyphicon-stop"></i> Ready')
+      $('#modal').modal('hide')
+      $(window).trigger('resize')
+    })
+  }, 1000)
+}
 
 audioPlayer.onloadedmetadata = () => {
   audioPlayer.ontimeupdate = () => {
@@ -136,7 +206,9 @@ const writeId3Tag = (item) => {
     year: item.year,
     copyright: item.copyright,
     url: item.url,
-    comment: item.description,
+    comment: {
+      text: item.description
+    },
     genre: item.genre,
     bpm: item.bpm,
     APIC: item.cover,
@@ -331,6 +403,7 @@ const Library = new function() {
 
         storage.set('library', storageUpdate)
         libCore.updateCallback(storageUpdate)
+
         $('#modal').modal('hide')
       })
     }
@@ -487,13 +560,11 @@ const Library = new function() {
     return tagFiltersArray;
   };
 
-  libCore.repopulateTagFilters = (libraryData) => {
+  libCore.refreshTagFilters = (libraryData) => {
     const tagFilters = libCore.getTagFilters(libraryData);
-
     libCore.addFilterGroup('Tags', tagFilters, (filter, item) => {
       return item.tags.indexOf(filter.value) !== -1;
     });
-
     libCore.viewModel.filterGroups(libCore.viewModel.filterGroups())
   }
 
@@ -565,7 +636,7 @@ const Library = new function() {
   }
 
   libCore.updateCallback = (libraryData) => {
-    libCore.repopulateTagFilters(libraryData)
+    libCore.refreshTagFilters(libraryData)
     libCore.librarySetup(libraryData)
     libCore.updateDisabledFlags()
     $(window).trigger('resize');
@@ -579,8 +650,15 @@ const Library = new function() {
     ko.applyBindings(libCore.viewModel, document.getElementById('musicLibrary'))
     // console.log(libCore.viewModel.filteredLibrary())
 
+    // load preferences
+    libPathInput = document.querySelector('#LibraryPath')
+    libPathInput.innerHTML = storage.get('preferences.libraryPath')
+
     // front load audio files
-    libCore.storeBase64(libraryData) // TODO do more testing with storage, currently only for show...
+    // $('#modal .modal-title').html('Please wait...')
+    // $('#modal .modal-body').html('<p>Reading: ' + storage.get('preferences.libraryPath') + '</p>' + progressBarHtml)
+    // $('#modal').modal('show')
+    // libCore.storeBase64(libraryData) // TODO do more testing with storage, currently only for show...
 
     // sets up fixed position table header
     $(document).ready(function() {
@@ -591,20 +669,22 @@ const Library = new function() {
         sorterClicked(elm.currentTarget.dataset.sorter)
       })
     })
+
+    updateConsole('<i class="glyphicon glyphicon-stop"></i> Ready');
+    $('#modal').modal('hide')
   };
 
   libCore.init = () => {
-    $('#modal .modal-title').html('Please wait...')
-    $('#modal .modal-body').html('<p>Reading: ' + libPath + '</p>' + progressBarHtml)
-    $('#modal').modal('show')
-
     libCore.viewModel = new libCore.libraryViewModel()
     libCore.initCallback(storage.get('library'))
   };
 };
 
-storage.set('library', '')
-storage.set('preferences', { 'libraryPath': libPath })
+if (!storage.get('library'))
+  storage.set('library', '')
+
+if (!storage.get('preferences.libraryPath'))
+  storage.set('preferences', { 'libraryPath': defaultLibPath })
 
 $('#modal .modal-title').html('Please wait...')
 $('#modal .modal-body').html('<p>Preparing system...</p>')
@@ -612,7 +692,7 @@ $('#modal').modal('show')
 
 window.setTimeout(() => {
   if (!storage.get('library')) {
-    dir.walkParallel(libPath, (err, results) => {
+    dir.walkParallel(storage.get('preferences.libraryPath'), (err, results) => {
       if (err)
         throw err;
 
