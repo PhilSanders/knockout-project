@@ -1,4 +1,5 @@
 // index.js
+window.AudioContext = window.AudioContext || window.webkitAudioContext || window.mozAudioContext;
 
 const BrowserWindow = require('electron').remote.BrowserWindow
 const remote = require('electron').remote
@@ -21,77 +22,6 @@ let libPathInput
 let audioPlayer = document.querySelector('#AudioPlayer')
 let audioSource = document.querySelector('#AudioMp3')
 
-const getComputedStyle = (selectorProp, styleProp) => {
-  let para = document.querySelector(selectorProp);
-  let compStyles = window.getComputedStyle(para);
-  return compStyles.getPropertyValue(styleProp);
-}
-
-window.AudioContext = window.AudioContext || window.webkitAudioContext || window.mozAudioContext;
-
-//var audio = document.getElementById('audio');
-var ctx = new AudioContext();
-var analyser = ctx.createAnalyser();
-var audioSrc = ctx.createMediaElementSource(audioPlayer);
-// we have to connect the MediaElementSource with the analyser
-audioSrc.connect(analyser);
-analyser.connect(ctx.destination);
-// we could configure the analyser: e.g. analyser.fftSize (for further infos read the spec)
-// analyser.fftSize = 64;
-// frequencyBinCount tells you how many values you'll receive from the analyser
-var frequencyData = new Uint8Array(analyser.frequencyBinCount);
-
-let visColors = {
-  'primary': getComputedStyle('.theme-pallete .primary', 'background-color'),
-  'light': getComputedStyle('.theme-pallete .primary-light', 'background-color'),
-  'dark': getComputedStyle('.theme-pallete .primary-dark', 'background-color'),
-  'highlight': getComputedStyle('.theme-pallete .primary-highlight', 'background-color')
-}
-
-// we're ready to receive some data!
-var canvas = document.getElementById('canvas'),
-    cwidth = canvas.width,
-    cheight = canvas.height - 2,
-    meterWidth = 10, //width of the meters in the spectrum
-    gap = 2, //gap between meters
-    capHeight = 2,
-    capStyle = visColors.highlight,
-    meterNum = 800 / (10 + 2), //count of the meters
-    capYPositionArray = []; ////store the vertical position of hte caps for the preivous frame
-
-ctx = canvas.getContext('2d'),
-gradient = ctx.createLinearGradient(0, 0, 0, 300);
-gradient.addColorStop(1, visColors.primary);
-gradient.addColorStop(0.5, visColors.primary);
-gradient.addColorStop(0, visColors.light);
-
-// loop
-function renderFrame() {
-    var array = new Uint8Array(analyser.frequencyBinCount);
-    analyser.getByteFrequencyData(array);
-    var step = Math.round(array.length / meterNum); //sample limited data from the total array
-    ctx.clearRect(0, 0, cwidth, cheight);
-    for (var i = 0; i < meterNum; i++) {
-        var value = array[i * step];
-        if (capYPositionArray.length < Math.round(meterNum)) {
-            capYPositionArray.push(value);
-        };
-        ctx.fillStyle = capStyle;
-        //draw the cap, with transition effect
-        if (value < capYPositionArray[i]) {
-            ctx.fillRect(i * 12, cheight - (--capYPositionArray[i]), meterWidth, capHeight);
-        } else {
-            ctx.fillRect(i * 12, cheight - value, meterWidth, capHeight);
-            capYPositionArray[i] = value;
-        };
-        ctx.fillStyle = gradient; //set the filllStyle to gradient for a better look
-        ctx.fillRect(i * 12 /*meterWidth+gap*/ , cheight - value + capHeight, meterWidth, cheight); //the meter
-    }
-    requestAnimationFrame(renderFrame);
-}
-// renderFrame();
-// audio.play();
-
 const consoleOut = document.querySelector("#ConsoleLog span")
 const updateConsole = (text) => {
   // consoleOut.title = text
@@ -108,68 +38,10 @@ dirDialogBtn.addEventListener('click', () => {
   })
 })
 
-const updateLibPath = () => {
-  console.log('update preferences')
-  // const libraryData = storage.get('library')
-
-  audioPlayer.pause()
-
-  $('#modal .modal-title').html('Please wait...')
-  $('#modal .modal-body').html('<p>Preparing system...</p>')
-  $('#modal').modal('show')
-
-  libPathInput.innerHTML = storage.get('preferences.libraryPath')
-
-  window.setTimeout(() => {
-    dir.walkParallel(storage.get('preferences.libraryPath'), (err, results) => {
-      if (err)
-        throw err;
-
-      results.forEach((filePath, id) => {
-        const fileName = filePath.substr(filePath.lastIndexOf('\/') + 1, filePath.length)
-
-        if (fileName.split('.').pop() === 'mp3') {
-          const info = id3.get(filePath)
-
-          libraryTempData.push({
-            catNum: '',
-            compilationId: null,
-            artist: info.artist ? info.artist : 'Unknown',
-            title: info.title ? info.title : 'Untitled',
-            description: info.comment ? info.comment.text : '',
-            genre: info.genre ? info.genre : '',
-            bpm: info.bpm ? info.bpm : '',
-            type: info.album ? 'Album' : 'Single',
-            album: info.album ? info.album : '',
-            cover: info.image ? info.image.imageBuffer : '',
-            year: info.year ? info.year : '',
-            copyright: info.copyright ? info.copyright : '',
-            url: '',
-            tags: [],
-            fileBufferId: id,
-            filePath: filePath,
-            fileName: fileName
-          })
-        }
-      })
-      // console.log(libraryTempData);
-
-      fastSort(libraryTempData).asc(u => u.artist)
-      storage.set('library', libraryTempData)
-      libraryTempData = []
-
-      Library.filtersSetup(storage.get('library'))
-      Library.librarySetup(storage.get('library'))
-      Library.updateDisabledFlags()
-
-      Library.viewModel.filteredLibrary(Library.viewModel.getFilteredLibrary())
-      Library.viewModel.filterGroups(Library.viewModel.filterGroups())
-
-      updateConsole('<i class="glyphicon glyphicon-stop"></i> Ready')
-      $('#modal').modal('hide')
-      $(window).trigger('resize')
-    })
-  }, 1000)
+const getComputedStyle = (selectorProp, styleProp) => {
+  let para = document.querySelector(selectorProp);
+  let compStyles = window.getComputedStyle(para);
+  return compStyles.getPropertyValue(styleProp);
 }
 
 audioPlayer.onloadedmetadata = () => {
@@ -189,13 +61,73 @@ audioPlayer.onloadedmetadata = () => {
 
     trackTime.innerHTML = curmins + ':' + cursecs
     trackDuration.innerHTML = durmins + ':' + dursecs
+
+    $('#seekbar').attr('value', audioPlayer.currentTime / audioPlayer.duration);
   }
 }
+
 audioPlayer.onplay = () => {
   updateConsole('<i class="glyphicon glyphicon-play"></i> Playing')
 }
 audioPlayer.onpause = () => {
   updateConsole('<i class="glyphicon glyphicon-pause"></i> Paused')
+}
+
+let ctx = new AudioContext();
+const analyser = ctx.createAnalyser();
+const audioSrc = ctx.createMediaElementSource(audioPlayer);
+
+audioSrc.connect(analyser);
+analyser.connect(ctx.destination);
+// analyser.fftSize = 64;
+// frequencyBinCount tells you how many values you'll receive from the analyser
+const frequencyData = new Uint8Array(analyser.frequencyBinCount);
+
+let visColors = {
+  'primary': getComputedStyle('.theme-pallete .primary', 'background-color'),
+  'light': getComputedStyle('.theme-pallete .primary-light', 'background-color'),
+  'dark': getComputedStyle('.theme-pallete .primary-dark', 'background-color'),
+  'highlight': getComputedStyle('.theme-pallete .primary-highlight', 'background-color')
+}
+
+const canvas = document.getElementById('canvas'),
+    cwidth = canvas.width,
+    cheight = canvas.height - 2,
+    meterWidth = 11, //width of the meters in the spectrum
+    gap = 1, //gap between meters
+    capHeight = 1,
+    capStyle = visColors.highlight,
+    meterNum = 800 / (6 + 2), //count of the meters
+    capYPositionArray = []; ////store the vertical position of hte caps for the preivous frame
+
+ctx = canvas.getContext('2d'),
+gradient = ctx.createLinearGradient(0, 0, 0, 300);
+gradient.addColorStop(1, visColors.primary);
+gradient.addColorStop(0.5, visColors.primary);
+gradient.addColorStop(0, visColors.light);
+
+const renderFrame = () => {
+    const array = new Uint8Array(analyser.frequencyBinCount);
+    analyser.getByteFrequencyData(array);
+    const step = Math.round(array.length / meterNum); //sample limited data from the total array
+    ctx.clearRect(0, 0, cwidth, cheight);
+    for (let i = 0; i < meterNum; i++) {
+        const value = array[i * step];
+        if (capYPositionArray.length < Math.round(meterNum)) {
+            capYPositionArray.push(value);
+        };
+        ctx.fillStyle = capStyle;
+        //draw the cap, with transition effect
+        if (value < capYPositionArray[i]) {
+            ctx.fillRect(i * 12, cheight - (--capYPositionArray[i]), meterWidth, capHeight);
+        } else {
+            ctx.fillRect(i * 12, cheight - value, meterWidth, capHeight);
+            capYPositionArray[i] = value;
+        };
+        ctx.fillStyle = gradient; //set the filllStyle to gradient for a better look
+        ctx.fillRect(i * 12 /*meterWidth+gap*/ , cheight - value + capHeight, meterWidth, cheight); //the meter
+    }
+    requestAnimationFrame(renderFrame);
 }
 
 let contextMenuRef; // this should always be an html element (tr)
@@ -305,10 +237,10 @@ const writeId3Tag = (item) => {
 }
 
 const encode = (input) => {
-    var keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
-    var output = "";
-    var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
-    var i = 0;
+    const keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+    let output = "";
+    let chr1, chr2, chr3, enc1, enc2, enc3, enc4;
+    let i = 0;
 
     while (i < input.length) {
         chr1 = input[i++];
@@ -329,6 +261,70 @@ const encode = (input) => {
                   keyStr.charAt(enc3) + keyStr.charAt(enc4);
     }
     return output;
+}
+
+const updateLibPath = () => {
+  console.log('update preferences')
+  // const libraryData = storage.get('library')
+
+  audioPlayer.pause()
+
+  $('#modal .modal-title').html('Please wait...')
+  $('#modal .modal-body').html('<p>Preparing system...</p>')
+  $('#modal').modal('show')
+
+  libPathInput.innerHTML = storage.get('preferences.libraryPath')
+
+  window.setTimeout(() => {
+    dir.walkParallel(storage.get('preferences.libraryPath'), (err, results) => {
+      if (err)
+        throw err;
+
+      results.forEach((filePath, id) => {
+        const fileName = filePath.substr(filePath.lastIndexOf('\/') + 1, filePath.length)
+
+        if (fileName.split('.').pop() === 'mp3') {
+          const info = id3.get(filePath)
+
+          libraryTempData.push({
+            catNum: '',
+            compilationId: null,
+            artist: info.artist ? info.artist : 'Unknown',
+            title: info.title ? info.title : 'Untitled',
+            description: info.comment ? info.comment.text : '',
+            genre: info.genre ? info.genre : '',
+            bpm: info.bpm ? info.bpm : '',
+            type: info.album ? 'Album' : 'Single',
+            album: info.album ? info.album : '',
+            cover: info.image ? info.image.imageBuffer : '',
+            year: info.year ? info.year : '',
+            copyright: info.copyright ? info.copyright : '',
+            url: '',
+            tags: [],
+            fileBufferId: id,
+            filePath: filePath,
+            fileName: fileName
+          })
+        }
+      })
+      // console.log(libraryTempData);
+
+      fastSort(libraryTempData).asc(u => u.artist)
+      storage.set('library', libraryTempData)
+      libraryTempData = []
+
+      Library.filtersSetup(storage.get('library'))
+      Library.librarySetup(storage.get('library'))
+      Library.updateDisabledFlags()
+
+      Library.viewModel.filteredLibrary(Library.viewModel.getFilteredLibrary())
+      Library.viewModel.filterGroups(Library.viewModel.filterGroups())
+
+      updateConsole('<i class="glyphicon glyphicon-stop"></i> Ready')
+      $('#modal').modal('hide')
+      $(window).trigger('resize')
+    })
+  }, 1000)
 }
 
 const Library = new function() {

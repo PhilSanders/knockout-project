@@ -2,6 +2,7 @@
 @import "variables";
 
 header {
+  position: relative;
   display: flex;
   -webkit-user-select: none;
   -webkit-app-region: drag;
@@ -12,4 +13,22 @@ header {
   border-bottom: 1px solid $gray-base;
   overflow: hidden;
   @import "audio-player";
+  progress[value] {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    -webkit-appearance: none;
+    appearance: none;
+
+    &::-webkit-progress-bar {
+      background-color: $brand-primary;
+      border-radius: 0;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25) inset;
+    }
+
+    &::-webkit-progress-value {
+        border-radius: 2px;
+        background-color: $brand-primary-highlight;
+    }
+  }
 }

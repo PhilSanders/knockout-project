@@ -187,6 +187,7 @@ a:focus {
 
 /* header */
 header {
+  position: relative;
   display: flex;
   -webkit-user-select: none;
   -webkit-app-region: drag;
@@ -225,6 +226,25 @@ header canvas {
   top: 30px;
   width: 100%;
   height: calc(130px - 31px) !important;
+}
+
+header progress[value] {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+header progress[value]::-webkit-progress-bar {
+  background-color: #8A2BE2;
+  border-radius: 0;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25) inset;
+}
+
+header progress[value]::-webkit-progress-value {
+  border-radius: 2px;
+  background-color: #d8b8f5;
 }
 
 .main {
@@ -475,7 +495,7 @@ footer > div .console-log {
   padding-right: 10px;
   overflow: hidden;
   text-overflow: ellipsis;
-  color: #c799f1;
+  color: #d8b8f5;
 }
 
 footer > div .footer-menu {
@@ -511,6 +531,10 @@ footer > div .footer-menu .nav-tabs > li.active a {
   color: #FFF;
 }
 
+:focus {
+  outline: none !important;
+}
+
 .theme-pallete {
   position: absolute;
   left: -1000%;
@@ -529,7 +553,7 @@ footer > div .footer-menu .nav-tabs > li.active a {
 }
 
 .theme-pallete .primary-highlight {
-  background-color: #c799f1;
+  background-color: #d8b8f5;
 }
 
 .unstyled-list {

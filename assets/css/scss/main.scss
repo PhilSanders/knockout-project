@@ -12,6 +12,10 @@
 @import "id3";
 @import "footer";
 
+:focus {
+  outline: none !important;
+}
+
 .theme-pallete {
   position: absolute;
   left: -1000%;
