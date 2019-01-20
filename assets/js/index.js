@@ -510,6 +510,22 @@ const Library = new function() {
     return typeFiltersArray;
   };
 
+  libCore.getAlbumFilters = (data) => {
+    let albumFiltersArray = [];
+
+    data.forEach((item) => {
+      const filter = {
+        value: item.album,
+      };
+
+      if (filter.value && albumFiltersArray.map((f) => { return f.value }).indexOf(filter.value) === -1) {
+        albumFiltersArray.push(filter);
+      }
+    });
+
+    return albumFiltersArray;
+  };
+
   libCore.getYearFilters = (data) => {
     let yearFiltersArray = [];
 
@@ -574,6 +590,11 @@ const Library = new function() {
     const typeFilters = libCore.getTypeFilters(libraryData);
     libCore.addFilterGroup('Type', typeFilters, (filter, item) => {
       return item.type === filter.value;
+    });
+
+    const albumFilters = libCore.getAlbumFilters(libraryData);
+    libCore.addFilterGroup('Album', albumFilters, (filter, item) => {
+      return item.album === filter.value;
     });
 
     const yearFilters = libCore.getYearFilters(libraryData);
