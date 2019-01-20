@@ -10,5 +10,6 @@ header {
   @include filter-gradient($brand-primary-light, $brand-primary, vertical);
   @include background-image(linear-gradient(top, rgba($brand-primary-light, 1) 0%,rgba($brand-primary, 1) 30%));
   border-bottom: 1px solid $gray-base;
+  overflow: hidden;
   @import "audio-player";
 }

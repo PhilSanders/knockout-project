@@ -42,7 +42,7 @@
 }
 
 .modal .modal-content .modal-body {
-  max-height: calc(100vh - 110px - 30px);
+  max-height: calc(100vh - 130px - 30px);
   overflow-y: auto;
   color: #eeeeee;
 }
@@ -190,7 +190,7 @@ header {
   display: flex;
   -webkit-user-select: none;
   -webkit-app-region: drag;
-  min-height: 110px;
+  min-height: 130px;
   background-color: #8A2BE2;
   *zoom: 1;
   filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFAB68EA', endColorstr='#FF8A2BE2');
@@ -200,12 +200,14 @@ header {
   background-image: -o-linear-gradient(top, #ab68ea 0%, blueviolet 30%);
   background-image: linear-gradient(top, #ab68ea 0%, blueviolet 30%);
   border-bottom: 1px solid #000;
+  overflow: hidden;
 }
 
 header .audio-title {
   width: 100%;
   color: #FFF;
   text-align: center;
+  z-index: 1;
 }
 
 header .audio-title .time-display {
@@ -217,13 +219,20 @@ header .audio-title small {
   color: #FFF;
 }
 
+header canvas {
+  position: absolute;
+  top: 30px;
+  width: 100%;
+  height: calc(130px - 31px) !important;
+}
+
 .main {
   height: 100vh;
   overflow: hidden;
 }
 
 .main > div {
-  height: calc(100vh - 110px - 45px);
+  height: calc(100vh - 130px - 45px);
 }
 
 .main section {
