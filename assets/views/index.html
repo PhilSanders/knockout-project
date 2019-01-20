@@ -34,7 +34,7 @@
       </h1>
     </header>
     <div class="tab-content">
-      <div id="LibraryView" class="main tab-panel fade in active">
+      <div id="LibraryView" class="tab-panel fade in active">
         <section class="filters">
           <h2 class="h4 filters-title">Filter By</h2>
           <div class="filters-menu">
@@ -103,12 +103,16 @@
       </div>
       <div id="PlaylistView" class="tab-panel fade">
         <section class="playlist">
-          <h2 class="h3">Playlist</h2>
+          <h2 class="title">Playlist</h2>
+          <div class="body"></div>
         </section>
       </div>
       <div id="PreferencesView" class="tab-panel fade">
         <section class="preferences">
-          <h2 class="h3">Preferences</h2>
+          <h2 class="title">Preferences</h2>
+          <div class="body">
+            Library path: <button id="DirInput" class="btn btn-brand-primary btn-sm btn-rounded">Browse Directory</button>
+          </div>
         </section>
       </div>
     </div>

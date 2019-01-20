@@ -388,6 +388,20 @@ header .audio-title small {
   text-align: center;
 }
 
+.main .preferences,
+.main .playlist {
+  padding: 20px;
+  width: 100%;
+}
+
+.main .preferences .title,
+.main .playlist .title {
+  margin: 0;
+  font-size: 60px;
+  color: #555555;
+  text-align: right;
+}
+
 #Id3EditorForm .form-group input[type="text"],
 #Id3EditorForm .form-group textarea {
   color: #eeeeee;

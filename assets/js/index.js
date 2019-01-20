@@ -13,7 +13,7 @@ const store = require('electron-store')
 const storage = new store()
 
 let libraryTempData = []
-let libPath = 'assets/mp3'
+let libPath = 'mp3'
 
 let audioPlayer = document.querySelector('#AudioPlayer')
 let audioSource = document.querySelector('#AudioMp3')
@@ -24,10 +24,12 @@ const updateConsole = (text) => {
   consoleOut.innerHTML = text
 }
 
-// const fileDialogBtn = document.querySelector('#party')
-// fileDialogBtn.addEventListener('click', () => {
-//   mainProcess.selectDirectory()
-// })
+const dirDialogBtn = document.querySelector('#DirInput')
+dirDialogBtn.addEventListener('click', () => {
+  mainProcess.selectDirectory((path) => {
+    console.log(path)
+  })
+})
 
 audioPlayer.onloadedmetadata = () => {
   audioPlayer.ontimeupdate = () => {
@@ -601,7 +603,8 @@ const Library = new function() {
   };
 };
 
-// storage.clear()
+storage.set('library', '')
+storage.set('preferences', { 'libraryPath': libPath })
 
 $('#modal .modal-title').html('Please wait...')
 $('#modal .modal-body').html('<p>Preparing system...</p>')

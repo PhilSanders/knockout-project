@@ -27,4 +27,19 @@
   }
   @import "library-filters";
   @import "library-list";
+
+  .preferences,
+  .playlist {
+    padding: 20px;
+    width: 100%;
+    .title {
+      margin: 0;
+      font-size: 60px;
+      color: $gray;
+      text-align: right;
+    }
+    .body {
+
+    }
+  }
 }
