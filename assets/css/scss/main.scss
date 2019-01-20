@@ -12,6 +12,23 @@
 @import "id3";
 @import "footer";
 
+.theme-pallete {
+  position: absolute;
+  left: -1000%;
+  .primary {
+    background-color: $brand-primary;
+  }
+  .primary-light {
+    background-color: $brand-primary-light;
+  }
+  .primary-dark {
+    background-color: $brand-primary-dark;
+  }
+  .primary-highlight {
+    background-color: $brand-primary-highlight;
+  }
+}
+
 .unstyled-list {
   list-style: none;
   padding: 0;

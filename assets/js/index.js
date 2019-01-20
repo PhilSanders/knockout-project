@@ -21,6 +21,12 @@ let libPathInput
 let audioPlayer = document.querySelector('#AudioPlayer')
 let audioSource = document.querySelector('#AudioMp3')
 
+const getComputedStyle = (selectorProp, styleProp) => {
+  let para = document.querySelector(selectorProp);
+  let compStyles = window.getComputedStyle(para);
+  return compStyles.getPropertyValue(styleProp);
+}
+
 window.AudioContext = window.AudioContext || window.webkitAudioContext || window.mozAudioContext;
 
 //var audio = document.getElementById('audio');
@@ -35,6 +41,13 @@ analyser.connect(ctx.destination);
 // frequencyBinCount tells you how many values you'll receive from the analyser
 var frequencyData = new Uint8Array(analyser.frequencyBinCount);
 
+let visColors = {
+  'primary': getComputedStyle('.theme-pallete .primary', 'background-color'),
+  'light': getComputedStyle('.theme-pallete .primary-light', 'background-color'),
+  'dark': getComputedStyle('.theme-pallete .primary-dark', 'background-color'),
+  'highlight': getComputedStyle('.theme-pallete .primary-highlight', 'background-color')
+}
+
 // we're ready to receive some data!
 var canvas = document.getElementById('canvas'),
     cwidth = canvas.width,
@@ -42,15 +55,15 @@ var canvas = document.getElementById('canvas'),
     meterWidth = 10, //width of the meters in the spectrum
     gap = 2, //gap between meters
     capHeight = 2,
-    capStyle = '#fff',
+    capStyle = visColors.highlight,
     meterNum = 800 / (10 + 2), //count of the meters
     capYPositionArray = []; ////store the vertical position of hte caps for the preivous frame
 
 ctx = canvas.getContext('2d'),
 gradient = ctx.createLinearGradient(0, 0, 0, 300);
-gradient.addColorStop(1, '#8A2BE2');
-gradient.addColorStop(0.5, '#8A2BE2');
-gradient.addColorStop(0, '#ab68ea');
+gradient.addColorStop(1, visColors.primary);
+gradient.addColorStop(0.5, visColors.primary);
+gradient.addColorStop(0, visColors.light);
 
 // loop
 function renderFrame() {

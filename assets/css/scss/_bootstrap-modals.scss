@@ -29,7 +29,7 @@
       }
     }
     .modal-body {
-      max-height: calc(100vh - #{$header-height} - 30px);
+      max-height: calc(100vh - #{$header-height} - 60px);
       overflow-y: auto;
       color: $gray-lighter;
     }
