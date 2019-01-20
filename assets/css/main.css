@@ -42,7 +42,7 @@
 }
 
 .modal .modal-content .modal-body {
-  max-height: calc(100vh - 130px - 30px);
+  max-height: calc(100vh - 130px - 60px);
   overflow-y: auto;
   color: #eeeeee;
 }
@@ -207,6 +207,7 @@ header .audio-title {
   width: 100%;
   color: #FFF;
   text-align: center;
+  text-shadow: #6718b0 0px 2px 10px;
   z-index: 1;
 }
 
@@ -474,7 +475,7 @@ footer > div .console-log {
   padding-right: 10px;
   overflow: hidden;
   text-overflow: ellipsis;
-  color: #eeeeee;
+  color: #c799f1;
 }
 
 footer > div .footer-menu {
@@ -508,6 +509,27 @@ footer > div .footer-menu .nav-tabs > li.active a {
   background-color: #ab68ea;
   border-color: #6718b0;
   color: #FFF;
+}
+
+.theme-pallete {
+  position: absolute;
+  left: -1000%;
+}
+
+.theme-pallete .primary {
+  background-color: #8A2BE2;
+}
+
+.theme-pallete .primary-light {
+  background-color: #ab68ea;
+}
+
+.theme-pallete .primary-dark {
+  background-color: #6718b0;
+}
+
+.theme-pallete .primary-highlight {
+  background-color: #c799f1;
 }
 
 .unstyled-list {

@@ -29,7 +29,7 @@ exports.editorTemplate = (item) => {
            + '<div class="form-group">'
              + '<label class="col-xs-3 control-label" for="FileNameDisabled">File Name</label>'
              + '<div class="col-xs-9">'
-               + '<input type="text" class="form-control input-sm" id="FileNameDisabled" placeholder="Original file name" value="' + item.fileName + '" title="Can not edit file name here" disabled>'
+               + '<input type="text" class="form-control input-sm" id="FileNameDisabled" placeholder="Original file name" value="' + item.filePath + '" title="Can not edit file name here" disabled>'
              + '</div>'
            + '</div>'
 
