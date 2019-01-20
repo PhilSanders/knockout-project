@@ -68,7 +68,7 @@ const updateLibPath = () => {
             description: info.comment ? info.comment.text : '',
             genre: info.genre ? info.genre : '',
             bpm: info.bpm ? info.bpm : '',
-            type: 'single',
+            type: info.album ? 'Album' : 'Single',
             album: info.album ? info.album : '',
             cover: info.image ? info.image.imageBuffer : '',
             year: info.year ? info.year : '',
@@ -710,7 +710,7 @@ window.setTimeout(() => {
             description: info.comment ? info.comment.text : '',
             genre: info.genre ? info.genre : '',
             bpm: info.bpm ? info.bpm : '',
-            type: 'single',
+            type: info.album ? 'Album' : 'Single',
             album: info.album ? info.album : '',
             cover: info.image ? info.image.imageBuffer : '',
             year: info.year ? info.year : '',
@@ -723,7 +723,7 @@ window.setTimeout(() => {
           })
         }
       })
-      // console.log(libraryTempData);
+      console.log(libraryTempData);
 
       fastSort(libraryTempData).asc(u => u.artist);
       storage.set('library', libraryTempData)
