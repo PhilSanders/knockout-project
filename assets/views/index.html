@@ -15,7 +15,7 @@
   <!-- end:build -->
 </head>
 <body>
-  <div id="musicLibrary">
+  <div id="musicLibrary" class="main">
     <header>
       <!-- <button id="party" class="very-sweet-looking">Open</button> -->
       <!-- <input id="business" type="file" style="display: none" /> -->
@@ -34,7 +34,7 @@
       </h1>
     </header>
     <div class="tab-content">
-      <div id="LibraryView" class="main tab-panel fade in active">
+      <div id="LibraryView" class="tab-panel fade in active">
         <section class="filters">
           <h2 class="h4 filters-title">Filter By</h2>
           <div class="filters-menu">
@@ -102,10 +102,19 @@
         </section>
       </div>
       <div id="PlaylistView" class="tab-panel fade">
-        <h2>Playlist</h2>
+        <section class="playlist">
+          <h2 class="title">Playlist</h2>
+          <div class="body"></div>
+        </section>
       </div>
       <div id="PreferencesView" class="tab-panel fade">
-        <h2>Preferences</h2>
+        <section class="preferences">
+          <h2 class="title">Preferences</h2>
+          <div class="body">
+            <button id="DirInput" class="btn btn-brand-primary btn-sm btn-rounded">Browse Directory</button>
+            <span class="file-path">Library path: <span id="LibraryPath"></span>
+          </div>
+        </section>
       </div>
     </div>
     <footer>

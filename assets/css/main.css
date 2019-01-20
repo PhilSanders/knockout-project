@@ -3,6 +3,10 @@
   max-width: 1170px;
 }
 
+.modal .modal-dialog {
+  padding: 30px;
+}
+
 .modal .modal-content {
   background-color: #222222;
   border: 1px solid #6718b0;
@@ -38,7 +42,7 @@
 }
 
 .modal .modal-content .modal-body {
-  max-height: calc(100vh - 110px);
+  max-height: calc(100vh - 110px - 30px);
   overflow-y: auto;
   color: #eeeeee;
 }
@@ -213,21 +217,21 @@ header .audio-title small {
   color: #FFF;
 }
 
-#musicLibrary {
+.main {
   height: 100vh;
   overflow: hidden;
 }
 
-#musicLibrary > div {
+.main > div {
   height: calc(100vh - 110px - 45px);
 }
 
-#musicLibrary section {
+.main section {
   padding: 0;
   background: #222222;
 }
 
-#musicLibrary .tab-panel {
+.main .tab-panel {
   position: absolute;
   height: 0;
   width: 0;
@@ -235,20 +239,20 @@ header .audio-title small {
   left: -1000%;
 }
 
-#musicLibrary .tab-panel.active {
+.main .tab-panel.active {
   position: relative;
   left: 0;
   height: 100%;
   width: 100%;
 }
 
-#musicLibrary .filters {
+.main .filters {
   position: relative;
   min-width: 200px;
   border-right: 1px solid #333333;
 }
 
-#musicLibrary .filters:after {
+.main .filters:after {
   content: "";
   position: absolute;
   top: 0;
@@ -259,7 +263,7 @@ header .audio-title small {
   cursor: col-resize;
 }
 
-#musicLibrary .filters .filters-title {
+.main .filters .filters-title {
   margin: 0;
   padding: 0 10px;
   height: 39px;
@@ -268,26 +272,26 @@ header .audio-title small {
   line-height: 2;
 }
 
-#musicLibrary .filters .filters-menu {
+.main .filters .filters-menu {
   height: calc(100% - 39px);
   overflow-y: auto;
 }
 
-#musicLibrary .filters .filters-menu > div {
+.main .filters .filters-menu > div {
   position: relative;
   min-height: 100%;
   padding: 10px calc(10px + 5px) 10px 10px;
 }
 
-#musicLibrary .filters .filter-group {
+.main .filters .filter-group {
   margin-bottom: 20px;
 }
 
-#musicLibrary .filters .filter-group h5 {
+.main .filters .filter-group h5 {
   margin-top: 0;
 }
 
-#musicLibrary .filters .filter-group ul li a {
+.main .filters .filter-group ul li a {
   display: block;
   padding: 4px;
   border: 1px #333333 solid;
@@ -296,62 +300,62 @@ header .audio-title small {
   transition: 200ms background linear;
 }
 
-#musicLibrary .filters .filter-group ul li a.active {
+.main .filters .filter-group ul li a.active {
   background: #6718b0;
   border-bottom-width: 0;
   color: #FFF;
 }
 
-#musicLibrary .filters .filter-group ul li:last-child a {
+.main .filters .filter-group ul li:last-child a {
   border-bottom-width: 1px;
 }
 
-#musicLibrary .list {
+.main .list {
   width: 100%;
   height: 100%;
 }
 
-#musicLibrary .list .scroll-area {
+.main .list .scroll-area {
   height: 100%;
   width: 100%;
   overflow-y: auto;
 }
 
-#musicLibrary .list table {
+.main .list table {
   table-layout: auto;
 }
 
-#musicLibrary .list table thead {
+.main .list table thead {
   background: #6718b0;
 }
 
-#musicLibrary .list table tr {
+.main .list table tr {
   border-bottom: 1px #333333 solid;
   height: 39px;
 }
 
-#musicLibrary .list table th, #musicLibrary .list table td {
+.main .list table th, .main .list table td {
   position: relative;
   padding: 4px;
   color: #eeeeee;
 }
 
-#musicLibrary .list table th a, #musicLibrary .list table td a {
+.main .list table th a, .main .list table td a {
   display: block;
   padding: 8px;
   color: #FFF;
 }
 
-#musicLibrary .list table th {
+.main .list table th {
   padding: 0;
   -webkit-user-select: none;
 }
 
-#musicLibrary .list table th:first-child, #musicLibrary .list table th:last-child {
+.main .list table th:first-child, .main .list table th:last-child {
   width: 40px !important;
 }
 
-#musicLibrary .list table th:after {
+.main .list table th:after {
   content: '';
   position: absolute;
   top: 0;
@@ -363,29 +367,54 @@ header .audio-title small {
   cursor: col-resize;
 }
 
-#musicLibrary .list table td:first-child, #musicLibrary .list table td:last-child {
+.main .list table td:first-child, .main .list table td:last-child {
   text-align: center;
 }
 
-#musicLibrary .list table tbody {
+.main .list table tbody {
   height: 100%;
   overflow-y: auto;
 }
 
-#musicLibrary .list table tbody > tr {
+.main .list table tbody > tr {
   cursor: default;
 }
 
-#musicLibrary .list table tbody > tr:nth-of-type(odd) {
+.main .list table tbody > tr:nth-of-type(odd) {
   background-color: #333333;
 }
 
-#musicLibrary .list table tbody > tr:hover {
+.main .list table tbody > tr:hover {
   background-color: rgba(103, 24, 176, 0.5);
 }
 
-#musicLibrary .list table tbody > tr > td:last-child {
+.main .list table tbody > tr > td:last-child {
   text-align: center;
+}
+
+.main .preferences,
+.main .playlist {
+  padding: 20px;
+  width: 100%;
+}
+
+.main .preferences .title,
+.main .playlist .title {
+  margin: 0;
+  font-size: 60px;
+  color: #333333;
+  text-align: right;
+}
+
+.main .preferences .body,
+.main .playlist .body {
+  margin-top: -30px;
+}
+
+.main .preferences .file-path {
+  display: block;
+  padding: 10px 0 0;
+  color: #777777;
 }
 
 #Id3EditorForm .form-group input[type="text"],
@@ -486,11 +515,11 @@ footer > div .footer-menu .nav-tabs > li.active a {
   font-size: 14px;
 }
 
-.flex-row, #musicLibrary .tab-panel {
+.flex-row, .main .tab-panel {
   display: flex;
 }
 
-.flex-row:before, #musicLibrary .tab-panel:before {
+.flex-row:before, .main .tab-panel:before {
   display: block;
 }
 

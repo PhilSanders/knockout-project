@@ -1,6 +1,9 @@
 // boostrap modal overrides
 
 .modal {
+  .modal-dialog {
+    padding: 30px;
+  }
   .modal-content {
     background-color: $gray-darker;
     border: 1px solid $brand-primary-dark;
@@ -26,7 +29,7 @@
       }
     }
     .modal-body {
-      max-height: calc(100vh - #{$header-height});
+      max-height: calc(100vh - #{$header-height} - 30px);
       overflow-y: auto;
       color: $gray-lighter;
     }
