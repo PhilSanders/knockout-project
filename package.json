@@ -16,6 +16,7 @@
     "electron": "^4.0.1",
     "electron-connect": "^0.6.3",
     "electron-store": "^2.0.0",
+    "fast-sort": "^1.5.4",
     "fs": "^0.0.1-security",
     "gulp": "^3.9.1",
     "gulp-sass": "^3.1.0",

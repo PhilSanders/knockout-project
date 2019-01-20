@@ -6,7 +6,7 @@ const { Menu, MenuItem } = remote
 const ko = require('knockout')
 const mainProcess = remote.require('./main')
 const dir = remote.require('./assets/js/dir')
-const sort = remote.require('./assets/js/sort')
+const fastSort = require('fast-sort')
 const dataUrl = remote.require('./assets/js/base64')
 const id3 = remote.require('./assets/js/id3')
 const store = require('electron-store')
@@ -83,7 +83,7 @@ const updateLibPath = () => {
       })
       // console.log(libraryTempData);
 
-      libraryTempData.sort(sort.sortArtists)
+      fastSort(libraryTempData).asc(u => u.artist)
       storage.set('library', libraryTempData)
       libraryTempData = []
 
@@ -180,16 +180,16 @@ const progressBarHtml = '<div class="progress">'
 const sorterClicked = (sortType) => {
   switch(sortType) {
     case 'artists':
-      Library.viewModel.libraryCoreData.sort(sort.sortArtists)
+      fastSort(Library.viewModel.libraryCoreData).asc(u => u.artist);
       break;
     case 'titles':
-      Library.viewModel.libraryCoreData.sort(sort.sortTitles)
+      fastSort(Library.viewModel.libraryCoreData).asc(u => u.title);
       break;
     case 'genres':
-      Library.viewModel.libraryCoreData.sort(sort.sortGenres)
+      fastSort(Library.viewModel.libraryCoreData).asc(u => u.genre);
       break;
     case 'years':
-      Library.viewModel.libraryCoreData.sort(sort.sortYears)
+      fastSort(Library.viewModel.libraryCoreData).asc(u => u.year);
       break;
   }
   Library.viewModel.filteredLibrary(Library.viewModel.getFilteredLibrary());
@@ -725,7 +725,7 @@ window.setTimeout(() => {
       })
       // console.log(libraryTempData);
 
-      libraryTempData.sort(sort.sortArtists)
+      fastSort(libraryTempData).asc(u => u.artist);
       storage.set('library', libraryTempData)
       libraryTempData = []
 
