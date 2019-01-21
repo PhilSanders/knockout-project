@@ -232,6 +232,7 @@ header progress[value] {
   position: absolute;
   bottom: 0;
   width: 100%;
+  height: 12px;
   -webkit-appearance: none;
   appearance: none;
 }
