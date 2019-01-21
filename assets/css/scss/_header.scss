@@ -14,6 +14,7 @@ header {
   overflow: hidden;
   @import "audio-player";
   progress[value] {
+    -webkit-app-region: no-drag;
     position: absolute;
     bottom: 0;
     width: 100%;

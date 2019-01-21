@@ -229,6 +229,7 @@ header canvas {
 }
 
 header progress[value] {
+  -webkit-app-region: no-drag;
   position: absolute;
   bottom: 0;
   width: 100%;
@@ -278,6 +279,7 @@ header progress[value]::-webkit-progress-value {
 }
 
 .main .filters {
+  -webkit-user-select: none;
   position: relative;
   min-width: 200px;
   border-right: 1px solid #333333;
@@ -342,6 +344,7 @@ header progress[value]::-webkit-progress-value {
 }
 
 .main .list {
+  -webkit-user-select: none;
   width: 100%;
   height: 100%;
 }
