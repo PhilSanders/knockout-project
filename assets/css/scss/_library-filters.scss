@@ -2,6 +2,7 @@
 @import "variables";
 
 .filters {
+  -webkit-user-select: none;
   position: relative;
   min-width: $filter-menu-width;
   border-right: 1px solid $gray-dark;

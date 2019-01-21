@@ -17,8 +17,6 @@
 <body>
   <div id="musicLibrary" class="main">
     <header>
-      <!-- <button id="party" class="very-sweet-looking">Open</button> -->
-      <!-- <input id="business" type="file" style="display: none" /> -->
       <h1 class="audio-title">
         <i id="PlayBtn" class="glyphicon glyphicon-play" data-bind="click: function() { $root.playClicked() }"></i>
         <i id="PauseBtn" class="glyphicon glyphicon-pause" data-bind="click: function() { $root.pauseClicked() }"></i>
@@ -34,6 +32,10 @@
       </h1>
       <canvas id="canvas" width="400" height="200"></canvas>
       <progress id="seekbar" value="0" max="1"></progress>
+      <div class="volume-slider">
+        <i class="icon glyphicon glyphicon-volume-down"></i>
+        <input id="VolumeSlider" type="range" value="0" min="0" max="1" step="0.05">
+      </div>
     </header>
     <div class="tab-content">
       <div id="LibraryView" class="tab-panel fade in active">
