@@ -19,8 +19,18 @@ let libPath
 let libraryTempData = []
 let libPathInput
 
-let audioPlayer = document.querySelector('#AudioPlayer')
-let audioSource = document.querySelector('#AudioMp3')
+const getComputedStyle = (selectorProp, styleProp) => {
+  let para = document.querySelector(selectorProp);
+  let compStyles = window.getComputedStyle(para);
+  return compStyles.getPropertyValue(styleProp);
+}
+
+let themePallete = {
+  'primary': getComputedStyle('.theme-pallete .primary', 'background-color'),
+  'light': getComputedStyle('.theme-pallete .primary-light', 'background-color'),
+  'dark': getComputedStyle('.theme-pallete .primary-dark', 'background-color'),
+  'highlight': getComputedStyle('.theme-pallete .primary-highlight', 'background-color')
+}
 
 const consoleOut = document.querySelector("#ConsoleLog span")
 const updateConsole = (text) => {
@@ -38,11 +48,8 @@ dirDialogBtn.addEventListener('click', () => {
   })
 })
 
-const getComputedStyle = (selectorProp, styleProp) => {
-  let para = document.querySelector(selectorProp);
-  let compStyles = window.getComputedStyle(para);
-  return compStyles.getPropertyValue(styleProp);
-}
+let audioPlayer = document.querySelector('#AudioPlayer')
+let audioSource = document.querySelector('#AudioMp3')
 
 audioPlayer.onloadedmetadata = () => {
   audioPlayer.ontimeupdate = () => {
@@ -83,28 +90,21 @@ analyser.connect(ctx.destination);
 // frequencyBinCount tells you how many values you'll receive from the analyser
 const frequencyData = new Uint8Array(analyser.frequencyBinCount);
 
-let visColors = {
-  'primary': getComputedStyle('.theme-pallete .primary', 'background-color'),
-  'light': getComputedStyle('.theme-pallete .primary-light', 'background-color'),
-  'dark': getComputedStyle('.theme-pallete .primary-dark', 'background-color'),
-  'highlight': getComputedStyle('.theme-pallete .primary-highlight', 'background-color')
-}
-
 const canvas = document.getElementById('canvas'),
     cwidth = canvas.width,
     cheight = canvas.height - 2,
     meterWidth = 11, //width of the meters in the spectrum
     gap = 1, //gap between meters
     capHeight = 1,
-    capStyle = visColors.highlight,
+    capStyle = themePallete.highlight,
     meterNum = 800 / (6 + 2), //count of the meters
     capYPositionArray = []; ////store the vertical position of hte caps for the preivous frame
 
 ctx = canvas.getContext('2d'),
 gradient = ctx.createLinearGradient(0, 0, 0, 300);
-gradient.addColorStop(1, visColors.primary);
-gradient.addColorStop(0.5, visColors.primary);
-gradient.addColorStop(0, visColors.light);
+gradient.addColorStop(1, themePallete.primary);
+gradient.addColorStop(0.5, themePallete.primary);
+gradient.addColorStop(0, themePallete.light);
 
 const renderFrame = () => {
     const array = new Uint8Array(analyser.frequencyBinCount);
