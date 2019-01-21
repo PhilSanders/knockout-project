@@ -50,6 +50,9 @@ dirDialogBtn.addEventListener('click', () => {
 
 let audioPlayer = document.querySelector('#AudioPlayer')
 let audioSource = document.querySelector('#AudioMp3')
+let audioVolInput = document.querySelector('#VolumeSlider')
+
+audioVolInput.value = audioPlayer.volume;
 
 audioPlayer.onloadedmetadata = () => {
   audioPlayer.ontimeupdate = () => {
@@ -79,6 +82,10 @@ audioPlayer.onplay = () => {
 audioPlayer.onpause = () => {
   updateConsole('<i class="glyphicon glyphicon-pause"></i> Paused')
 }
+
+audioVolInput.addEventListener('input', (e) => {
+  audioPlayer.volume = audioVolInput.value;
+})
 
 let ctx = new AudioContext();
 const analyser = ctx.createAnalyser();

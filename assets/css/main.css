@@ -205,6 +205,7 @@ header {
 }
 
 header .audio-title {
+  margin: 24px 20px 12px;
   width: 100%;
   color: #FFF;
   text-align: center;
@@ -229,11 +230,11 @@ header canvas {
 }
 
 header progress[value] {
-  -webkit-app-region: no-drag;
   position: absolute;
   bottom: 0;
   width: 100%;
   height: 12px;
+  -webkit-app-region: no-drag;
   -webkit-appearance: none;
   appearance: none;
 }
@@ -247,6 +248,64 @@ header progress[value]::-webkit-progress-bar {
 header progress[value]::-webkit-progress-value {
   border-radius: 2px;
   background-color: #d8b8f5;
+}
+
+header .volume-slider {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 160px;
+  -webkit-app-region: no-drag;
+}
+
+header .volume-slider .icon {
+  position: absolute;
+  top: -4px;
+  color: #8A2BE2;
+  font-size: 18px;
+  transition: color 100ms linear;
+}
+
+header .volume-slider input[type="range"] {
+  padding-left: 16px;
+  background: transparent;
+  -webkit-appearance: none;
+}
+
+header .volume-slider input[type=range]::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 8.4px;
+  background: #8A2BE2;
+  border-radius: 1000px;
+  border: none;
+  cursor: pointer;
+  animate: 0.2s;
+  transition: background 100ms linear;
+}
+
+header .volume-slider input[type=range]::-webkit-slider-thumb {
+  margin-top: -4px;
+  height: 16px;
+  width: 16px;
+  background: #ab68ea;
+  border: none;
+  border-radius: 1000px;
+  box-shadow: 1px 1px 1px #6718b0;
+  cursor: pointer;
+  -webkit-appearance: none;
+  transition: background 100ms linear;
+}
+
+header:hover .volume-slider .icon {
+  color: #6718b0;
+}
+
+header:hover .volume-slider input[type=range]::-webkit-slider-thumb {
+  background: #d8b8f5;
+}
+
+header:hover .volume-slider input[type=range]::-webkit-slider-runnable-track {
+  background: #6718b0;
 }
 
 .main {
