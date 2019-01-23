@@ -63,7 +63,7 @@
         </section>
         <section class="list">
           <div class="scroll-area">
-            <table>
+            <table class="table-fixed">
               <thead>
                 <tr>
                   <th></th>
@@ -110,16 +110,61 @@
       </div>
 
       <div id="PlaylistView" class="tab-panel fade">
+        <h2 class="title">Playlist</h2>
         <section class="playlist">
-          <h2 class="title">Playlist</h2>
-          <div class="body"></div>
+          <div class="scroll-area">
+            <table>
+              <tbody>
+                <tr class="item">
+                  <td> 1 </td><td> Artist - Song Name </td><td> 3:40 </td>
+                </tr>
+                <tr class="item">
+                  <td> 2 </td><td> Artist - Song Name </td><td> 4:10 </td>
+                </tr>
+                <tr class="item">
+                  <td> 3 </td><td> Artist - Song Name </td><td> 5:00 </td>
+                </tr>
+                <tr class="item">
+                  <td> 4 </td><td> Artist - Song Name </td><td> 3:50 </td>
+                </tr>
+                <tr class="item">
+                  <td> 5 </td><td> Artist - Song Name </td><td> 3:40 </td>
+                </tr>
+                <tr class="item">
+                  <td> 6 </td><td> Artist - Song Name </td><td> 4:10 </td>
+                </tr>
+                <tr class="item">
+                  <td> 7 </td><td> Artist - Song Name </td><td> 5:00 </td>
+                </tr>
+                <tr class="item">
+                  <td> 8 </td><td> Artist - Song Name </td><td> 3:50 </td>
+                </tr>
+                <tr class="item">
+                  <td> 9 </td><td> Artist - Song Name </td><td> 3:40 </td>
+                </tr>
+                <tr class="item">
+                  <td> 10 </td><td> Artist - Song Name </td><td> 4:10 </td>
+                </tr>
+                <tr class="item">
+                  <td> 11 </td><td> Artist - Song Name </td><td> 5:00 </td>
+                </tr>
+                <tr class="item">
+                  <td> 12 </td><td> Artist - Song Name </td><td> 3:50 </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="bottom">
+            <button class="btn btn-xs btn-brand-primary">clear</button>
+            <button class="btn btn-xs btn-brand-primary">shuffle</button>
+          </div>
         </section>
       </div>
 
       <div id="PreferencesView" class="tab-panel fade">
+        <h2 class="title">Preferences</h2>
         <section class="preferences">
-          <h2 class="title">Preferences</h2>
-          <div class="body">
+          <div class="scroll-area">
             <button id="DirInput" class="btn btn-brand-primary btn-sm btn-rounded">Browse Directory</button>
             <span class="file-path">Library path: <span id="LibraryPath"></span>
           </div>

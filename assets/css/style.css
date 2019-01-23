@@ -322,7 +322,7 @@ header:hover .volume-slider input[type=range]::-webkit-slider-runnable-track {
   background: #222222;
 }
 
-.main .tab-panel {
+.main .tab-content .tab-panel {
   position: absolute;
   height: 0;
   width: 0;
@@ -330,11 +330,21 @@ header:hover .volume-slider input[type=range]::-webkit-slider-runnable-track {
   left: -1000%;
 }
 
-.main .tab-panel.active {
+.main .tab-content .tab-panel.active {
   position: relative;
   left: 0;
   height: 100%;
   width: 100%;
+}
+
+.main .tab-content .title {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  margin: 0;
+  font-size: 60px;
+  color: #333333;
+  text-align: right;
 }
 
 .main .filters {
@@ -487,24 +497,35 @@ header:hover .volume-slider input[type=range]::-webkit-slider-runnable-track {
 
 .main .preferences,
 .main .playlist {
-  padding: 20px;
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding-top: 60px;
+  overflow: hidden;
 }
 
-.main .preferences .title,
-.main .playlist .title {
-  margin: 0;
-  font-size: 60px;
-  color: #333333;
-  text-align: right;
+.main .playlist .scroll-area {
+  position: absolute;
+  top: 1px;
+  height: calc(100% - 31px);
+  overflow-y: auto;
 }
 
-.main .preferences .body,
-.main .playlist .body {
-  margin-top: -30px;
+.main .playlist .bottom {
+  margin-top: auto;
+  height: 30px;
+  padding: 10px 20px 0;
+  background-color: #333333;
 }
 
-.main .preferences .file-path {
+.main .preferences .scroll-area {
+  height: 100%;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.main .preferences .scroll-area .file-path {
   display: block;
   padding: 10px 0 0;
   color: #777777;
@@ -633,11 +654,11 @@ footer > div .footer-menu .nav-tabs > li.active a {
   font-size: 14px;
 }
 
-.flex-row, .main .tab-panel {
+.flex-row, .main .tab-content .tab-panel {
   display: flex;
 }
 
-.flex-row:before, .main .tab-panel:before {
+.flex-row:before, .main .tab-content .tab-panel:before {
   display: block;
 }
 

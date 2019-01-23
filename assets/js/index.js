@@ -143,6 +143,8 @@ const menu = new Menu()
 menu.append(new MenuItem({ id: 1, label: 'Play', click() { menuPlayClicked() } }))
 menu.append(new MenuItem({ id: 2, label: 'Edit', click() { menuEditClicked() } }))
 menu.append(new MenuItem({ id: 3, type:  'separator' }))
+menu.append(new MenuItem({ id: 2, label: 'Add to Playlist', click() { menuAddPlaylistClicked() } }))
+menu.append(new MenuItem({ id: 3, type:  'separator' }))
 menu.append(new MenuItem({ id: 4, label: 'Favorite', type: 'checkbox', checked: false }))
 
 menu.on('menu-will-close', () => {
@@ -156,6 +158,11 @@ const menuPlayClicked = () => {
 
 const menuEditClicked = () => {
   contextMenuRef.children[contextMenuRef.cells.length - 1].children[0].click();
+}
+
+const menuAddPlaylistClicked = () => {
+  console.log(contextMenuRef);
+  // contextMenuRef.children[contextMenuRef.cells.length - 1].children[0].click();
 }
 
 window.addEventListener('contextmenu', (e) => {
@@ -759,10 +766,10 @@ const Library = new function() {
 
     // sets up fixed position table header
     $(document).ready(function() {
-      $('table').tableFixedHeader({
+      $('.table-fixed').tableFixedHeader({
         scrollContainer: '.scroll-area'
       })
-      $('table th a').on('click', (elm) => {
+      $('.table-fixed th a').on('click', (elm) => {
         sorterClicked(elm.currentTarget.dataset.sorter)
       })
     })
