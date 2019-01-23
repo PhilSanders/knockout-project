@@ -49,6 +49,29 @@ dirDialogBtn.addEventListener('click', () => {
   })
 })
 
+const clearPlaylistBtn = document.querySelector('#ClearPlaylistBtn')
+clearPlaylistBtn.addEventListener('click', () => {
+  storage.set('playlist', [])
+  Library.viewModel.playlistCoreData(storage.get('playlist'))
+})
+
+const sufflePlaylistBtn = document.querySelector('#ShufflePlaylistBtn')
+sufflePlaylistBtn.addEventListener('click', () => {
+  let playlistData = storage.get('playlist')
+
+  if (playlistData.length) {
+    playlistData.sort(() => { return 0.5 - Math.random() })
+
+    playlistData = playlistData.map((item, index) => {
+      item.id = index
+      return item
+    })
+
+    storage.set('playlist', playlistData)
+    Library.viewModel.playlistCoreData(storage.get('playlist'))
+  }
+})
+
 let audioPlayer = document.querySelector('#AudioPlayer')
 let audioSource = document.querySelector('#AudioMp3')
 let audioVolInput = document.querySelector('#VolumeSlider')
