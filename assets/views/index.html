@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Catalog List</title>
   <link href="../css/bootstrap.css" rel="stylesheet">
-  <link href="../css/main.css" rel="stylesheet">
+  <link href="../css/style.css" rel="stylesheet">
   <!-- build:remove -->
   <!-- Connect to server process -->
   <script>
@@ -15,7 +15,8 @@
   <!-- end:build -->
 </head>
 <body>
-  <div id="musicLibrary" class="main">
+  <div id="MusicLibrary" class="main">
+
     <header>
       <h1 class="audio-title">
         <i id="PlayBtn" class="glyphicon glyphicon-play" data-bind="click: function() { $root.playClicked() }"></i>
@@ -37,7 +38,9 @@
         <input id="VolumeSlider" type="range" value="0" min="0" max="1" step="0.05">
       </div>
     </header>
+
     <div class="tab-content">
+
       <div id="LibraryView" class="tab-panel fade in active">
         <section class="filters">
           <h2 class="h4 filters-title">Filter By</h2>
@@ -105,12 +108,14 @@
           </div>
         </section>
       </div>
+
       <div id="PlaylistView" class="tab-panel fade">
         <section class="playlist">
           <h2 class="title">Playlist</h2>
           <div class="body"></div>
         </section>
       </div>
+
       <div id="PreferencesView" class="tab-panel fade">
         <section class="preferences">
           <h2 class="title">Preferences</h2>
@@ -120,7 +125,9 @@
           </div>
         </section>
       </div>
+
     </div>
+
     <footer>
       <div>
         <div id="ConsoleLog" class="console-log">
@@ -141,7 +148,8 @@
         </div>
       </div>
     </footer>
-  </div>
+
+  </div><!-- End #MusicLibrary -->
 
   <div id="modal" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
     <div class="modal-dialog modal-md" role="document">

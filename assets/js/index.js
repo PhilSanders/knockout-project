@@ -744,7 +744,7 @@ const Library = new function() {
     libCore.filtersSetup(libraryData)
     libCore.librarySetup(libraryData)
     libCore.updateDisabledFlags()
-    ko.applyBindings(libCore.viewModel, document.getElementById('musicLibrary'))
+    ko.applyBindings(libCore.viewModel, document.getElementById('MusicLibrary'))
     // console.log(libCore.viewModel.filteredLibrary())
 
     // load preferences
