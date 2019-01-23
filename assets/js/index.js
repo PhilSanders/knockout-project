@@ -118,8 +118,6 @@ audioPlayer.onended = () => {
     const nextItemId = currentItemInPlayer.id + 1;
 
     playlistData.forEach((item) => {
-      console.log(item.id, nextItemId, playlistData.length);
-
       if (item.id === nextItemId && item.id - 1 < playlistData.length) {
         currentItemInPlayer = item
         Library.viewModel.playThisItem(item)

@@ -117,7 +117,17 @@
               <tbody data-bind="foreach: playlistCoreData">
                 <tr class="playlist-item">
                   <td data-bind="text: ($index() + 1)"></td>
-                  <td><span data-bind="text: artist"></span> - <span data-bind="text: title"></span></td>
+                  <td>
+                    <!-- ko if: artist -->
+                    <span data-bind="text: artist"></span> - <span data-bind="text: title"></span>
+                    <!-- /ko -->
+                    <!-- ko ifnot: artist -->
+                    <span data-bind="text: title"></span>
+                    <!-- /ko -->
+                    <!-- ko ifnot: title -->
+                    <span>Untitled</span>
+                    <!-- /ko -->
+                  </td>
                   <td>
                     <span data-bind="text: time"></span>
                     <button hidden data-bind="click: function() { $root.playlistItemPlayClicked(this) }"></button>
