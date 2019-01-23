@@ -20,6 +20,8 @@ let libPath
 let libraryTempData = []
 let libPathInput
 
+let currentItemInPlayer
+
 const getComputedStyle = (selectorProp, styleProp) => {
   let para = document.querySelector(selectorProp);
   let compStyles = window.getComputedStyle(para);
@@ -103,8 +105,30 @@ audioPlayer.onloadedmetadata = () => {
 audioPlayer.onplay = () => {
   updateConsole('<i class="glyphicon glyphicon-play"></i> Playing')
 }
+
 audioPlayer.onpause = () => {
   updateConsole('<i class="glyphicon glyphicon-pause"></i> Paused')
+}
+
+audioPlayer.onended = () => {
+  // get the next item in the playlist, if there is one
+  const playlistData = storage.get('playlist')
+
+  if (playlistData.length > 1) {
+    const nextItemId = currentItemInPlayer.id + 1;
+
+    playlistData.forEach((item) => {
+      console.log(item.id, nextItemId, playlistData.length);
+
+      if (item.id === nextItemId && item.id - 1 < playlistData.length) {
+        currentItemInPlayer = item
+        Library.viewModel.playThisItem(item)
+      }
+    })
+  }
+  else {
+    updateConsole('<i class="glyphicon glyphicon-stop"></i> Ready')
+  }
 }
 
 audioVolInput.addEventListener('input', (e) => {
@@ -137,7 +161,7 @@ gradient.addColorStop(1, themePallete.primary);
 gradient.addColorStop(0.5, themePallete.primary);
 gradient.addColorStop(0, themePallete.light);
 
-const renderFrame = () => {
+const visualizer = () => {
     const array = new Uint8Array(analyser.frequencyBinCount);
     analyser.getByteFrequencyData(array);
     const step = Math.round(array.length / meterNum); //sample limited data from the total array
@@ -158,7 +182,7 @@ const renderFrame = () => {
         ctx.fillStyle = gradient; //set the filllStyle to gradient for a better look
         ctx.fillRect(i * 12 /*meterWidth+gap*/ , cheight - value + capHeight, meterWidth, cheight); //the meter
     }
-    requestAnimationFrame(renderFrame);
+    requestAnimationFrame(visualizer);
 }
 
 let contextMenuRef; // this should always be an html element (tr)
@@ -345,8 +369,8 @@ const updateLibPath = () => {
           libraryTempData.push({
             catNum: '',
             compilationId: null,
-            artist: info.artist ? info.artist : 'Unknown',
-            title: info.title ? info.title : 'Untitled',
+            artist: info.artist ? info.artist : '',
+            title: info.title ? info.title : '',
             description: info.comment ? info.comment.text : '',
             genre: info.genre ? info.genre : '',
             bpm: info.bpm ? info.bpm : '',
@@ -457,13 +481,15 @@ const Library = new function() {
         audioPlayer.load()
         audioPlayer.play()
 
-        renderFrame();
+        currentItemInPlayer = item;
+
+        visualizer();
       })
     }
 
     libVM.libraryItemPlayClicked = (item) => {
       storage.set('playlist', [])
-      this.addPlaylistClicked(item)
+      this.addItemToPlaylist(item)
       this.playThisItem(item)
     }
 
@@ -486,7 +512,7 @@ const Library = new function() {
     libVM.addItemToPlaylist = (item) => {
       let playlistArray = storage.get('playlist')
 
-      mp3Duration(item.filePath, function (err, duration) {
+      mp3Duration(item.filePath, (err, duration) => {
         if (err) return console.log(err.message);
 
         let durmins = Math.floor(duration / 60)
@@ -552,7 +578,7 @@ const Library = new function() {
         })
       })
 
-      $(function () {
+      $(() => {
         $('[data-toggle="tooltip"]').tooltip()
       })
 
@@ -565,8 +591,8 @@ const Library = new function() {
         const storageData = storage.get('library')
         const storageUpdate = storageData.map((itemInStorage) => {
           if (JSON.stringify(itemInStorage) === JSON.stringify(item)) {
-            itemInStorage.artist      = id3UForm.ArtistInput.value ? id3UForm.ArtistInput.value : 'Unknown'
-            itemInStorage.title       = id3UForm.TitleInput.value ? id3UForm.TitleInput.value : 'Untitled'
+            itemInStorage.artist      = id3UForm.ArtistInput.value ? id3UForm.ArtistInput.value : ''
+            itemInStorage.title       = id3UForm.TitleInput.value ? id3UForm.TitleInput.value : ''
             itemInStorage.album       = id3UForm.AlbumInput.value ? id3UForm.AlbumInput.value : ''
             itemInStorage.cover       = id3UForm.CoverInput.value ? id3UForm.CoverInput.value : ''
             itemInStorage.year        = id3UForm.YearInput.value ? id3UForm.YearInput.value : ''
@@ -612,7 +638,7 @@ const Library = new function() {
     libCore.updateFilterSelection(selectionArray, filter);
   };
 
-  libCore.applyFilters = function(filters, items) {
+  libCore.applyFilters = (filters, items) => {
     // pass if it passes any filter in filterGroup
     return items.filter((item) => {
       for (let i in filters) {
@@ -874,7 +900,7 @@ const Library = new function() {
     // libCore.storeBase64(libraryData) // TODO do more testing with storage, currently only for show...
 
     // sets up fixed position table header
-    $(document).ready(function() {
+    $(document).ready(() => {
       $('.table-fixed').tableFixedHeader({
         scrollContainer: '.scroll-area'
       })
@@ -921,8 +947,8 @@ window.setTimeout(() => {
           libraryTempData.push({
             catNum: '',
             compilationId: null,
-            artist: info.artist ? info.artist : 'Unknown',
-            title: info.title ? info.title : 'Untitled',
+            artist: info.artist ? info.artist : '',
+            title: info.title ? info.title : '',
             description: info.comment ? info.comment.text : '',
             genre: info.genre ? info.genre : '',
             bpm: info.bpm ? info.bpm : '',

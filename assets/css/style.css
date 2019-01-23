@@ -527,8 +527,12 @@ header:hover .volume-slider input[type=range]::-webkit-slider-runnable-track {
   color: #eeeeee;
 }
 
-.main .playlist .scroll-area table td:first-child, .main .playlist .scroll-area table td:last-child {
+.main .playlist .scroll-area table td:first-child {
   text-align: center;
+}
+
+.main .playlist .scroll-area table td:last-child {
+  text-align: right;
 }
 
 .main .playlist .scroll-area table tbody > tr {
@@ -541,10 +545,6 @@ header:hover .volume-slider input[type=range]::-webkit-slider-runnable-track {
 
 .main .playlist .scroll-area table tbody > tr:hover {
   background-color: rgba(103, 24, 176, 0.5);
-}
-
-.main .playlist .scroll-area table tbody > tr > td:last-child {
-  text-align: center;
 }
 
 .main .playlist .bottom {

@@ -65,9 +65,11 @@
           position: relative;
           padding: 4px;
           color: $gray-lighter;
-          &:first-child,
-          &:last-child {
+          &:first-child {
             text-align: center;
+          }
+          &:last-child {
+            text-align: right;
           }
         }
         tbody {
@@ -78,9 +80,6 @@
             }
             &:hover {
               background-color: rgba($brand-primary-dark, 0.5);
-            }
-            > td:last-child {
-              text-align: center;
             }
           }
         }
