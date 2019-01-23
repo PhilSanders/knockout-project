@@ -10,6 +10,7 @@ const dir = remote.require('./assets/js/dir')
 const fastSort = require('fast-sort')
 const dataUrl = remote.require('./assets/js/base64')
 const id3 = remote.require('./assets/js/id3')
+const mp3Duration = require('mp3-duration')
 const store = require('electron-store')
 const storage = new store()
 
@@ -139,44 +140,77 @@ const renderFrame = () => {
 
 let contextMenuRef; // this should always be an html element (tr)
 
-const menu = new Menu()
-menu.append(new MenuItem({ id: 1, label: 'Play', click() { menuPlayClicked() } }))
-menu.append(new MenuItem({ id: 2, label: 'Edit', click() { menuEditClicked() } }))
-menu.append(new MenuItem({ id: 3, type:  'separator' }))
-menu.append(new MenuItem({ id: 2, label: 'Add to Playlist', click() { menuAddPlaylistClicked() } }))
-menu.append(new MenuItem({ id: 3, type:  'separator' }))
-menu.append(new MenuItem({ id: 4, label: 'Favorite', type: 'checkbox', checked: false }))
-
-menu.on('menu-will-close', () => {
-  console.log('content mneu closed');
-  contentMenuRef = null;
-})
+const libraryMenu = new Menu()
+libraryMenu.append(new MenuItem({ label: 'Play', click() { menuPlayClicked() } }))
+libraryMenu.append(new MenuItem({ label: 'Edit', click() { menuEditClicked() } }))
+libraryMenu.append(new MenuItem({ type:  'separator' }))
+libraryMenu.append(new MenuItem({ label: 'Add to Playlist', click() { menuAddPlaylistClicked() } }))
+libraryMenu.append(new MenuItem({ type:  'separator' }))
+libraryMenu.append(new MenuItem({ label: 'Favorite', type: 'checkbox', checked: false }))
 
 const menuPlayClicked = () => {
+  // resolves as Library.viewModel.libraryItemPlayClicked()
   contextMenuRef.children[0].children[0].click();
 }
 
 const menuEditClicked = () => {
+  // resolves as Library.viewModel.editClicked()
   contextMenuRef.children[contextMenuRef.cells.length - 1].children[0].click();
 }
 
 const menuAddPlaylistClicked = () => {
-  console.log(contextMenuRef);
-  // contextMenuRef.children[contextMenuRef.cells.length - 1].children[0].click();
+  // resolves as Library.viewModel.addPlaylistClicked()
+  contextMenuRef.children[contextMenuRef.cells.length - 1].children[1].click();
+}
+
+const playlistMenu = new Menu()
+playlistMenu.append(new MenuItem({ label: 'Play', click() { menuPlaylistPlayClicked() } }))
+playlistMenu.append(new MenuItem({ label: 'Edit', click() { menuPlaylistEditClicked() } }))
+playlistMenu.append(new MenuItem({ type:  'separator' }))
+playlistMenu.append(new MenuItem({ label: 'Remove from Playlist', click() { menuRemovePlaylistClicked() } }))
+playlistMenu.append(new MenuItem({ type:  'separator' }))
+playlistMenu.append(new MenuItem({ label: 'Favorite', type: 'checkbox', checked: false }))
+
+const menuPlaylistPlayClicked = () => {
+  // resolves as Library.viewModel.playlistItemPlayClicked()
+  contextMenuRef.children[contextMenuRef.cells.length - 1].children[1].click();
+}
+
+const menuPlaylistEditClicked = () => {
+  // resolves as Library.viewModel.editClicked()
+  contextMenuRef.children[contextMenuRef.cells.length - 1].children[2].click();
+}
+
+const menuRemovePlaylistClicked = () => {
+  // resolves as Library.viewModel.removeFromPlaylistClicked()
+  contextMenuRef.children[contextMenuRef.cells.length - 1].children[3].click();
 }
 
 window.addEventListener('contextmenu', (e) => {
   e.preventDefault()
-  let tr;
+  contentMenuRef = null;
+
+  let libraryItem,
+      playlistItem
+
   for(let i = 0; i < e.path.length; i++) {
-    if (e.path[i].className === 'item') {
-      tr = e.path[i];
+    if (e.path[i].className === 'library-item') {
+      libraryItem = e.path[i];
+      break;
+    }
+    if (e.path[i].className === 'playlist-item') {
+      playlistItem = e.path[i];
       break;
     }
   }
-  if (tr) {
-    contextMenuRef = tr;
-    menu.popup({ window: remote.getCurrentWindow() })
+
+  if (libraryItem) {
+    contextMenuRef = libraryItem
+    libraryMenu.popup({ window: remote.getCurrentWindow() })
+  }
+  else if (playlistItem) {
+    contextMenuRef = playlistItem
+    playlistMenu.popup({ window: remote.getCurrentWindow() })
   }
 }, false)
 
@@ -232,22 +266,7 @@ const writeId3Tag = (item) => {
     // TRCK: "27"
   }
 
-  // console.log(tags)
-
-  //  Create a ID3-Frame buffer from passed tags
-  //  Synchronous
-  // let ID3FrameBuffer = NodeID3.create(tags)   //  Returns ID3-Frame buffer
-  //  Asynchronous
-  // NodeID3.create(tags, function(frame) {  })
-
-  //  Write ID3-Frame into (.mp3) file
-  // let success = NodeID3.write(tags, file) //  Returns true/false or, if buffer passed as file, the tagged buffer
-  // NodeID3.write(tags, file, function(err, buffer) {  }) //  Buffer is only returned if a buffer was passed as file
-
-  //  Update existing ID3-Frame with new/edited tags
   let success = id3.update(tags, item.filePath) //  Returns true/false or, if buffer passed as file, the tagged buffer
-  // success.then((data) => { console.log(data) })
-  // NodeID3.update(tags, file, function(err, buffer) {  })  //  Buffer is only returned if a buffer was passed as file
 }
 
 const encode = (input) => {
@@ -351,6 +370,8 @@ const Library = new function() {
 
     libVM.libraryCoreData = []
 
+    libVM.playlistCoreData = ko.observableArray([])
+
     libVM.currentArtist = ko.observable()
     libVM.currentTitle = ko.observable()
     libVM.currentFile = ko.observable()
@@ -402,7 +423,7 @@ const Library = new function() {
       return filteredLibrary;
     };
 
-    libVM.itemClick = (item) => {
+    libVM.playThisItem = (item) => {
       const promise = dataUrl.base64(item.filePath, 'audio/mp3');
       promise.then((fileBuffer) => {
         // update audio player artist and song tile text display
@@ -417,12 +438,71 @@ const Library = new function() {
       })
     }
 
-    libVM.pauseClicked = () => {
-      audioPlayer.pause();
+    libVM.libraryItemPlayClicked = (item) => {
+      storage.set('playlist', [])
+      this.addPlaylistClicked(item)
+      this.playThisItem(item)
+    }
+
+    libVM.playlistItemPlayClicked = (item) => {
+      this.playThisItem(item)
     }
 
     libVM.playClicked = () => {
       audioPlayer.play();
+    }
+
+    libVM.pauseClicked = () => {
+      audioPlayer.pause();
+    }
+
+    libVM.addPlaylistClicked = (item) => {
+      this.addItemToPlaylist(item)
+    }
+
+    libVM.addItemToPlaylist = (item) => {
+      let playlistArray = storage.get('playlist')
+
+      mp3Duration(item.filePath, function (err, duration) {
+        if (err) return console.log(err.message);
+
+        let durmins = Math.floor(duration / 60)
+        let dursecs = Math.floor(duration - durmins * 60)
+
+        if(durmins < 10) { durmins = '0' + durmins; }
+        if(dursecs < 10) { dursecs = '0' + dursecs; }
+
+        item.id = playlistArray.length + 1
+        item.time = durmins + ':' + dursecs
+        playlistArray.push(item)
+
+        storage.set('playlist', playlistArray)
+        Library.viewModel.playlistCoreData(storage.get('playlist'))
+        // console.log(storage.get('playlist'));
+      });
+    }
+
+    libVM.removeFromPlaylistClicked = (item) => {
+      this.removeFromPlaylist(item)
+    }
+
+    libVM.removeFromPlaylist = (item) => {
+      let playlistData = storage.get('playlist'),
+          playlistDataFiltered = []
+
+      playlistData.map((i) => {
+        if (i.id !== item.id)
+          playlistDataFiltered.push(i)
+      })
+
+      playlistDataFiltered = playlistDataFiltered.map((item, index) => {
+        item.id = index
+        return item
+      })
+
+      console.log(playlistDataFiltered);
+      storage.set('playlist', playlistDataFiltered)
+      libCore.viewModel.playlistCoreData(storage.get('playlist'))
     }
 
     libVM.editClicked = (item) => {
@@ -696,6 +776,11 @@ const Library = new function() {
     });
   }
 
+  libCore.playlistSetup = () => {
+    const playlistData = storage.get('playlist')
+    libCore.viewModel.playlistCoreData(playlistData)
+  }
+
   libCore.librarySetup = (libraryData) => {
     // setup library core data
     libCore.viewModel.libraryCoreData = libraryData.map((item) => {
@@ -750,6 +835,7 @@ const Library = new function() {
   libCore.initCallback = (libraryData) => {
     libCore.filtersSetup(libraryData)
     libCore.librarySetup(libraryData)
+    libCore.playlistSetup(libraryData)
     libCore.updateDisabledFlags()
     ko.applyBindings(libCore.viewModel, document.getElementById('MusicLibrary'))
     // console.log(libCore.viewModel.filteredLibrary())
@@ -785,7 +871,10 @@ const Library = new function() {
 };
 
 if (!storage.get('library'))
-  storage.set('library', '')
+  storage.set('library', [])
+
+if (!storage.get('playlist'))
+  storage.set('playlist', [])
 
 if (!storage.get('preferences.libraryPath'))
   storage.set('preferences', { 'libraryPath': defaultLibPath })
@@ -795,7 +884,7 @@ $('#modal .modal-body').html('<p>Preparing system...</p>')
 $('#modal').modal('show')
 
 window.setTimeout(() => {
-  if (!storage.get('library')) {
+  if (!storage.get('library').length) {
     dir.walkParallel(storage.get('preferences.libraryPath'), (err, results) => {
       if (err)
         throw err;

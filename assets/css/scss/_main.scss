@@ -46,15 +46,45 @@
     display: flex;
     flex-direction: column;
     height: 100%;
-    padding-top: 60px;
     overflow: hidden;
   }
   .playlist {
     .scroll-area {
       position: absolute;
       top: 1px;
+      width: 100%;
       height: calc(100% - 31px);
       overflow-y: auto;
+      table {
+        table-layout: auto;
+        tr {
+          border-bottom: 1px $gray-dark solid;
+          height: 39px;
+        }
+        td {
+          position: relative;
+          padding: 4px;
+          color: $gray-lighter;
+          &:first-child,
+          &:last-child {
+            text-align: center;
+          }
+        }
+        tbody {
+          > tr {
+            cursor: default;
+            &:nth-of-type(odd) {
+              background-color: $gray-dark;
+            }
+            &:hover {
+              background-color: rgba($brand-primary-dark, 0.5);
+            }
+            > td:last-child {
+              text-align: center;
+            }
+          }
+        }
+      }
     }
     .bottom {
       margin-top: auto;
@@ -64,6 +94,7 @@
     }
   }
   .preferences {
+    padding-top: 60px;
     .scroll-area {
       height: 100%;
       padding: 20px;
