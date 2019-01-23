@@ -5,7 +5,6 @@ const electron = require('electron-connect').server.create(),
       gulp = require('gulp'),
       sass = require('gulp-sass'),
       compassImporter = require('compass-importer'),
-      webserver = require('gulp-webserver'),
       useref = require('gulp-useref');
 
 const sassConfig = {
@@ -18,22 +17,9 @@ const sassConfig = {
       };
 
 gulp.task('electron', ['sasswatch'], function () {
-  // Start browser process
   electron.start();
-  // Restart browser process
   gulp.watch(['main.js', 'assets/*/*'], electron.restart);
-  // Reload renderer process
   gulp.watch(['assets/views/index.html'], electron.reload);
-});
-
-gulp.task('webserver', ['sasswatch'], function() {
-  gulp.src('.')
-    .pipe(webserver({
-      livereload: true,
-      directoryListing: false,
-      open: true,
-    fallback: 'index.html'
-    }));
 });
 
 gulp.task('sass', function() {
@@ -48,25 +34,5 @@ gulp.task('sasswatch', function() {
 });
 
 gulp.task('default', function() {
-  gulp.run('webserver');
+  gulp.run('electron');
 });
-
-// gulp.task('move-assets', function() {
-//   return gulp.src(['assets/*/*.*'])
-//     .pipe(gulp.dest('dist/assets'))
-// });
-//
-// gulp.task('move-fonts', function() {
-//   return gulp.src(['assets/fonts/**'])
-//     .pipe(gulp.dest('dist/assets/fonts/'))
-// });
-//
-// gulp.task('clean', function() {
-//   return del(['./dist']);
-// });
-//
-// gulp.task('build', ['clean', 'move-assets', 'move-fonts'], function(){
-//   return gulp.src('./*.html')
-//     .pipe(useref())
-//     .pipe(gulp.dest('dist'));
-// });
