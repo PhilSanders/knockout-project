@@ -63,7 +63,7 @@
         </section>
         <section class="list">
           <div class="scroll-area">
-            <table>
+            <table class="table-fixed">
               <thead>
                 <tr>
                   <th></th>
@@ -85,9 +85,9 @@
                 </tr>
               </thead>
               <tbody data-bind="foreach: filteredLibrary">
-                <tr class="item">
+                <tr class="library-item">
                   <td>
-                    <button class="btn btn-success btn-xs" data-bind="click: function() { $root.itemClick(this) }">
+                    <button class="btn btn-success btn-xs" data-bind="click: function() { $root.libraryItemPlayClicked(this) }">
                       <i class="glyphicon glyphicon-play"></i>
                     </button>
                   </td>
@@ -96,37 +96,66 @@
                   <td data-bind="text: title"></td>
                   <td data-bind="text: genre"></td>
                   <td data-bind="text: year"></td>
-                  <td data-bind="foreach: { data: tags, as: 'tag' }"> <span data-bind="text: tag"></span><!-- ko if: $index < (tags.length - 1) --><span>,&nbsp;</span><!-- /ko --></td>
+                  <td data-bind="foreach: { data: tags, as: 'tag' }"> <span data-bind="text: tag"></span><!-- ko if: ($index() < (tags.length - 1)) --><span>,&nbsp;</span><!-- /ko --></td>
                   <td>
-                    <button class="btn btn-modify btn-xs" data-bind="click: function() { $root.editClicked(this) }, clickBubble: false">
+                    <button class="btn btn-modify btn-xs" data-bind="click: function() { $root.editClicked(this) }">
                       <i class="glyphicon glyphicon-pencil"></i>
                     </button>
+                    <button hidden data-bind="click: function() { $root.addPlaylistClicked(this) }"></button>
                   </td>
                 </tr>
               </tbody>
             </table>
           </div>
         </section>
-      </div>
+      </div><!-- End #LibraryView -->
 
       <div id="PlaylistView" class="tab-panel fade">
         <section class="playlist">
-          <h2 class="title">Playlist</h2>
-          <div class="body"></div>
+          <div class="scroll-area">
+            <table>
+              <tbody data-bind="foreach: playlistCoreData()">
+                <tr class="playlist-item" data-bind="css: { active: active() }">
+                  <td data-bind="text: ($index() + 1)"></td>
+                  <td>
+                    <!-- ko if: artist && title-->
+                    <span data-bind="text: artist"></span> - <span data-bind="text: title"></span>
+                    <!-- /ko -->
+                    <!-- ko ifnot: artist -->
+                    <span data-bind="text: title"></span>
+                    <!-- /ko -->
+                    <!-- ko ifnot: title -->
+                    <span data-bind="text: fileName"></span>
+                    <!-- /ko -->
+                  </td>
+                  <td>
+                    <span data-bind="text: time"></span>
+                    <button hidden data-bind="click: function() { $root.playlistItemPlayClicked(this) }"></button>
+                    <button hidden data-bind="click: function() { $root.editClicked(this) }"></button>
+                    <button hidden data-bind="click: function() { $root.removeFromPlaylistClicked(this) }"></button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="bottom">
+            <button id="ClearPlaylistBtn" class="btn btn-xs btn-brand-primary">Clear</button>
+            <button id="ShufflePlaylistBtn" class="btn btn-xs btn-brand-primary">Shuffle</button>
+          </div>
         </section>
-      </div>
+      </div><!-- End #PlaylistView -->
 
       <div id="PreferencesView" class="tab-panel fade">
+        <h2 class="title">Preferences</h2>
         <section class="preferences">
-          <h2 class="title">Preferences</h2>
-          <div class="body">
+          <div class="scroll-area">
             <button id="DirInput" class="btn btn-brand-primary btn-sm btn-rounded">Browse Directory</button>
             <span class="file-path">Library path: <span id="LibraryPath"></span>
           </div>
         </section>
-      </div>
+      </div><!-- End #PreferencesView -->
 
-    </div>
+    </div><!-- End .tab-content -->
 
     <footer>
       <div>

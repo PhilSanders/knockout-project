@@ -11,42 +11,124 @@
     padding: 0;
     background: $gray-darker;
   }
-  .tab-panel {
-    @extend .flex-row;
-    position: absolute;
-    height: 0;
-    width: 0;
-    overflow-y: auto;
-    left: -1000%;
-    &.active {
-      position: relative;
-      left: 0;
-      height: 100%;
-      width: 100%;
+  .tab-content {
+    .tab-panel {
+      @extend .flex-row;
+      position: absolute;
+      height: 0;
+      width: 0;
+      overflow-y: auto;
+      left: -1000%;
+      &.active {
+        position: relative;
+        left: 0;
+        height: 100%;
+        width: 100%;
+      }
     }
-  }
-  @import "library-filters";
-  @import "library-list";
-
-  .preferences,
-  .playlist {
-    padding: 20px;
-    width: 100%;
     .title {
+      position: absolute;
+      top: 20px;
+      right: 20px;
       margin: 0;
       font-size: 60px;
       color: $gray-dark;
       text-align: right;
     }
-    .body {
-      margin-top: -30px;
+  }
+
+  @import "library-filters";
+  @import "library-list";
+
+  .preferences,
+  .playlist {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .playlist {
+    position: relative;
+    .scroll-area {
+      position: absolute;
+      top: 1px;
+      width: 100%;
+      height: 100%;
+      overflow-y: auto;
+      table {
+        table-layout: auto;
+        margin-bottom: 30px;
+        tbody {
+          tr {
+            border-bottom: 1px $gray-dark solid;
+            height: 39px;
+            color: rgba($gray-lighter, 0.7);
+            cursor: default;
+            transition: all 100ms linear;
+            &:nth-of-type(odd) {
+              background-color: rgba($gray-dark, 0.5);
+            }
+            &:hover {
+              // background-color: rgba($brand-primary-dark, 0.5);
+              color: $white;
+            }
+            &.active {
+              background-color: rgba($brand-primary, 0.8);
+              color: $white;
+              &:hover {
+                background-color: rgba($brand-primary, 1);
+              }
+            }
+          }
+          td {
+            position: relative;
+            padding: 4px;
+            &:first-child {
+              width: 40px;
+              text-align: center;
+            }
+            &:last-child {
+              width: 50px;
+              padding-right: 10px;
+              text-align: right;
+            }
+          }
+        }
+      }
+    }
+    .bottom {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      margin-top: auto;
+      padding-top: 3px;
+      height: 30px;
+      text-align: center;
+      .btn {
+        padding: 2px 8px;
+        background-color: $gray-darker;
+        border-color: $gray-darker;
+      }
+      .btn:hover {
+        background-color: $gray-dark;
+        border-color: $gray-dark;
+      }
     }
   }
+
   .preferences {
-    .file-path {
-      display: block;
-      padding: 10px 0 0;
-      color: $gray-light;
+    padding-top: 60px;
+    .scroll-area {
+      height: 100%;
+      padding: 20px;
+      overflow-y: auto;
+      .file-path {
+        display: block;
+        padding: 10px 0 0;
+        color: $gray-light;
+      }
     }
   }
 }
