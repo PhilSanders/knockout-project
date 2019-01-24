@@ -10,6 +10,7 @@ const dir = remote.require('./assets/js/dir')
 const fastSort = require('fast-sort')
 const dataUrl = remote.require('./assets/js/base64')
 const id3 = remote.require('./assets/js/id3')
+const mp3Duration = require('mp3-duration')
 const store = require('electron-store')
 const storage = new store()
 
@@ -48,11 +49,39 @@ dirDialogBtn.addEventListener('click', () => {
   })
 })
 
+const clearPlaylistBtn = document.querySelector('#ClearPlaylistBtn')
+clearPlaylistBtn.addEventListener('click', () => {
+  storage.set('playlist', [])
+  Library.viewModel.playlistCoreData([])
+})
+
+const sufflePlaylistBtn = document.querySelector('#ShufflePlaylistBtn')
+sufflePlaylistBtn.addEventListener('click', () => {
+  let playlistData = Library.viewModel.playlistCoreData()
+
+  if (playlistData.length) {
+    playlistData.sort(() => { return 0.5 - Math.random() })
+
+    playlistData = playlistData.map((item, index) => {
+      item.id = index
+      return item
+    })
+
+    storage.set('playlist', playlistData)
+    Library.viewModel.playlistCoreData(playlistData)
+  }
+})
+
+let currentAudioFile = {}
 let audioPlayer = document.querySelector('#AudioPlayer')
 let audioSource = document.querySelector('#AudioMp3')
 let audioVolInput = document.querySelector('#VolumeSlider')
 
 audioVolInput.value = audioPlayer.volume;
+
+audioVolInput.addEventListener('input', (e) => {
+  audioPlayer.volume = audioVolInput.value;
+})
 
 audioPlayer.onloadedmetadata = () => {
   audioPlayer.ontimeupdate = () => {
@@ -79,13 +108,28 @@ audioPlayer.onloadedmetadata = () => {
 audioPlayer.onplay = () => {
   updateConsole('<i class="glyphicon glyphicon-play"></i> Playing')
 }
+
 audioPlayer.onpause = () => {
   updateConsole('<i class="glyphicon glyphicon-pause"></i> Paused')
 }
 
-audioVolInput.addEventListener('input', (e) => {
-  audioPlayer.volume = audioVolInput.value;
-})
+audioPlayer.onended = () => {
+  // get the next item in the playlist, if there is one
+  const playlistData = Library.viewModel.playlistCoreData()
+
+  if (playlistData.length > 1) {
+    const nextItemId = currentAudioFile.id + 1;
+
+    playlistData.forEach((item) => {
+      if (item.id === nextItemId && item.id - 1 < playlistData.length) {
+        Library.viewModel.playThisItem(item, true)
+      }
+    })
+  }
+  else {
+    updateConsole('<i class="glyphicon glyphicon-stop"></i> Ready')
+  }
+}
 
 let ctx = new AudioContext();
 const analyser = ctx.createAnalyser();
@@ -113,7 +157,7 @@ gradient.addColorStop(1, themePallete.primary);
 gradient.addColorStop(0.5, themePallete.primary);
 gradient.addColorStop(0, themePallete.light);
 
-const renderFrame = () => {
+const visualizer = () => {
     const array = new Uint8Array(analyser.frequencyBinCount);
     analyser.getByteFrequencyData(array);
     const step = Math.round(array.length / meterNum); //sample limited data from the total array
@@ -134,42 +178,82 @@ const renderFrame = () => {
         ctx.fillStyle = gradient; //set the filllStyle to gradient for a better look
         ctx.fillRect(i * 12 /*meterWidth+gap*/ , cheight - value + capHeight, meterWidth, cheight); //the meter
     }
-    requestAnimationFrame(renderFrame);
+    requestAnimationFrame(visualizer);
 }
 
 let contextMenuRef; // this should always be an html element (tr)
 
-const menu = new Menu()
-menu.append(new MenuItem({ id: 1, label: 'Play', click() { menuPlayClicked() } }))
-menu.append(new MenuItem({ id: 2, label: 'Edit', click() { menuEditClicked() } }))
-menu.append(new MenuItem({ id: 3, type:  'separator' }))
-menu.append(new MenuItem({ id: 4, label: 'Favorite', type: 'checkbox', checked: false }))
-
-menu.on('menu-will-close', () => {
-  console.log('content mneu closed');
-  contentMenuRef = null;
-})
+const libraryMenu = new Menu()
+libraryMenu.append(new MenuItem({ label: 'Play', click() { menuPlayClicked() } }))
+libraryMenu.append(new MenuItem({ label: 'Edit', click() { menuEditClicked() } }))
+libraryMenu.append(new MenuItem({ type:  'separator' }))
+libraryMenu.append(new MenuItem({ label: 'Add to Playlist', click() { menuAddPlaylistClicked() } }))
+libraryMenu.append(new MenuItem({ type:  'separator' }))
+libraryMenu.append(new MenuItem({ label: 'Favorite', type: 'checkbox', checked: false }))
 
 const menuPlayClicked = () => {
+  // resolves as Library.viewModel.libraryItemPlayClicked()
   contextMenuRef.children[0].children[0].click();
 }
 
 const menuEditClicked = () => {
+  // resolves as Library.viewModel.editClicked()
   contextMenuRef.children[contextMenuRef.cells.length - 1].children[0].click();
+}
+
+const menuAddPlaylistClicked = () => {
+  // resolves as Library.viewModel.addPlaylistClicked()
+  contextMenuRef.children[contextMenuRef.cells.length - 1].children[1].click();
+}
+
+const playlistMenu = new Menu()
+playlistMenu.append(new MenuItem({ label: 'Play', click() { menuPlaylistPlayClicked() } }))
+playlistMenu.append(new MenuItem({ label: 'Edit', click() { menuPlaylistEditClicked() } }))
+playlistMenu.append(new MenuItem({ type:  'separator' }))
+playlistMenu.append(new MenuItem({ label: 'Remove from Playlist', click() { menuRemovePlaylistClicked() } }))
+playlistMenu.append(new MenuItem({ type:  'separator' }))
+playlistMenu.append(new MenuItem({ label: 'Favorite', type: 'checkbox', checked: false }))
+
+const menuPlaylistPlayClicked = () => {
+  // resolves as Library.viewModel.playlistItemPlayClicked()
+  contextMenuRef.children[contextMenuRef.cells.length - 1].children[1].click();
+}
+
+const menuPlaylistEditClicked = () => {
+  // resolves as Library.viewModel.editClicked()
+  contextMenuRef.children[contextMenuRef.cells.length - 1].children[2].click();
+}
+
+const menuRemovePlaylistClicked = () => {
+  // resolves as Library.viewModel.removeFromPlaylistClicked()
+  contextMenuRef.children[contextMenuRef.cells.length - 1].children[3].click();
 }
 
 window.addEventListener('contextmenu', (e) => {
   e.preventDefault()
-  let tr;
+  contentMenuRef = null;
+
+  let libraryItem,
+      playlistItem
+
   for(let i = 0; i < e.path.length; i++) {
-    if (e.path[i].className === 'item') {
-      tr = e.path[i];
+    if (e.path[i].classList.contains('library-item')) {
+      libraryItem = e.path[i];
+      break;
+    }
+    if (e.path[i].classList.contains('playlist-item')) {
+      playlistItem = e.path[i];
       break;
     }
   }
-  if (tr) {
-    contextMenuRef = tr;
-    menu.popup({ window: remote.getCurrentWindow() })
+
+  if (libraryItem) {
+    contextMenuRef = libraryItem
+    libraryMenu.popup({ window: remote.getCurrentWindow() })
+  }
+  else if (playlistItem) {
+    contextMenuRef = playlistItem
+    playlistMenu.popup({ window: remote.getCurrentWindow() })
   }
 }, false)
 
@@ -225,22 +309,7 @@ const writeId3Tag = (item) => {
     // TRCK: "27"
   }
 
-  // console.log(tags)
-
-  //  Create a ID3-Frame buffer from passed tags
-  //  Synchronous
-  // let ID3FrameBuffer = NodeID3.create(tags)   //  Returns ID3-Frame buffer
-  //  Asynchronous
-  // NodeID3.create(tags, function(frame) {  })
-
-  //  Write ID3-Frame into (.mp3) file
-  // let success = NodeID3.write(tags, file) //  Returns true/false or, if buffer passed as file, the tagged buffer
-  // NodeID3.write(tags, file, function(err, buffer) {  }) //  Buffer is only returned if a buffer was passed as file
-
-  //  Update existing ID3-Frame with new/edited tags
   let success = id3.update(tags, item.filePath) //  Returns true/false or, if buffer passed as file, the tagged buffer
-  // success.then((data) => { console.log(data) })
-  // NodeID3.update(tags, file, function(err, buffer) {  })  //  Buffer is only returned if a buffer was passed as file
 }
 
 const encode = (input) => {
@@ -296,8 +365,8 @@ const updateLibPath = () => {
           libraryTempData.push({
             catNum: '',
             compilationId: null,
-            artist: info.artist ? info.artist : 'Unknown',
-            title: info.title ? info.title : 'Untitled',
+            artist: info.artist ? info.artist : '',
+            title: info.title ? info.title : '',
             description: info.comment ? info.comment.text : '',
             genre: info.genre ? info.genre : '',
             bpm: info.bpm ? info.bpm : '',
@@ -343,6 +412,8 @@ const Library = new function() {
     const libVM = this
 
     libVM.libraryCoreData = []
+
+    libVM.playlistCoreData = ko.observableArray([])
 
     libVM.currentArtist = ko.observable()
     libVM.currentTitle = ko.observable()
@@ -395,27 +466,113 @@ const Library = new function() {
       return filteredLibrary;
     };
 
-    libVM.itemClick = (item) => {
+    libVM.playThisItem = (item, autoPlay) => {
+      console.log(item)
+
       const promise = dataUrl.base64(item.filePath, 'audio/mp3');
       promise.then((fileBuffer) => {
         // update audio player artist and song tile text display
         libVM.currentArtist(item.artist)
         libVM.currentTitle(item.title)
+
         // load base64 audio buffer and play it
         audioSource.src = fileBuffer
         audioPlayer.load()
-        audioPlayer.play()
+        if (autoPlay) audioPlayer.play()
 
-        renderFrame();
+        // update the currently playing item
+        currentAudioFile = item;
+        storage.set('lastPlayed', item)
+
+        // set active item in playlist
+        libVM.toggleActiveItemInPlaylist()
+
+        // start the visualizer
+        visualizer();
       })
+    }
+
+    libVM.toggleActiveItemInPlaylist = () => {
+      let playlistData = libVM.playlistCoreData()
+
+      playlistData.forEach((item) => {
+        item.active(false)
+        if (item.id === currentAudioFile.id && item.filePath === currentAudioFile.filePath)
+          item.active(true)
+      })
+
+      libVM.playlistCoreData(playlistData)
+    }
+
+    libVM.libraryItemPlayClicked = (item) => {
+      libVM.playlistCoreData([])
+      libVM.addItemToPlaylist(item, true, true)
+    }
+
+    libVM.playlistItemPlayClicked = (item) => {
+      libVM.playThisItem(item, true)
+    }
+
+    libVM.playClicked = () => {
+      libVM.toggleActiveItemInPlaylist()
+      audioPlayer.play();
     }
 
     libVM.pauseClicked = () => {
       audioPlayer.pause();
     }
 
-    libVM.playClicked = () => {
-      audioPlayer.play();
+    libVM.addPlaylistClicked = (item) => {
+      libVM.addItemToPlaylist(item, false, false)
+    }
+
+    libVM.addItemToPlaylist = (item, autoPlay, active) => {
+      let playlistData = libVM.playlistCoreData()
+
+      mp3Duration(item.filePath, (err, duration) => {
+        if (err) return console.log(err.message)
+
+        let durmins = Math.floor(duration / 60)
+        let dursecs = Math.floor(duration - durmins * 60)
+
+        if (durmins < 10) { durmins = '0' + durmins; }
+        if (dursecs < 10) { dursecs = '0' + dursecs; }
+
+        item.id = playlistData.length + 1
+        item.time = durmins + ':' + dursecs
+        item.active(active)
+
+        playlistData.push(item)
+
+        storage.set('playlist', playlistData)
+        libVM.playlistCoreData(playlistData)
+        if (autoPlay) libVM.playThisItem(item, true)
+
+        console.log(playlistData)
+      });
+    }
+
+    libVM.removeFromPlaylistClicked = (item) => {
+      libVM.removeFromPlaylist(item)
+    }
+
+    libVM.removeFromPlaylist = (item) => {
+      let playlistData = libVM.playlistCoreData(),
+          playlistDataFiltered = []
+
+      playlistData.map((i) => {
+        if (i.id !== item.id)
+          playlistDataFiltered.push(i)
+      })
+
+      playlistDataFiltered = playlistDataFiltered.map((item, index) => {
+        item.id = index
+        return item
+      })
+
+      console.log(playlistDataFiltered);
+      storage.set('playlist', playlistDataFiltered)
+      libVM.playlistCoreData(playlistDataFiltered)
     }
 
     libVM.editClicked = (item) => {
@@ -442,7 +599,7 @@ const Library = new function() {
         })
       })
 
-      $(function () {
+      $(() => {
         $('[data-toggle="tooltip"]').tooltip()
       })
 
@@ -450,13 +607,13 @@ const Library = new function() {
       const id3UpdateBtn = document.querySelector('#Id3UpdateBtn')
 
       id3UpdateBtn.addEventListener('click', () => {
-        console.log('updating item')
+        console.log('updating item', item)
 
         const storageData = storage.get('library')
         const storageUpdate = storageData.map((itemInStorage) => {
           if (JSON.stringify(itemInStorage) === JSON.stringify(item)) {
-            itemInStorage.artist      = id3UForm.ArtistInput.value ? id3UForm.ArtistInput.value : 'Unknown'
-            itemInStorage.title       = id3UForm.TitleInput.value ? id3UForm.TitleInput.value : 'Untitled'
+            itemInStorage.artist      = id3UForm.ArtistInput.value ? id3UForm.ArtistInput.value : ''
+            itemInStorage.title       = id3UForm.TitleInput.value ? id3UForm.TitleInput.value : ''
             itemInStorage.album       = id3UForm.AlbumInput.value ? id3UForm.AlbumInput.value : ''
             itemInStorage.cover       = id3UForm.CoverInput.value ? id3UForm.CoverInput.value : ''
             itemInStorage.year        = id3UForm.YearInput.value ? id3UForm.YearInput.value : ''
@@ -502,7 +659,7 @@ const Library = new function() {
     libCore.updateFilterSelection(selectionArray, filter);
   };
 
-  libCore.applyFilters = function(filters, items) {
+  libCore.applyFilters = (filters, items) => {
     // pass if it passes any filter in filterGroup
     return items.filter((item) => {
       for (let i in filters) {
@@ -689,6 +846,28 @@ const Library = new function() {
     });
   }
 
+  libCore.playlistSetup = () => {
+    let playlistData = storage.get('playlist')
+
+    if (playlistData) {
+      playlistData = playlistData.map((item) => {
+        item.active = ko.observable(false)
+        return item
+      })
+
+      libCore.viewModel.playlistCoreData(playlistData)
+    }
+  }
+
+  libCore.lastPlayedSetup = () => {
+    if (storage.get('lastPlayed')) {
+      let lastPlayedItem = storage.get('lastPlayed')
+
+      lastPlayedItem.active = ko.observable(true)
+      libCore.viewModel.playThisItem(lastPlayedItem, false)
+    }
+  }
+
   libCore.librarySetup = (libraryData) => {
     // setup library core data
     libCore.viewModel.libraryCoreData = libraryData.map((item) => {
@@ -733,6 +912,7 @@ const Library = new function() {
   }
 
   libCore.updateCallback = (libraryData) => {
+    console.log(libraryData);
     libCore.refreshTagFilters(libraryData)
     libCore.librarySetup(libraryData)
     libCore.updateDisabledFlags()
@@ -743,8 +923,9 @@ const Library = new function() {
   libCore.initCallback = (libraryData) => {
     libCore.filtersSetup(libraryData)
     libCore.librarySetup(libraryData)
+    libCore.playlistSetup(libraryData)
     libCore.updateDisabledFlags()
-    ko.applyBindings(libCore.viewModel, document.getElementById('musicLibrary'))
+    ko.applyBindings(libCore.viewModel, document.getElementById('MusicLibrary'))
     // console.log(libCore.viewModel.filteredLibrary())
 
     // load preferences
@@ -758,13 +939,19 @@ const Library = new function() {
     // libCore.storeBase64(libraryData) // TODO do more testing with storage, currently only for show...
 
     // sets up fixed position table header
-    $(document).ready(function() {
-      $('table').tableFixedHeader({
+    $(document).ready(() => {
+      $('.table-fixed').tableFixedHeader({
         scrollContainer: '.scroll-area'
       })
-      $('table th a').on('click', (elm) => {
+
+      $('.table-fixed th a').on('click', (elm) => {
         sorterClicked(elm.currentTarget.dataset.sorter)
       })
+
+      // load last played item
+      if (storage.get('lastPlayed')) {
+        libCore.lastPlayedSetup()
+      }
     })
 
     updateConsole('<i class="glyphicon glyphicon-stop"></i> Ready');
@@ -777,18 +964,26 @@ const Library = new function() {
   };
 };
 
+// initializ storage bins
 if (!storage.get('library'))
-  storage.set('library', '')
+  storage.set('library', [])
+
+if (!storage.get('playlist'))
+  storage.set('playlist', [])
+
+if (!storage.get('lastPlayed'))
+  storage.set('lastPlayed', {})
 
 if (!storage.get('preferences.libraryPath'))
   storage.set('preferences', { 'libraryPath': defaultLibPath })
+
 
 $('#modal .modal-title').html('Please wait...')
 $('#modal .modal-body').html('<p>Preparing system...</p>')
 $('#modal').modal('show')
 
 window.setTimeout(() => {
-  if (!storage.get('library')) {
+  if (!storage.get('library').length) {
     dir.walkParallel(storage.get('preferences.libraryPath'), (err, results) => {
       if (err)
         throw err;
@@ -802,8 +997,8 @@ window.setTimeout(() => {
           libraryTempData.push({
             catNum: '',
             compilationId: null,
-            artist: info.artist ? info.artist : 'Unknown',
-            title: info.title ? info.title : 'Untitled',
+            artist: info.artist ? info.artist : '',
+            title: info.title ? info.title : '',
             description: info.comment ? info.comment.text : '',
             genre: info.genre ? info.genre : '',
             bpm: info.bpm ? info.bpm : '',
