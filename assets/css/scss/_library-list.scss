@@ -21,7 +21,6 @@
     th, td {
       position: relative;
       padding: 4px;
-      color: $gray-lighter;
       a {
         display: block;
         padding: 8px;
@@ -57,12 +56,14 @@
       height: 100%;
       overflow-y: auto;
       > tr {
+        color: rgba($gray-lighter, 0.7);
         cursor: default;
+        transition: all 100ms linear;
         &:nth-of-type(odd) {
-          background-color: $gray-dark;
+          background-color: rgba($gray-dark, 0.5);
         }
         &:hover {
-          background-color: rgba($brand-primary-dark, 0.5);
+          color: $white;
         }
         > td:last-child {
           text-align: center;

@@ -72,7 +72,7 @@ sufflePlaylistBtn.addEventListener('click', () => {
   }
 })
 
-let currentAudioFile = storage.get('lastPlayed') ? storage.get('lastPlayed') : {}
+let currentAudioFile = {}
 let audioPlayer = document.querySelector('#AudioPlayer')
 let audioSource = document.querySelector('#AudioMp3')
 let audioVolInput = document.querySelector('#VolumeSlider')
@@ -115,7 +115,7 @@ audioPlayer.onpause = () => {
 
 audioPlayer.onended = () => {
   // get the next item in the playlist, if there is one
-  const playlistData = storage.get('playlist')
+  const playlistData = Library.viewModel.playlistCoreData()
 
   if (playlistData.length > 1) {
     const nextItemId = currentAudioFile.id + 1;
@@ -237,11 +237,11 @@ window.addEventListener('contextmenu', (e) => {
       playlistItem
 
   for(let i = 0; i < e.path.length; i++) {
-    if (e.path[i].className === 'library-item') {
+    if (e.path[i].classList.contains('library-item')) {
       libraryItem = e.path[i];
       break;
     }
-    if (e.path[i].className === 'playlist-item') {
+    if (e.path[i].classList.contains('playlist-item')) {
       playlistItem = e.path[i];
       break;
     }
@@ -467,6 +467,8 @@ const Library = new function() {
     };
 
     libVM.playThisItem = (item, autoPlay) => {
+      console.log(item)
+
       const promise = dataUrl.base64(item.filePath, 'audio/mp3');
       promise.then((fileBuffer) => {
         // update audio player artist and song tile text display
@@ -482,15 +484,29 @@ const Library = new function() {
         currentAudioFile = item;
         storage.set('lastPlayed', item)
 
+        // set active item in playlist
+        libVM.toggleActiveItemInPlaylist()
+
         // start the visualizer
         visualizer();
       })
     }
 
+    libVM.toggleActiveItemInPlaylist = () => {
+      let playlistData = libVM.playlistCoreData()
+
+      playlistData.forEach((item) => {
+        item.active(false)
+        if (item.id === currentAudioFile.id && item.filePath === currentAudioFile.filePath)
+          item.active(true)
+      })
+
+      libVM.playlistCoreData(playlistData)
+    }
+
     libVM.libraryItemPlayClicked = (item) => {
       libVM.playlistCoreData([])
-      libVM.addItemToPlaylist(item, true)
-      libVM.playThisItem(item, true)
+      libVM.addItemToPlaylist(item, true, true)
     }
 
     libVM.playlistItemPlayClicked = (item) => {
@@ -498,6 +514,7 @@ const Library = new function() {
     }
 
     libVM.playClicked = () => {
+      libVM.toggleActiveItemInPlaylist()
       audioPlayer.play();
     }
 
@@ -506,10 +523,10 @@ const Library = new function() {
     }
 
     libVM.addPlaylistClicked = (item) => {
-      libVM.addItemToPlaylist(item, false)
+      libVM.addItemToPlaylist(item, false, false)
     }
 
-    libVM.addItemToPlaylist = (item, active) => {
+    libVM.addItemToPlaylist = (item, autoPlay, active) => {
       let playlistData = libVM.playlistCoreData()
 
       mp3Duration(item.filePath, (err, duration) => {
@@ -529,6 +546,8 @@ const Library = new function() {
 
         storage.set('playlist', playlistData)
         libVM.playlistCoreData(playlistData)
+        if (autoPlay) libVM.playThisItem(item, true)
+
         console.log(playlistData)
       });
     }
@@ -829,14 +848,24 @@ const Library = new function() {
 
   libCore.playlistSetup = () => {
     let playlistData = storage.get('playlist')
+
     if (playlistData) {
       playlistData = playlistData.map((item) => {
         item.active = ko.observable(false)
         return item
       })
-    }
 
-    libCore.viewModel.playlistCoreData(playlistData)
+      libCore.viewModel.playlistCoreData(playlistData)
+    }
+  }
+
+  libCore.lastPlayedSetup = () => {
+    if (storage.get('lastPlayed')) {
+      let lastPlayedItem = storage.get('lastPlayed')
+
+      lastPlayedItem.active = ko.observable(true)
+      libCore.viewModel.playThisItem(lastPlayedItem, false)
+    }
   }
 
   libCore.librarySetup = (libraryData) => {
@@ -914,13 +943,14 @@ const Library = new function() {
       $('.table-fixed').tableFixedHeader({
         scrollContainer: '.scroll-area'
       })
+
       $('.table-fixed th a').on('click', (elm) => {
         sorterClicked(elm.currentTarget.dataset.sorter)
       })
+
       // load last played item
       if (storage.get('lastPlayed')) {
-        console.log(storage.get('lastPlayed'))
-        libCore.viewModel.playThisItem(storage.get('lastPlayed'))
+        libCore.lastPlayedSetup()
       }
     })
 

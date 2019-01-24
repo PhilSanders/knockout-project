@@ -48,6 +48,7 @@
     height: 100%;
     overflow: hidden;
   }
+
   .playlist {
     position: relative;
     .scroll-area {
@@ -59,13 +60,31 @@
       table {
         table-layout: auto;
         margin-bottom: 30px;
-        tr {
-          border-bottom: 1px $gray-dark solid;
-          height: 39px;
+        tbody {
+          tr {
+            border-bottom: 1px $gray-dark solid;
+            height: 39px;
+            color: rgba($gray-lighter, 0.7);
+            cursor: default;
+            transition: all 100ms linear;
+            &:nth-of-type(odd) {
+              background-color: rgba($gray-dark, 0.5);
+            }
+            &:hover {
+              // background-color: rgba($brand-primary-dark, 0.5);
+              color: $white;
+            }
+            &.active {
+              background-color: rgba($brand-primary, 0.8);
+              color: $white;
+              &:hover {
+                background-color: rgba($brand-primary, 1);
+              }
+            }
+          }
           td {
             position: relative;
             padding: 4px;
-            color: $gray-light;
             &:first-child {
               width: 40px;
               text-align: center;
@@ -74,23 +93,6 @@
               width: 50px;
               padding-right: 10px;
               text-align: right;
-            }
-          }
-          &.active {
-            td {
-              background-color: rgba($brand-primary, 0.5);
-              color: $white
-            }
-          }
-        }
-        tbody {
-          > tr {
-            cursor: default;
-            &:nth-of-type(odd) {
-              background-color: $gray-dark;
-            }
-            &:hover {
-              background-color: rgba($brand-primary-dark, 0.5);
             }
           }
         }
@@ -115,6 +117,7 @@
       }
     }
   }
+
   .preferences {
     padding-top: 60px;
     .scroll-area {
