@@ -20,8 +20,6 @@ let libPath
 let libraryTempData = []
 let libPathInput
 
-let currentItemInPlayer
-
 const getComputedStyle = (selectorProp, styleProp) => {
   let para = document.querySelector(selectorProp);
   let compStyles = window.getComputedStyle(para);
@@ -74,6 +72,7 @@ sufflePlaylistBtn.addEventListener('click', () => {
   }
 })
 
+let currentAudioFile = storage.get('lastPlayed') ? storage.get('lastPlayed') : {}
 let audioPlayer = document.querySelector('#AudioPlayer')
 let audioSource = document.querySelector('#AudioMp3')
 let audioVolInput = document.querySelector('#VolumeSlider')
@@ -115,12 +114,11 @@ audioPlayer.onended = () => {
   const playlistData = storage.get('playlist')
 
   if (playlistData.length > 1) {
-    const nextItemId = currentItemInPlayer.id + 1;
+    const nextItemId = currentAudioFile.id + 1;
 
     playlistData.forEach((item) => {
       if (item.id === nextItemId && item.id - 1 < playlistData.length) {
-        currentItemInPlayer = item
-        Library.viewModel.playThisItem(item)
+        Library.viewModel.playThisItem(item, true)
       }
     })
   }
@@ -468,19 +466,23 @@ const Library = new function() {
       return filteredLibrary;
     };
 
-    libVM.playThisItem = (item) => {
+    libVM.playThisItem = (item, autoPlay) => {
       const promise = dataUrl.base64(item.filePath, 'audio/mp3');
       promise.then((fileBuffer) => {
         // update audio player artist and song tile text display
         libVM.currentArtist(item.artist)
         libVM.currentTitle(item.title)
+
         // load base64 audio buffer and play it
         audioSource.src = fileBuffer
         audioPlayer.load()
-        audioPlayer.play()
+        if (autoPlay) audioPlayer.play()
 
-        currentItemInPlayer = item;
+        // update the currently playing item
+        currentAudioFile = item;
+        storage.set('lastPlayed', item)
 
+        // start the visualizer
         visualizer();
       })
     }
@@ -488,11 +490,11 @@ const Library = new function() {
     libVM.libraryItemPlayClicked = (item) => {
       storage.set('playlist', [])
       this.addItemToPlaylist(item)
-      this.playThisItem(item)
+      this.playThisItem(item, true)
     }
 
     libVM.playlistItemPlayClicked = (item) => {
-      this.playThisItem(item)
+      this.playThisItem(item, true)
     }
 
     libVM.playClicked = () => {
@@ -584,7 +586,7 @@ const Library = new function() {
       const id3UpdateBtn = document.querySelector('#Id3UpdateBtn')
 
       id3UpdateBtn.addEventListener('click', () => {
-        console.log('updating item')
+        console.log('updating item', item)
 
         const storageData = storage.get('library')
         const storageUpdate = storageData.map((itemInStorage) => {
@@ -872,6 +874,7 @@ const Library = new function() {
   }
 
   libCore.updateCallback = (libraryData) => {
+    console.log(libraryData);
     libCore.refreshTagFilters(libraryData)
     libCore.librarySetup(libraryData)
     libCore.updateDisabledFlags()
@@ -905,6 +908,11 @@ const Library = new function() {
       $('.table-fixed th a').on('click', (elm) => {
         sorterClicked(elm.currentTarget.dataset.sorter)
       })
+      // load last played item
+      if (storage.get('lastPlayed')) {
+        console.log(storage.get('lastPlayed'))
+        libCore.viewModel.playThisItem(storage.get('lastPlayed'))
+      }
     })
 
     updateConsole('<i class="glyphicon glyphicon-stop"></i> Ready');
@@ -917,14 +925,19 @@ const Library = new function() {
   };
 };
 
+// initializ storage bins
 if (!storage.get('library'))
   storage.set('library', [])
 
 if (!storage.get('playlist'))
   storage.set('playlist', [])
 
+if (!storage.get('lastPlayed'))
+  storage.set('lastPlayed', {})
+
 if (!storage.get('preferences.libraryPath'))
   storage.set('preferences', { 'libraryPath': defaultLibPath })
+
 
 $('#modal .modal-title').html('Please wait...')
 $('#modal .modal-body').html('<p>Preparing system...</p>')
