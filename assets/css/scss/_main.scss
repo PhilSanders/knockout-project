@@ -49,27 +49,38 @@
     overflow: hidden;
   }
   .playlist {
+    position: relative;
     .scroll-area {
       position: absolute;
       top: 1px;
       width: 100%;
-      height: calc(100% - 31px);
+      height: 100%;
       overflow-y: auto;
       table {
         table-layout: auto;
+        margin-bottom: 30px;
         tr {
           border-bottom: 1px $gray-dark solid;
           height: 39px;
-        }
-        td {
-          position: relative;
-          padding: 4px;
-          color: $gray-lighter;
-          &:first-child {
-            text-align: center;
+          td {
+            position: relative;
+            padding: 4px;
+            color: $gray-light;
+            &:first-child {
+              width: 40px;
+              text-align: center;
+            }
+            &:last-child {
+              width: 50px;
+              padding-right: 10px;
+              text-align: right;
+            }
           }
-          &:last-child {
-            text-align: right;
+          &.active {
+            td {
+              background-color: rgba($brand-primary, 0.5);
+              color: $white
+            }
           }
         }
         tbody {
@@ -86,10 +97,22 @@
       }
     }
     .bottom {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
       margin-top: auto;
+      padding-top: 3px;
       height: 30px;
-      padding: 10px 20px 0;
-      background-color: $gray-dark;
+      text-align: center;
+      .btn {
+        padding: 2px 8px;
+        background-color: $gray-darker;
+        border-color: $gray-darker;
+      }
+      .btn:hover {
+        background-color: $gray-dark;
+        border-color: $gray-dark;
+      }
     }
   }
   .preferences {

@@ -114,18 +114,18 @@
         <section class="playlist">
           <div class="scroll-area">
             <table>
-              <tbody data-bind="foreach: playlistCoreData">
-                <tr class="playlist-item">
+              <tbody data-bind="foreach: playlistCoreData()">
+                <tr class="playlist-item" data-bind="css: { active: active() }">
                   <td data-bind="text: ($index() + 1)"></td>
                   <td>
-                    <!-- ko if: artist -->
+                    <!-- ko if: artist && title-->
                     <span data-bind="text: artist"></span> - <span data-bind="text: title"></span>
                     <!-- /ko -->
                     <!-- ko ifnot: artist -->
                     <span data-bind="text: title"></span>
                     <!-- /ko -->
                     <!-- ko ifnot: title -->
-                    <span>Unkown</span>
+                    <span data-bind="text: fileName"></span>
                     <!-- /ko -->
                   </td>
                   <td>

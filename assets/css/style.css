@@ -504,16 +504,21 @@ header:hover .volume-slider input[type=range]::-webkit-slider-runnable-track {
   overflow: hidden;
 }
 
+.main .playlist {
+  position: relative;
+}
+
 .main .playlist .scroll-area {
   position: absolute;
   top: 1px;
   width: 100%;
-  height: calc(100% - 31px);
+  height: 100%;
   overflow-y: auto;
 }
 
 .main .playlist .scroll-area table {
   table-layout: auto;
+  margin-bottom: 30px;
 }
 
 .main .playlist .scroll-area table tr {
@@ -521,18 +526,26 @@ header:hover .volume-slider input[type=range]::-webkit-slider-runnable-track {
   height: 39px;
 }
 
-.main .playlist .scroll-area table td {
+.main .playlist .scroll-area table tr td {
   position: relative;
   padding: 4px;
-  color: #eeeeee;
+  color: #777777;
 }
 
-.main .playlist .scroll-area table td:first-child {
+.main .playlist .scroll-area table tr td:first-child {
+  width: 40px;
   text-align: center;
 }
 
-.main .playlist .scroll-area table td:last-child {
+.main .playlist .scroll-area table tr td:last-child {
+  width: 50px;
+  padding-right: 10px;
   text-align: right;
+}
+
+.main .playlist .scroll-area table tr.active td {
+  background-color: rgba(138, 43, 226, 0.5);
+  color: #FFF;
 }
 
 .main .playlist .scroll-area table tbody > tr {
@@ -548,10 +561,24 @@ header:hover .volume-slider input[type=range]::-webkit-slider-runnable-track {
 }
 
 .main .playlist .bottom {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
   margin-top: auto;
+  padding-top: 3px;
   height: 30px;
-  padding: 10px 20px 0;
+  text-align: center;
+}
+
+.main .playlist .bottom .btn {
+  padding: 2px 8px;
+  background-color: #222222;
+  border-color: #222222;
+}
+
+.main .playlist .bottom .btn:hover {
   background-color: #333333;
+  border-color: #333333;
 }
 
 .main .preferences {

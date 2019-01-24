@@ -52,12 +52,12 @@ dirDialogBtn.addEventListener('click', () => {
 const clearPlaylistBtn = document.querySelector('#ClearPlaylistBtn')
 clearPlaylistBtn.addEventListener('click', () => {
   storage.set('playlist', [])
-  Library.viewModel.playlistCoreData(storage.get('playlist'))
+  Library.viewModel.playlistCoreData([])
 })
 
 const sufflePlaylistBtn = document.querySelector('#ShufflePlaylistBtn')
 sufflePlaylistBtn.addEventListener('click', () => {
-  let playlistData = storage.get('playlist')
+  let playlistData = Library.viewModel.playlistCoreData()
 
   if (playlistData.length) {
     playlistData.sort(() => { return 0.5 - Math.random() })
@@ -68,7 +68,7 @@ sufflePlaylistBtn.addEventListener('click', () => {
     })
 
     storage.set('playlist', playlistData)
-    Library.viewModel.playlistCoreData(storage.get('playlist'))
+    Library.viewModel.playlistCoreData(playlistData)
   }
 })
 
@@ -78,6 +78,10 @@ let audioSource = document.querySelector('#AudioMp3')
 let audioVolInput = document.querySelector('#VolumeSlider')
 
 audioVolInput.value = audioPlayer.volume;
+
+audioVolInput.addEventListener('input', (e) => {
+  audioPlayer.volume = audioVolInput.value;
+})
 
 audioPlayer.onloadedmetadata = () => {
   audioPlayer.ontimeupdate = () => {
@@ -126,10 +130,6 @@ audioPlayer.onended = () => {
     updateConsole('<i class="glyphicon glyphicon-stop"></i> Ready')
   }
 }
-
-audioVolInput.addEventListener('input', (e) => {
-  audioPlayer.volume = audioVolInput.value;
-})
 
 let ctx = new AudioContext();
 const analyser = ctx.createAnalyser();
@@ -488,13 +488,13 @@ const Library = new function() {
     }
 
     libVM.libraryItemPlayClicked = (item) => {
-      storage.set('playlist', [])
-      this.addItemToPlaylist(item)
-      this.playThisItem(item, true)
+      libVM.playlistCoreData([])
+      libVM.addItemToPlaylist(item, true)
+      libVM.playThisItem(item, true)
     }
 
     libVM.playlistItemPlayClicked = (item) => {
-      this.playThisItem(item, true)
+      libVM.playThisItem(item, true)
     }
 
     libVM.playClicked = () => {
@@ -506,37 +506,39 @@ const Library = new function() {
     }
 
     libVM.addPlaylistClicked = (item) => {
-      this.addItemToPlaylist(item)
+      libVM.addItemToPlaylist(item, false)
     }
 
-    libVM.addItemToPlaylist = (item) => {
-      let playlistArray = storage.get('playlist')
+    libVM.addItemToPlaylist = (item, active) => {
+      let playlistData = libVM.playlistCoreData()
 
       mp3Duration(item.filePath, (err, duration) => {
-        if (err) return console.log(err.message);
+        if (err) return console.log(err.message)
 
         let durmins = Math.floor(duration / 60)
         let dursecs = Math.floor(duration - durmins * 60)
 
-        if(durmins < 10) { durmins = '0' + durmins; }
-        if(dursecs < 10) { dursecs = '0' + dursecs; }
+        if (durmins < 10) { durmins = '0' + durmins; }
+        if (dursecs < 10) { dursecs = '0' + dursecs; }
 
-        item.id = playlistArray.length + 1
+        item.id = playlistData.length + 1
         item.time = durmins + ':' + dursecs
-        playlistArray.push(item)
+        item.active(active)
 
-        storage.set('playlist', playlistArray)
-        Library.viewModel.playlistCoreData(storage.get('playlist'))
-        // console.log(storage.get('playlist'));
+        playlistData.push(item)
+
+        storage.set('playlist', playlistData)
+        libVM.playlistCoreData(playlistData)
+        console.log(playlistData)
       });
     }
 
     libVM.removeFromPlaylistClicked = (item) => {
-      this.removeFromPlaylist(item)
+      libVM.removeFromPlaylist(item)
     }
 
     libVM.removeFromPlaylist = (item) => {
-      let playlistData = storage.get('playlist'),
+      let playlistData = libVM.playlistCoreData(),
           playlistDataFiltered = []
 
       playlistData.map((i) => {
@@ -551,7 +553,7 @@ const Library = new function() {
 
       console.log(playlistDataFiltered);
       storage.set('playlist', playlistDataFiltered)
-      libCore.viewModel.playlistCoreData(storage.get('playlist'))
+      libVM.playlistCoreData(playlistDataFiltered)
     }
 
     libVM.editClicked = (item) => {
@@ -826,7 +828,14 @@ const Library = new function() {
   }
 
   libCore.playlistSetup = () => {
-    const playlistData = storage.get('playlist')
+    let playlistData = storage.get('playlist')
+    if (playlistData) {
+      playlistData = playlistData.map((item) => {
+        item.active = ko.observable(false)
+        return item
+      })
+    }
+
     libCore.viewModel.playlistCoreData(playlistData)
   }
 
