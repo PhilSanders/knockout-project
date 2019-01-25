@@ -18,7 +18,7 @@ const sassConfig = {
 
 gulp.task('electron', ['sasswatch'], function () {
   electron.start();
-  gulp.watch(['main.js', 'assets/*/*'], electron.restart);
+  gulp.watch(['main.js', 'assets/js/**/*', 'assets/css/*'], electron.restart);
   gulp.watch(['assets/views/index.html'], electron.reload);
 });
 
