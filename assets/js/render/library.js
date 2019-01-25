@@ -1,24 +1,68 @@
 // assets / js / library
 
+const remote = require('electron').remote
+const mainProcess = remote.require('./main')
 const path = require('path')
 const ko = require('knockout')
+const fastSort = require('fast-sort')
+const mp3Duration = require('mp3-duration')
 
 const dataUrl = require(path.resolve('./assets/js/base64'))
+const id3 = require(path.resolve('./assets/js/id3'))
 
 const feedback = require(path.resolve('./assets/js/render/feedback'))
-updateConsole = feedback.updateConsole
+const updateConsole = feedback.updateConsole
 
-const audio = require(path.resolve('./assests/js/render/audio'))
-const visualizer = audio.visualizer;
+const audio = require(path.resolve('./assets/js/render/audio'))
+const audioPlayer = audio.audioPlayer
+const audioSource = audio.audioSource
+const visualizer = audio.visualizer
 
 let storage = {}
-
 let currentAudioFile = {}
-let audioPlayer = document.querySelector('#AudioPlayer')
-let audioSource = document.querySelector('#AudioMp3')
-let audioVolInput = document.querySelector('#VolumeSlider')
 
-function Library() {
+const sorterClicked = (sortType) => {
+  switch(sortType) {
+    case 'artists':
+      fastSort(Library.viewModel.libraryCoreData).asc(u => u.artist);
+      break;
+    case 'titles':
+      fastSort(Library.viewModel.libraryCoreData).asc(u => u.title);
+      break;
+    case 'genres':
+      fastSort(Library.viewModel.libraryCoreData).asc(u => u.genre);
+      break;
+    case 'years':
+      fastSort(Library.viewModel.libraryCoreData).asc(u => u.year);
+      break;
+  }
+  Library.viewModel.filteredLibrary(Library.viewModel.getFilteredLibrary());
+}
+
+const writeId3Tag = (item) => {
+  // console.log(item)
+
+  //  Define the tags for your file using the ID (e.g. APIC) or the alias (see at bottom)
+  let tags = {
+    artist: item.artist,
+    title: item.title,
+    album: item.album,
+    year: item.year,
+    copyright: item.copyright,
+    url: item.url,
+    comment: {
+      text: item.description
+    },
+    genre: item.genre,
+    bpm: item.bpm,
+    APIC: item.cover,
+    // TRCK: "27"
+  }
+
+  let success = id3.update(tags, item.filePath) //  Returns true/false or, if buffer passed as file, the tagged buffer
+}
+
+const Library = function() {
   const libCore = this;
 
   libCore.viewModel = null
@@ -204,7 +248,7 @@ function Library() {
         console.log(item.cover);
         const arrayBuffer = id3.get(item.filePath).image.imageBuffer;
         const bytes = new Uint8Array(arrayBuffer);
-        coverImg.src = 'data:image/png;base64,' + encode(bytes)
+        coverImg.src = 'data:image/png;base64,' + dataUrl.encode(bytes)
       }
 
       fileDialogBtn.addEventListener('click', (e) => {
@@ -545,7 +589,7 @@ function Library() {
     libCore.playlistSetup(libraryData)
     libCore.updateDisabledFlags()
 
-    ko.applyBindings(libCore.viewModel, document.getElementById('MusicLibrary'))
+    ko.applyBindings(libCore.viewModel, document.querySelector('#MusicLibrary'))
     // console.log(libCore.viewModel.filteredLibrary())
 
     // load preferences

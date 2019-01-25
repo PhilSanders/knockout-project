@@ -50,24 +50,6 @@ audioPlayer.onpause = () => {
   updateConsole('<i class="glyphicon glyphicon-pause"></i> Paused')
 }
 
-audioPlayer.onended = () => {
-  // get the next item in the playlist, if there is one
-  const playlistData = Library.viewModel.playlistCoreData()
-
-  if (playlistData.length > 1) {
-    const nextItemId = currentAudioFile.id + 1;
-
-    playlistData.forEach((item) => {
-      if (item.id === nextItemId && item.id - 1 < playlistData.length) {
-        Library.viewModel.playThisItem(item, true)
-      }
-    })
-  }
-  else {
-    updateConsole('<i class="glyphicon glyphicon-stop"></i> Ready')
-  }
-}
-
 let ctx = new AudioContext();
 const analyser = ctx.createAnalyser();
 const audioSrc = ctx.createMediaElementSource(audioPlayer);
