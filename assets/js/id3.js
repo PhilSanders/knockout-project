@@ -1,16 +1,16 @@
-// assets/js/id3.js
+// assets / js / id3
 
 const id3 = require('node-id3')
 
-exports.update = (tags, file, callbackFunc) => {
-  return id3.update(tags, file, callbackFunc)
-}
-
-exports.get = (file) => {
+const get = (file) => {
   return id3.read(file)
 }
 
-exports.editorTemplate = (item) => {
+const update = (tags, file, callbackFunc) => {
+  return id3.update(tags, file, callbackFunc)
+}
+
+const editorTemplate = (item) => {
   let htmlTemp = ''
 
   htmlTemp = '<form id="Id3EditorForm" class="form-horizontal">'
@@ -118,4 +118,10 @@ exports.editorTemplate = (item) => {
            + '</form>';
 
   return htmlTemp
+}
+
+module.exports = {
+  get: get,
+  update: update,
+  editorTemplate: editorTemplate
 }
