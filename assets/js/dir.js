@@ -1,9 +1,9 @@
-// assets/js/dir.js
+// assets / js / dir
 
 const fs = require('fs')
 const path = require('path')
 
-exports.walkParallel = function(dir, callbackFunc) {
+const walkParallel = function(dir, callbackFunc) {
   let results = [];
   fs.readdir(dir, function(err, list) {
     if (err)
@@ -18,7 +18,7 @@ exports.walkParallel = function(dir, callbackFunc) {
       file = path.resolve(dir, file);
       fs.stat(file, function(err, stat) {
         if (stat && stat.isDirectory()) {
-          exports.walkParallel(file, function(err, res) {
+          walkParallel(file, function(err, res) {
             results = results.concat(res);
             if (!--pending)
               callbackFunc(null, results);
@@ -33,7 +33,7 @@ exports.walkParallel = function(dir, callbackFunc) {
   });
 }
 
-exports.walkSerial = function(dir, callbackFunc) {
+const walkSerial = function(dir, callbackFunc) {
   let results = [];
   fs.readdir(dir, function(err, list) {
     if (err)
@@ -50,7 +50,7 @@ exports.walkSerial = function(dir, callbackFunc) {
 
       fs.stat(file, function(err, stat) {
         if (stat && stat.isDirectory()) {
-          exports.walkSerial(file, function(err, res) {
+          walkSerial(file, function(err, res) {
             results = results.concat(res);
             next();
           });
@@ -61,4 +61,9 @@ exports.walkSerial = function(dir, callbackFunc) {
       });
     })();
   });
+}
+
+module.exports = {
+  walkParallel: walkParallel,
+  walkSerial: walkSerial
 }
