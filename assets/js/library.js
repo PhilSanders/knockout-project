@@ -20,6 +20,20 @@ const visualizer = audio.visualizer
 
 let storage = {} // this gets set at initCallback(storageFromIndex)
 
+const waitFor = (ms) => new Promise(r => setTimeout(r, ms))
+
+async function asyncForEach(array, callback) {
+  for (let index = 0; index < array.length; index++) {
+    await callback(array[index], index, array);
+  }
+}
+
+const progressBarHtml = '<div class="progress">'
+                          + '<div id="ModalProgressBar" class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">'
+                            + '<span></span>'
+                          + '</div>'
+                        + '</div>'
+
 const Library = function() {
   const libCore = this;
 
