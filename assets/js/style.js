@@ -1,4 +1,4 @@
-// assets / js / render / style
+// assets / js / style
 
 const getComputedStyle = (selectorProp, styleProp) => {
   let para = document.querySelector(selectorProp);

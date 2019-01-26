@@ -1,4 +1,4 @@
-// assets / js / render / feedback
+// assets / js / feedback
 
 const consoleOut = document.querySelector("#ConsoleLog span")
 

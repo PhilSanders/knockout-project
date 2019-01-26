@@ -1,13 +1,13 @@
-// assets / js / render / audio
+// assets / js / audio
 
-window.AudioContext = window.AudioContext || window.webkitAudioContext || window.mozAudioContext;
+window.AudioContext = window.AudioContext || window.webkitAudioContext;
 
 const path = require('path')
 
-const style = require(path.resolve('./assets/js/render/style'))
+const style = require(path.resolve('./assets/js/style'))
 let themePallete = style.themePallete
 
-const feedback = require(path.resolve('./assets/js/render/feedback'))
+const feedback = require(path.resolve('./assets/js/feedback'))
 let updateConsole = feedback.updateConsole;
 
 let audioPlayer = document.querySelector('#AudioPlayer')

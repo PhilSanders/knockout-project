@@ -10,57 +10,15 @@ const mp3Duration = require('mp3-duration')
 const dataUrl = require(path.resolve('./assets/js/base64'))
 const id3 = require(path.resolve('./assets/js/id3'))
 
-const feedback = require(path.resolve('./assets/js/render/feedback'))
+const feedback = require(path.resolve('./assets/js/feedback'))
 const updateConsole = feedback.updateConsole
 
-const audio = require(path.resolve('./assets/js/render/audio'))
+const audio = require(path.resolve('./assets/js/audio'))
 const audioPlayer = audio.audioPlayer
 const audioSource = audio.audioSource
 const visualizer = audio.visualizer
 
-let storage = {}
-let currentAudioFile = {}
-
-const sorterClicked = (sortType) => {
-  switch(sortType) {
-    case 'artists':
-      fastSort(Library.viewModel.libraryCoreData).asc(u => u.artist);
-      break;
-    case 'titles':
-      fastSort(Library.viewModel.libraryCoreData).asc(u => u.title);
-      break;
-    case 'genres':
-      fastSort(Library.viewModel.libraryCoreData).asc(u => u.genre);
-      break;
-    case 'years':
-      fastSort(Library.viewModel.libraryCoreData).asc(u => u.year);
-      break;
-  }
-  Library.viewModel.filteredLibrary(Library.viewModel.getFilteredLibrary());
-}
-
-const writeId3Tag = (item) => {
-  // console.log(item)
-
-  //  Define the tags for your file using the ID (e.g. APIC) or the alias (see at bottom)
-  let tags = {
-    artist: item.artist,
-    title: item.title,
-    album: item.album,
-    year: item.year,
-    copyright: item.copyright,
-    url: item.url,
-    comment: {
-      text: item.description
-    },
-    genre: item.genre,
-    bpm: item.bpm,
-    APIC: item.cover,
-    // TRCK: "27"
-  }
-
-  let success = id3.update(tags, item.filePath) //  Returns true/false or, if buffer passed as file, the tagged buffer
-}
+let storage = {} // this gets set at initCallback(storageFromIndex)
 
 const Library = function() {
   const libCore = this;
@@ -125,10 +83,29 @@ const Library = function() {
       return filteredLibrary;
     }
 
-    libVM.playThisItem = (item, autoPlay) => {
-      console.log(item)
+    libVM.sorterClicked = (sortType) => {
+      switch(sortType) {
+        case 'artists':
+          fastSort(libVM.libraryCoreData).asc(u => u.artist);
+          break;
+        case 'titles':
+          fastSort(libVM.libraryCoreData).asc(u => u.title);
+          break;
+        case 'genres':
+          fastSort(libVM.libraryCoreData).asc(u => u.genre);
+          break;
+        case 'years':
+          fastSort(libVM.libraryCoreData).asc(u => u.year);
+          break;
+      }
+      libVM.filteredLibrary(libVM.getFilteredLibrary());
+    }
 
+    libVM.currentAudioFile = {}
+
+    libVM.playThisItem = (item, autoPlay) => {
       const promise = dataUrl.base64(item.filePath, 'audio/mp3');
+
       promise.then((fileBuffer) => {
         // update audio player artist and song tile text display
         libVM.currentArtist(item.artist)
@@ -140,7 +117,7 @@ const Library = function() {
         if (autoPlay) audioPlayer.play()
 
         // update the currently playing item
-        currentAudioFile = item;
+        libVM.currentAudioFile = item;
         storage.set('lastPlayed', item)
 
         // set active item in playlist
@@ -156,7 +133,7 @@ const Library = function() {
 
       playlistData.forEach((item) => {
         item.active(false)
-        if (item.id === currentAudioFile.id && item.filePath === currentAudioFile.filePath)
+        if (item.id === libVM.currentAudioFile.id && item.filePath === libVM.currentAudioFile.filePath)
           item.active(true)
       })
 
@@ -288,7 +265,7 @@ const Library = function() {
               itemInStorage.tags = tagsArray ? tagsArray : []
             }
             // also write the id3 tag
-            writeId3Tag(itemInStorage);
+            libCore.writeId3TagInfo(itemInStorage);
           }
           return itemInStorage;
         })
@@ -299,6 +276,26 @@ const Library = function() {
         $('#modal').modal('hide')
       })
     }
+  }
+
+  libCore.writeId3TagInfo = (item) => {
+    let tags = {
+      artist: item.artist,
+      title: item.title,
+      album: item.album,
+      year: item.year,
+      copyright: item.copyright,
+      url: item.url,
+      comment: {
+        text: item.description
+      },
+      genre: item.genre,
+      bpm: item.bpm,
+      APIC: item.cover,
+      // TRCK: "27"
+    }
+
+    let success = id3.update(tags, item.filePath)
   }
 
   libCore.toggleFilter = (filter) => {
@@ -579,8 +576,8 @@ const Library = function() {
     // console.log(storage.get('library'))
   }
 
-  libCore.initCallback = (initStorage) => {
-    storage = initStorage
+  libCore.initCallback = (storageFromIndex) => {
+    storage = storageFromIndex
 
     let libraryData = storage.get('library')
 
@@ -609,7 +606,7 @@ const Library = function() {
       })
 
       $('.table-fixed th a').on('click', (elm) => {
-        sorterClicked(elm.currentTarget.dataset.sorter)
+        libCore.viewModel.sorterClicked(elm.currentTarget.dataset.sorter)
       })
 
       // load last played item
@@ -622,9 +619,9 @@ const Library = function() {
     $('#modal').modal('hide')
   }
 
-  libCore.init = (storage) => {
+  libCore.init = (storageFromIndex) => {
     libCore.viewModel = new libCore.libraryViewModel()
-    libCore.initCallback(storage)
+    libCore.initCallback(storageFromIndex)
   }
 }
 

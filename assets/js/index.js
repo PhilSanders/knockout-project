@@ -5,19 +5,49 @@ const remote = require('electron').remote
 const { Menu, MenuItem } = remote
 const mainProcess = remote.require('./main')
 const path = require('path')
-const ko = require('knockout')
+const fastSort = require('fast-sort')
 const store = require('electron-store')
 const storage = new store()
 
 const dir = require(path.resolve('./assets/js/dir'));
 const id3 = require(path.resolve('./assets/js/id3'))
 
-const LibraryAbstract = require(path.resolve('./assets/js/render/library'))
-const Library = new LibraryAbstract.Library
+const LibCore = require(path.resolve('./assets/js/library'))
+const Library = new LibCore.Library
 
 const defaultLibPath = './mp3'
 let libraryTempData = []
 let libPathInput
+
+// audio / visualizer
+const audio = require(path.resolve('./assets/js/audio'))
+const audioPlayer = audio.audioPlayer
+const audioSource = audio.audioSource
+const visualizer = audio.visualizer
+
+audioPlayer.onended = () => {
+  // get the next item in the playlist, if there is one
+  const playlistData = Library.viewModel.playlistCoreData()
+
+  if (playlistData.length > 1) {
+    const nextItemId = Library.viewModel.currentAudioFile.id + 1;
+
+    playlistData.forEach((item) => {
+      if (item.id === nextItemId && item.id < playlistData.length - 1) {
+        Library.viewModel.playThisItem(item, true)
+      }
+      else {
+        updateConsole('<i class="glyphicon glyphicon-stop"></i> Ready')
+      }
+    })
+  }
+  else {
+    updateConsole('<i class="glyphicon glyphicon-stop"></i> Ready')
+  }
+}
+
+const feedback = require(path.resolve('./assets/js/feedback'))
+const updateConsole = feedback.updateConsole
 
 const dirDialogBtn = document.querySelector('#DirInput')
 dirDialogBtn.addEventListener('click', () => {
@@ -51,31 +81,6 @@ sufflePlaylistBtn.addEventListener('click', () => {
     Library.viewModel.playlistCoreData(playlistData)
   }
 })
-
-// audio / visualizer
-const audio = require(path.resolve('./assets/js/render/audio'))
-const audioPlayer = audio.audioPlayer
-const audioSource = audio.audioSource
-const visualizer = audio.visualizer
-let currentAudioFile = {}
-
-audioPlayer.onended = () => {
-  // get the next item in the playlist, if there is one
-  const playlistData = Library.viewModel.playlistCoreData()
-
-  if (playlistData.length > 1) {
-    const nextItemId = currentAudioFile.id + 1;
-
-    playlistData.forEach((item) => {
-      if (item.id === nextItemId && item.id - 1 < playlistData.length) {
-        Library.viewModel.playThisItem(item, true)
-      }
-    })
-  }
-  else {
-    updateConsole('<i class="glyphicon glyphicon-stop"></i> Ready')
-  }
-}
 
 let contextMenuRef; // this should always be an html element (tr)
 
@@ -177,6 +182,7 @@ const updateLibPath = () => {
   $('#modal .modal-body').html('<p>Preparing system...</p>')
   $('#modal').modal('show')
 
+  libPathInput = document.querySelector('#LibraryPath')
   libPathInput.innerHTML = storage.get('preferences.libraryPath')
 
   window.setTimeout(() => {
