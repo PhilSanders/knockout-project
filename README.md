@@ -4,7 +4,7 @@ Experimental mp3 music library with the intent to become a hackable audio librar
 
 ###### Top Level Dependencies
 
-NodeJs (v8.1.4)
+NodeJs
 Yarn
 Ruby (for sass)
 Python
@@ -15,7 +15,7 @@ Run `$ yarn` to install development dependencies
 
 ### Running The Development Environment
 
-Run `$ gulp electron` to start
+Run `$ gulp dev` to start
 
 ### Contribute
 
