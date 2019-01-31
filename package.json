@@ -3,28 +3,23 @@
   "version": "0.1.0",
   "description": "PillFORM Music Library",
   "main": "main.js",
-  "dependencies": {
-    "jquery": "1.12.4",
-    "jquery-table-fixed-header": "^1.1.4",
-    "knockout": "^3.5.0-beta"
-  },
   "devDependencies": {
-    "bootstrap-sass": "^3.3.7",
+    "bootstrap-sass": "^3.4.0",
     "compass-importer": "^0.4.1",
     "dataurl": "^0.1.0",
-    "del": "^3.0.0",
-    "electron": "^4.0.1",
+    "electron": "^4.0.3",
     "electron-connect": "^0.6.3",
     "electron-store": "^2.0.0",
     "fast-sort": "^1.5.4",
     "fs": "^0.0.1-security",
-    "gulp": "^3.9.1",
-    "gulp-sass": "^3.1.0",
-    "gulp-useref": "^3.1.6",
+    "gulp": "^4.0.0",
+    "gulp-sass": "^4.0.2",
+    "jquery": "3.3.1",
+    "jquery-table-fixed-header": "^1.1.4",
+    "knockout": "^3.5.0-beta",
     "mp3-duration": "^1.1.0",
     "node-id3": "^0.1.7",
-    "path": "^0.12.7",
-    "url": "^0.11.0"
+    "path": "^0.12.7"
   },
   "scripts": {
     "start": "electron ."

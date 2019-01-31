@@ -1,11 +1,9 @@
 'use-strict';
 
 const electron = require('electron-connect').server.create(),
-      del = require('del'),
       gulp = require('gulp'),
       sass = require('gulp-sass'),
-      compassImporter = require('compass-importer'),
-      useref = require('gulp-useref');
+      compassImporter = require('compass-importer');
 
 const sassConfig = {
         inputDir: 'assets/css/scss/**/*.scss',
@@ -16,23 +14,26 @@ const sassConfig = {
         }
       };
 
-gulp.task('electron', ['sasswatch'], function () {
-  electron.start();
-  gulp.watch(['main.js', 'assets/js/**/*', 'assets/css/*'], electron.restart);
-  gulp.watch(['assets/views/index.html'], electron.reload);
-});
-
-gulp.task('sass', function() {
-  return gulp
-    .src(sassConfig.inputDir)
-    .pipe(sass(sassConfig.options).on('error', sass.logError))
+const sassCompile = () => {
+  return gulp.src(sassConfig.inputDir)
+    .pipe(sass(sassConfig.options)
+    .on('error', sass.logError))
     .pipe(gulp.dest(sassConfig.outputDir));
+};
+
+const electronStart = () => {
+  electron.start();
+  gulp.watch(['main.js', 'assets/js/**/*', 'assets/css/*'], gulp.series(electron.restart));
+  gulp.watch(['assets/views/index.html'], gulp.series(electron.reload));
+};
+
+const sassWatch = gulp.parallel(() => {
+  gulp.watch(sassConfig.inputDir, gulp.series(sassCompile));
 });
 
-gulp.task('sasswatch', function() {
-  gulp.watch(sassConfig.inputDir, ['sass'])
-});
+const dev = gulp.series(sassWatch, electronStart);
 
-gulp.task('default', function() {
-  gulp.run('electron');
-});
+module.exports = {
+  dev: electronStart,
+  sass: sassCompile
+};

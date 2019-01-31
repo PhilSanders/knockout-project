@@ -20,96 +20,108 @@ const visualizer = audio.visualizer
 
 let storage = {} // this gets set at initCallback(storageFromIndex)
 
+const waitFor = (ms) => new Promise(r => setTimeout(r, ms))
+
+async function asyncForEach(array, callback) {
+  for (let index = 0; index < array.length; index++) {
+    await callback(array[index], index, array)
+  }
+}
+
+const progressBarHtml = '<div class="progress">'
+                          + '<div id="ModalProgressBar" class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">'
+                            + '<span></span>'
+                          + '</div>'
+                        + '</div>'
+
 const Library = function() {
-  const libCore = this;
+  const self = this
 
-  libCore.viewModel = null
+  self.viewModel = null
 
-  libCore.libraryViewModel = function() {
-    const libVM = this
+  self.libraryVM = function() {
+    this.libraryCoreData = []
 
-    libVM.libraryCoreData = []
+    this.playlistCoreData = ko.observableArray([])
 
-    libVM.playlistCoreData = ko.observableArray([])
+    this.currentArtist = ko.observable()
+    this.currentTitle = ko.observable()
+    this.currentFile = ko.observable()
 
-    libVM.currentArtist = ko.observable()
-    libVM.currentTitle = ko.observable()
-    libVM.currentFile = ko.observable()
+    this.filterGroups = ko.observableArray()
+    this.filteredLibrary = ko.observableArray([])
 
-    libVM.filterGroups = ko.observableArray()
-    libVM.filteredLibrary = ko.observableArray([])
-
-    libVM.getFilterGroupAsList = () => {
+    this.getFilterGroupAsList = () => {
       let filterGroupList = []
 
-      for (let key in libCore.viewModel.filterGroups()) {
+      for (let key in self.viewModel.filterGroups()) {
         filterGroupList.push({
           name: key,
-          filters: libCore.viewModel.filterGroups()[key].all,
-          selected: libCore.viewModel.filterGroups()[key].selected
-        });
+          filters: self.viewModel.filterGroups()[key].all,
+          selected: self.viewModel.filterGroups()[key].selected
+        })
       }
 
       return filterGroupList
     }
 
-    libVM.filterClicked = (filter) => {
+    this.filterClicked = (filter) => {
       //console.log(filter);
-      libCore.toggleFilter(filter)
-      libVM.setItemFlags()
-      libVM.filteredLibrary(libVM.getFilteredLibrary())
+      self.toggleFilter(filter)
+      this.setItemFlags()
+      this.filteredLibrary(this.getFilteredLibrary())
 
       $(window).trigger('resize');
       // console.log('filter');
     }
 
-    libVM.setItemFlags = () => {
-      libVM.libraryCoreData.forEach((item) => {
-        item.active(false);
-      });
+    this.setItemFlags = () => {
+      this.libraryCoreData.forEach((item) => {
+        item.active(false)
+      })
 
-      libVM.filteredLibrary().forEach((item) => {
-        item.active(false);
-      });
+      this.filteredLibrary().forEach((item) => {
+        item.active(false)
+      })
     }
 
-    libVM.getFilteredLibrary = () => {
-      let filteredLibrary = libVM.libraryCoreData;
+    this.getFilteredLibrary = () => {
+      let filteredLibrary = this.libraryCoreData
 
-      for (let key in libVM.filterGroups()) {
-        filteredLibrary = libCore.filterByGroup(key, filteredLibrary);
+      for (let key in this.filterGroups()) {
+        filteredLibrary = self.filterByGroup(key, filteredLibrary)
       }
 
-      return filteredLibrary;
+      return filteredLibrary
     }
 
-    libVM.sorterClicked = (sortType) => {
+    this.sorterClicked = (sortType) => {
       switch(sortType) {
         case 'artists':
-          fastSort(libVM.libraryCoreData).asc(u => u.artist);
-          break;
+          fastSort(this.libraryCoreData).asc(u => u.artist)
+          break
         case 'titles':
-          fastSort(libVM.libraryCoreData).asc(u => u.title);
-          break;
+          fastSort(this.libraryCoreData).asc(u => u.title)
+          break
         case 'genres':
-          fastSort(libVM.libraryCoreData).asc(u => u.genre);
-          break;
+          fastSort(this.libraryCoreData).asc(u => u.genre)
+          break
         case 'years':
-          fastSort(libVM.libraryCoreData).asc(u => u.year);
-          break;
+          fastSort(this.libraryCoreData).asc(u => u.year)
+          break
       }
-      libVM.filteredLibrary(libVM.getFilteredLibrary());
+      this.filteredLibrary(this.getFilteredLibrary())
     }
 
-    libVM.currentAudioFile = {}
+    this.currentAudioFile = {}
 
-    libVM.playThisItem = (item, autoPlay) => {
-      const promise = dataUrl.base64(item.filePath, 'audio/mp3');
+    this.playThisItem = (item, autoPlay) => {
+      const promise = dataUrl.base64(item.filePath, 'audio/mp3')
 
       promise.then((fileBuffer) => {
         // update audio player artist and song tile text display
-        libVM.currentArtist(item.artist)
-        libVM.currentTitle(item.title)
+        this.currentArtist(item.artist)
+        this.currentTitle(item.title)
 
         // load base64 audio buffer and play it
         audioSource.src = fileBuffer
@@ -117,53 +129,53 @@ const Library = function() {
         if (autoPlay) audioPlayer.play()
 
         // update the currently playing item
-        libVM.currentAudioFile = item;
+        this.currentAudioFile = item;
         storage.set('lastPlayed', item)
 
         // set active item in playlist
-        libVM.toggleActiveItemInPlaylist()
+        this.toggleActiveItemInPlaylist()
 
         // start the visualizer
-        visualizer();
+        visualizer()
       })
     }
 
-    libVM.toggleActiveItemInPlaylist = () => {
-      let playlistData = libVM.playlistCoreData()
+    this.toggleActiveItemInPlaylist = () => {
+      let playlistData = this.playlistCoreData()
 
       playlistData.forEach((item) => {
         item.active(false)
-        if (item.id === libVM.currentAudioFile.id && item.filePath === libVM.currentAudioFile.filePath)
+        if (item.id === this.currentAudioFile.id && item.filePath === this.currentAudioFile.filePath)
           item.active(true)
       })
 
-      libVM.playlistCoreData(playlistData)
+      this.playlistCoreData(playlistData)
     }
 
-    libVM.libraryItemPlayClicked = (item) => {
-      libVM.playlistCoreData([])
-      libVM.addItemToPlaylist(item, true, true)
+    this.libraryItemPlayClicked = (item) => {
+      this.playlistCoreData([])
+      this.addItemToPlaylist(item, true, true)
     }
 
-    libVM.playlistItemPlayClicked = (item) => {
-      libVM.playThisItem(item, true)
+    this.playlistItemPlayClicked = (item) => {
+      this.playThisItem(item, true)
     }
 
-    libVM.playClicked = () => {
-      libVM.toggleActiveItemInPlaylist()
-      audioPlayer.play();
+    this.playClicked = () => {
+      this.toggleActiveItemInPlaylist()
+      audioPlayer.play()
     }
 
-    libVM.pauseClicked = () => {
-      audioPlayer.pause();
+    this.pauseClicked = () => {
+      audioPlayer.pause()
     }
 
-    libVM.addPlaylistClicked = (item) => {
-      libVM.addItemToPlaylist(item, false, false)
+    this.addPlaylistClicked = (item) => {
+      this.addItemToPlaylist(item, false, false)
     }
 
-    libVM.addItemToPlaylist = (item, autoPlay, active) => {
-      let playlistData = libVM.playlistCoreData()
+    this.addItemToPlaylist = (item, autoPlay, active) => {
+      let playlistData = this.playlistCoreData()
 
       mp3Duration(item.filePath, (err, duration) => {
         if (err) return console.log(err.message)
@@ -181,19 +193,19 @@ const Library = function() {
         playlistData.push(item)
 
         storage.set('playlist', playlistData)
-        libVM.playlistCoreData(playlistData)
-        if (autoPlay) libVM.playThisItem(item, true)
+        this.playlistCoreData(playlistData)
+        if (autoPlay) this.playThisItem(item, true)
 
         console.log(playlistData)
-      });
+      })
     }
 
-    libVM.removeFromPlaylistClicked = (item) => {
-      libVM.removeFromPlaylist(item)
+    this.removeFromPlaylistClicked = (item) => {
+      this.removeFromPlaylist(item)
     }
 
-    libVM.removeFromPlaylist = (item) => {
-      let playlistData = libVM.playlistCoreData(),
+    this.removeFromPlaylist = (item) => {
+      let playlistData = this.playlistCoreData(),
           playlistDataFiltered = []
 
       playlistData.map((i) => {
@@ -208,10 +220,10 @@ const Library = function() {
 
       console.log(playlistDataFiltered);
       storage.set('playlist', playlistDataFiltered)
-      libVM.playlistCoreData(playlistDataFiltered)
+      this.playlistCoreData(playlistDataFiltered)
     }
 
-    libVM.editClicked = (item) => {
+    this.editClicked = (item) => {
       // console.log(item)
       $('#modal .modal-title').html('Edit Info')
       $('#modal .modal-body').html(id3.editorTemplate(item))
@@ -230,6 +242,7 @@ const Library = function() {
 
       fileDialogBtn.addEventListener('click', (e) => {
         e.preventDefault()
+
         mainProcess.selectImage((filePaths) => {
           coverInput.value = filePaths ? filePaths[0] : ''
         })
@@ -243,8 +256,6 @@ const Library = function() {
       const id3UpdateBtn = document.querySelector('#Id3UpdateBtn')
 
       id3UpdateBtn.addEventListener('click', () => {
-        console.log('updating item', item)
-
         const storageData = storage.get('library')
         const storageUpdate = storageData.map((itemInStorage) => {
           if (JSON.stringify(itemInStorage) === JSON.stringify(item)) {
@@ -265,20 +276,21 @@ const Library = function() {
               itemInStorage.tags = tagsArray ? tagsArray : []
             }
             // also write the id3 tag
-            libCore.writeId3TagInfo(itemInStorage);
+            self.writeId3TagInfo(itemInStorage)
           }
-          return itemInStorage;
+
+          return itemInStorage
         })
 
         storage.set('library', storageUpdate)
-        libCore.updateCallback(storageUpdate)
+        self.updateCallback(storageUpdate)
 
         $('#modal').modal('hide')
       })
     }
   }
 
-  libCore.writeId3TagInfo = (item) => {
+  self.writeId3TagInfo = (item) => {
     let tags = {
       artist: item.artist,
       title: item.title,
@@ -298,211 +310,211 @@ const Library = function() {
     let success = id3.update(tags, item.filePath)
   }
 
-  libCore.toggleFilter = (filter) => {
-    const filterLabel = filter.label;
-    filter.active(!filter.active());
-    libCore.updateFilterSelection(libCore.viewModel.filterGroups()[filter.label].selected, filter);
-    libCore.updateDisabledFlags();
+  self.toggleFilter = (filter) => {
+    const filterLabel = filter.label
+    filter.active(!filter.active())
+    self.updateFilterSelection(self.viewModel.filterGroups()[filter.label].selected, filter)
+    self.updateDisabledFlags()
   }
 
-  libCore.enableFilter = (filter) => {
-    filter.disabled(false);
+  self.enableFilter = (filter) => {
+    filter.disabled(false)
   }
 
-  libCore.disableFilter = (selectionArray, filter) => {
-    filter.active(false);
-    filter.disabled(true);
-    libCore.updateFilterSelection(selectionArray, filter);
+  self.disableFilter = (selectionArray, filter) => {
+    filter.active(false)
+    filter.disabled(true)
+    self.updateFilterSelection(selectionArray, filter)
   }
 
-  libCore.applyFilters = (filters, items) => {
+  self.applyFilters = (filters, items) => {
     // pass if it passes any filter in filterGroup
     return items.filter((item) => {
       for (let i in filters) {
-        const filterGroup = libCore.viewModel.filterGroups()[filters[i].label];
+        const filterGroup = self.viewModel.filterGroups()[filters[i].label]
 
         if (filterGroup.filterMethod(filters[i], item)) {
-          return true;
+          return true
         }
       }
-      return false;
-    });
+      return false
+    })
   }
 
-  libCore.filterByGroup = (filterGroup, items) => {
-    const activeFilters = libCore.viewModel.filterGroups()[filterGroup].selected();
-    return activeFilters.length !== 0 ? libCore.applyFilters(activeFilters, items) : items;
+  self.filterByGroup = (filterGroup, items) => {
+    const activeFilters = self.viewModel.filterGroups()[filterGroup].selected()
+    return activeFilters.length !== 0 ? self.applyFilters(activeFilters, items) : items
   }
 
-  libCore.updateFilterSelection = (selectionArray, item) => {
+  self.updateFilterSelection = (selectionArray, item) => {
     if (item.active()) {
-      selectionArray.push(item);
+      selectionArray.push(item)
     }
     else {
-      selectionArray.remove(item);
+      selectionArray.remove(item)
     }
   }
 
-  libCore.updateDisabledFlagsInGroup = (filterGroupName) => {
-    let filteredLibrary = libCore.viewModel.libraryCoreData;
+  self.updateDisabledFlagsInGroup = (filterGroupName) => {
+    let filteredLibrary = self.viewModel.libraryCoreData
     // apply all filters in other groups
-    for (let key in libCore.viewModel.filterGroups()) {
+    for (let key in self.viewModel.filterGroups()) {
       if (key !== filterGroupName) {
-        filteredLibrary = libCore.filterByGroup(key, filteredLibrary);
+        filteredLibrary = self.filterByGroup(key, filteredLibrary)
       }
     }
 
-    const filterGroup = libCore.viewModel.filterGroups()[filterGroupName];
+    const filterGroup = self.viewModel.filterGroups()[filterGroupName]
     filterGroup.all.forEach((filter) => {
       // disable filter if applying it would result in an empty set
-      const tempFilteredLibrary = libCore.applyFilters([filter], filteredLibrary);
+      const tempFilteredLibrary = self.applyFilters([filter], filteredLibrary)
       if (tempFilteredLibrary.length === 0) {
-        libCore.disableFilter(filterGroup.selected, filter)
+        self.disableFilter(filterGroup.selected, filter)
       } else {
-        libCore.enableFilter(filter);
+        self.enableFilter(filter)
       }
-    });
+    })
   }
 
-  libCore.updateDisabledFlags = () => {
-    for (let key in libCore.viewModel.filterGroups()) {
-      libCore.updateDisabledFlagsInGroup(key);
+  self.updateDisabledFlags = () => {
+    for (let key in self.viewModel.filterGroups()) {
+      self.updateDisabledFlagsInGroup(key)
     }
   }
 
-  libCore.addFilterGroup = (name, filters, filterMethod) => {
-    libCore.viewModel.filterGroups()[name] = {
+  self.addFilterGroup = (name, filters, filterMethod) => {
+    self.viewModel.filterGroups()[name] = {
       all: filters.map((filter) => {
-        filter.label = name;
-        filter.active = ko.observable(false);
-        filter.disabled = ko.observable(false);
-        return filter;
+        filter.label = name
+        filter.active = ko.observable(false)
+        filter.disabled = ko.observable(false)
+        return filter
       }),
       selected: ko.observableArray([]),
       filterMethod: filterMethod
-    };
+    }
   }
 
-  libCore.getTypeFilters = (data) => {
-    let typeFiltersArray = [];
+  self.getTypeFilters = (data) => {
+    let typeFiltersArray = []
 
     data.forEach((item) => {
       const filter = {
-        value: item.type,
-      };
+        value: item.type
+      }
 
       if (filter.value && typeFiltersArray.map((f) => { return f.value }).indexOf(filter.value) === -1) {
-        typeFiltersArray.push(filter);
+        typeFiltersArray.push(filter)
       }
-    });
+    })
 
-    return typeFiltersArray;
+    return typeFiltersArray
   }
 
-  libCore.getAlbumFilters = (data) => {
-    let albumFiltersArray = [];
+  self.getAlbumFilters = (data) => {
+    let albumFiltersArray = []
 
     data.forEach((item) => {
       const filter = {
-        value: item.album,
-      };
+        value: item.album
+      }
 
       if (filter.value && albumFiltersArray.map((f) => { return f.value }).indexOf(filter.value) === -1) {
-        albumFiltersArray.push(filter);
+        albumFiltersArray.push(filter)
       }
-    });
+    })
 
-    return albumFiltersArray;
+    return albumFiltersArray
   }
 
-  libCore.getYearFilters = (data) => {
-    let yearFiltersArray = [];
+  self.getYearFilters = (data) => {
+    let yearFiltersArray = []
 
     data.forEach((item) => {
       const filter = {
-        value: item.year,
-      };
+        value: item.year
+      }
 
       if (filter.value && yearFiltersArray.map((f) => { return f.value }).indexOf(filter.value) === -1) {
-        yearFiltersArray.push(filter);
+        yearFiltersArray.push(filter)
       }
-    });
+    })
 
-    return yearFiltersArray;
+    return yearFiltersArray
   }
 
-  libCore.getGenreFilters = (data) => {
-    let genreFiltersArray = [];
+  self.getGenreFilters = (data) => {
+    let genreFiltersArray = []
 
     data.forEach((item) => {
       const filter = {
-        value: item.genre,
-      };
+        value: item.genre
+      }
 
       if (filter.value && genreFiltersArray.map((f) => { return f.value }).indexOf(filter.value) === -1) {
-        genreFiltersArray.push(filter);
+        genreFiltersArray.push(filter)
       }
-    });
+    })
 
-    return genreFiltersArray;
+    return genreFiltersArray
   }
 
-  libCore.getTagFilters = (data) => {
-    let tagFiltersArray = [];
+  self.getTagFilters = (data) => {
+    let tagFiltersArray = []
 
     data.forEach((item) => {
       item.tags.forEach((tag) => {
         const filter = {
-          value: tag,
-        };
+          value: tag
+        }
 
         if (tag && tagFiltersArray.map((f) => { return f.value }).indexOf(filter.value) === -1) {
-          tagFiltersArray.push(filter);
+          tagFiltersArray.push(filter)
         }
-      });
-    });
+      })
+    })
 
-    return tagFiltersArray;
+    return tagFiltersArray
   }
 
-  libCore.refreshTagFilters = (libraryData) => {
-    const tagFilters = libCore.getTagFilters(libraryData);
-    libCore.addFilterGroup('Tags', tagFilters, (filter, item) => {
-      return item.tags.indexOf(filter.value) !== -1;
-    });
-    libCore.viewModel.filterGroups(libCore.viewModel.filterGroups())
+  self.refreshTagFilters = (libraryData) => {
+    const tagFilters = self.getTagFilters(libraryData)
+    self.addFilterGroup('Tags', tagFilters, (filter, item) => {
+      return item.tags.indexOf(filter.value) !== -1
+    })
+    self.viewModel.filterGroups(self.viewModel.filterGroups())
   }
 
-  libCore.filtersSetup = (libraryData) => {
+  self.filtersSetup = (libraryData) => {
     // setup filter groups
 
-    const typeFilters = libCore.getTypeFilters(libraryData);
-    libCore.addFilterGroup('Type', typeFilters, (filter, item) => {
-      return item.type === filter.value;
-    });
+    const typeFilters = self.getTypeFilters(libraryData)
+    self.addFilterGroup('Type', typeFilters, (filter, item) => {
+      return item.type === filter.value
+    })
 
-    const albumFilters = libCore.getAlbumFilters(libraryData);
-    libCore.addFilterGroup('Album', albumFilters, (filter, item) => {
-      return item.album === filter.value;
-    });
+    const albumFilters = self.getAlbumFilters(libraryData)
+    self.addFilterGroup('Album', albumFilters, (filter, item) => {
+      return item.album === filter.value
+    })
 
-    const yearFilters = libCore.getYearFilters(libraryData);
-    libCore.addFilterGroup('Year', yearFilters, (filter, item) => {
-      return item.year === filter.value;
-    });
+    const yearFilters = self.getYearFilters(libraryData)
+    self.addFilterGroup('Year', yearFilters, (filter, item) => {
+      return item.year === filter.value
+    })
 
-    const genreFilters = libCore.getGenreFilters(libraryData);
-    libCore.addFilterGroup('Genre', genreFilters, (filter, item) => {
-      return item.genre === filter.value;
-    });
+    const genreFilters = self.getGenreFilters(libraryData)
+    self.addFilterGroup('Genre', genreFilters, (filter, item) => {
+      return item.genre === filter.value
+    })
 
-    const tagFilters = libCore.getTagFilters(libraryData);
-    libCore.addFilterGroup('Tags', tagFilters, (filter, item) => {
-      return item.tags.indexOf(filter.value) !== -1;
-    });
+    const tagFilters = self.getTagFilters(libraryData)
+    self.addFilterGroup('Tags', tagFilters, (filter, item) => {
+      return item.tags.indexOf(filter.value) !== -1
+    })
   }
 
-  libCore.playlistSetup = () => {
+  self.playlistSetup = () => {
     let playlistData = storage.get('playlist')
 
     if (playlistData) {
@@ -511,43 +523,42 @@ const Library = function() {
         return item
       })
 
-      libCore.viewModel.playlistCoreData(playlistData)
+      self.viewModel.playlistCoreData(playlistData)
     }
   }
 
-  libCore.lastPlayedSetup = () => {
+  self.lastPlayedSetup = () => {
     if (storage.get('lastPlayed')) {
       let lastPlayedItem = storage.get('lastPlayed')
 
       lastPlayedItem.active = ko.observable(true)
-      libCore.viewModel.playThisItem(lastPlayedItem, false)
+      self.viewModel.playThisItem(lastPlayedItem, false)
     }
   }
 
-  libCore.librarySetup = (libraryData) => {
+  self.librarySetup = (libraryData) => {
     // setup library core data
-    libCore.viewModel.libraryCoreData = libraryData.map((item) => {
+    self.viewModel.libraryCoreData = libraryData.map((item) => {
       item.active = ko.observable(true);
-      return item;
+      return item
     });
 
-    libCore.viewModel.filteredLibrary(libCore.viewModel.getFilteredLibrary())
+    self.viewModel.filteredLibrary(self.viewModel.getFilteredLibrary())
   }
 
-  libCore.storeBase64 = (libraryData) => { // Asynchronous Process
+  self.storeBase64 = (libraryData) => { // Asynchronous Process
     const progressBar = document.querySelector('#ModalProgressBar')
     const progressAmount = document.querySelector('#ModalProgressBar span')
     let finishedBuffers = []
 
     asyncForEach(libraryData, async (libItem, n) => {
-      const promise = dataUrl.base64(libItem.filePath, 'audio/mp3');
+      const promise = dataUrl.base64(libItem.filePath, 'audio/mp3')
 
-      updateConsole('<i class="glyphicon glyphicon-refresh"></i> Reading: ' + libItem.filePath);
+      updateConsole('<i class="glyphicon glyphicon-refresh"></i> Reading: ' + libItem.filePath)
 
       promise.then((fileBuffer) => {
-        // console.log('audio.' + libItem.fileBufferId)
-        let key = libItem.fileBufferId;
-        finishedBuffers.push({[key]: fileBuffer});
+        let key = libItem.fileBufferId
+        finishedBuffers.push({[key]: fileBuffer})
 
         const progressAmntDone = Math.floor(100 *  finishedBuffers.length / libraryData.length) + '%'
         progressAmount.innerHTML = progressAmntDone
@@ -558,36 +569,34 @@ const Library = function() {
           // console.log(finishedBuffers);
           // storage.set('audio', finishedBuffers);
           // console.log(storage.get('audio'));
-          updateConsole('<i class="glyphicon glyphicon-stop"></i> Ready');
-          $('#modal').modal('hide');
-        }, 3000) : null;
+          updateConsole('<i class="glyphicon glyphicon-stop"></i> Ready')
+          $('#modal').modal('hide')
+        }, 3000) : null
       })
 
-      await waitFor(1000);
+      await waitFor(1000)
     })
   }
 
-  libCore.updateCallback = (libraryData) => {
-    console.log(libraryData);
-    libCore.refreshTagFilters(libraryData)
-    libCore.librarySetup(libraryData)
-    libCore.updateDisabledFlags()
-    $(window).trigger('resize');
+  self.updateCallback = (libraryData) => {
+    self.refreshTagFilters(libraryData)
+    self.librarySetup(libraryData)
+    self.updateDisabledFlags()
+    $(window).trigger('resize')
     // console.log(storage.get('library'))
   }
 
-  libCore.initCallback = (storageFromIndex) => {
+  self.initSetup = (storageFromIndex) => {
     storage = storageFromIndex
 
     let libraryData = storage.get('library')
 
-    libCore.filtersSetup(libraryData)
-    libCore.librarySetup(libraryData)
-    libCore.playlistSetup(libraryData)
-    libCore.updateDisabledFlags()
+    self.filtersSetup(libraryData)
+    self.librarySetup(libraryData)
+    self.playlistSetup(libraryData)
+    self.updateDisabledFlags()
 
-    ko.applyBindings(libCore.viewModel, document.querySelector('#MusicLibrary'))
-    // console.log(libCore.viewModel.filteredLibrary())
+    ko.applyBindings(self.viewModel, document.querySelector('#MusicLibrary'))
 
     // load preferences
     libPathInput = document.querySelector('#LibraryPath')
@@ -597,7 +606,7 @@ const Library = function() {
     // $('#modal .modal-title').html('Please wait...')
     // $('#modal .modal-body').html('<p>Reading: ' + storage.get('preferences.libraryPath') + '</p>' + progressBarHtml)
     // $('#modal').modal('show')
-    // libCore.storeBase64(libraryData) // TODO do more testing with storage, currently only for show...
+    // self.storeBase64(libraryData) // TODO do more testing with storage, currently only for show...
 
     // sets up fixed position table header
     $(document).ready(() => {
@@ -606,22 +615,22 @@ const Library = function() {
       })
 
       $('.table-fixed th a').on('click', (elm) => {
-        libCore.viewModel.sorterClicked(elm.currentTarget.dataset.sorter)
+        self.viewModel.sorterClicked(elm.currentTarget.dataset.sorter)
       })
 
       // load last played item
       if (storage.get('lastPlayed')) {
-        libCore.lastPlayedSetup()
+        self.lastPlayedSetup()
       }
     })
 
-    updateConsole('<i class="glyphicon glyphicon-stop"></i> Ready');
+    updateConsole('<i class="glyphicon glyphicon-stop"></i> Ready')
     $('#modal').modal('hide')
   }
 
-  libCore.init = (storageFromIndex) => {
-    libCore.viewModel = new libCore.libraryViewModel()
-    libCore.initCallback(storageFromIndex)
+  self.init = (storageFromIndex) => {
+    self.viewModel = new self.libraryVM()
+    self.initSetup(storageFromIndex)
   }
 }
 

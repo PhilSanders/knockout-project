@@ -9,15 +9,22 @@ const fastSort = require('fast-sort')
 const store = require('electron-store')
 const storage = new store()
 
+const library = require(path.resolve('./assets/js/library'))
+const Library = new library.Library
+
 const dir = require(path.resolve('./assets/js/dir'));
 const id3 = require(path.resolve('./assets/js/id3'))
 
-const LibCore = require(path.resolve('./assets/js/library'))
-const Library = new LibCore.Library
-
+// defaults / temp
 const defaultLibPath = './mp3'
 let libraryTempData = []
+
+// preferences settings
 let libPathInput
+
+// app process feedback
+const feedback = require(path.resolve('./assets/js/feedback'))
+const updateConsole = feedback.updateConsole
 
 // audio / visualizer
 const audio = require(path.resolve('./assets/js/audio'))
@@ -46,9 +53,7 @@ audioPlayer.onended = () => {
   }
 }
 
-const feedback = require(path.resolve('./assets/js/feedback'))
-const updateConsole = feedback.updateConsole
-
+// buttons / inputs
 const dirDialogBtn = document.querySelector('#DirInput')
 dirDialogBtn.addEventListener('click', () => {
   mainProcess.selectDirectory((path) => {
@@ -82,7 +87,8 @@ sufflePlaylistBtn.addEventListener('click', () => {
   }
 })
 
-let contextMenuRef; // this should always be an html element (tr)
+// context menus
+let contextMenuRef; // this should always be a table row (tr) object
 
 const libraryMenu = new Menu()
 libraryMenu.append(new MenuItem({ label: 'Play', click() { menuPlayClicked() } }))
@@ -158,20 +164,7 @@ window.addEventListener('contextmenu', (e) => {
   }
 }, false)
 
-const waitFor = (ms) => new Promise(r => setTimeout(r, ms))
-
-async function asyncForEach(array, callback) {
-  for (let index = 0; index < array.length; index++) {
-    await callback(array[index], index, array);
-  }
-}
-
-const progressBarHtml = '<div class="progress">'
-                          + '<div id="ModalProgressBar" class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">'
-                            + '<span></span>'
-                          + '</div>'
-                        + '</div>'
-
+// updates the library path in preferences
 const updateLibPath = () => {
   console.log('update preferences')
   // const libraryData = storage.get('library')
@@ -249,7 +242,6 @@ if (!storage.get('lastPlayed'))
 
 if (!storage.get('preferences.libraryPath'))
   storage.set('preferences', { 'libraryPath': defaultLibPath })
-
 
 $('#modal .modal-title').html('Please wait...')
 $('#modal .modal-body').html('<p>Preparing system...</p>')
