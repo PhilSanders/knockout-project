@@ -60,6 +60,7 @@ dirDialogBtn.addEventListener('click', () => {
     if (path) {
       storage.set('preferences.libraryPath', path[0])
       updateLibPath()
+      // Library.init(storage, true)
     }
   })
 })
@@ -230,66 +231,4 @@ const updateLibPath = () => {
   }, 1000)
 }
 
-// initializ storage bins
-if (!storage.get('library'))
-  storage.set('library', [])
-
-if (!storage.get('playlist'))
-  storage.set('playlist', [])
-
-if (!storage.get('lastPlayed'))
-  storage.set('lastPlayed', {})
-
-if (!storage.get('preferences.libraryPath'))
-  storage.set('preferences', { 'libraryPath': defaultLibPath })
-
-$('#modal .modal-title').html('Please wait...')
-$('#modal .modal-body').html('<p>Preparing system...</p>')
-$('#modal').modal('show')
-
-window.setTimeout(() => {
-  if (!storage.get('library').length) {
-    dir.walkParallel(storage.get('preferences.libraryPath'), (err, results) => {
-      if (err)
-        throw err;
-
-      results.forEach((filePath, id) => {
-        const fileName = filePath.substr(filePath.lastIndexOf('\/') + 1, filePath.length)
-
-        if (fileName.split('.').pop() === 'mp3') {
-          const info = id3.get(filePath)
-
-          libraryTempData.push({
-            catNum: '',
-            compilationId: null,
-            artist: info.artist ? info.artist : '',
-            title: info.title ? info.title : '',
-            description: info.comment ? info.comment.text : '',
-            genre: info.genre ? info.genre : '',
-            bpm: info.bpm ? info.bpm : '',
-            type: info.album ? 'Album' : 'Single',
-            album: info.album ? info.album : '',
-            cover: info.image ? info.image.imageBuffer : '',
-            year: info.year ? info.year : '',
-            copyright: info.copyright ? info.copyright : '',
-            url: '',
-            tags: [],
-            fileBufferId: id,
-            filePath: filePath,
-            fileName: fileName
-          })
-        }
-      })
-      console.log(libraryTempData);
-
-      fastSort(libraryTempData).asc(u => u.artist);
-      storage.set('library', libraryTempData)
-      libraryTempData = []
-
-      Library.init(storage)
-    })
-  }
-  else {
-    Library.init(storage)
-  }
-}, 1000)
+Library.init(storage, false)
