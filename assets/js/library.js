@@ -25,6 +25,8 @@ let storage = {} // this gets set at initCallback(storageFromIndex)
 const defaultLibPath = './mp3'
 let libraryTempData = []
 
+let libPathInput = document.querySelector('#LibraryPath')
+
 const waitFor = (ms) => new Promise(r => setTimeout(r, ms))
 
 async function asyncForEach(array, callback) {
@@ -291,7 +293,7 @@ const Library = function() {
         })
 
         storage.set('library', storageUpdate)
-        self.updateLibrary(storageUpdate)
+        self.updateLibrary()
 
         $('#modal').modal('hide')
       })
@@ -316,6 +318,38 @@ const Library = function() {
     }
 
     let success = id3.update(tags, item.filePath)
+  }
+
+  self.storeBase64 = (libraryData) => { // Asynchronous Process
+    const progressBar = document.querySelector('#ModalProgressBar')
+    const progressAmount = document.querySelector('#ModalProgressBar span')
+    let finishedBuffers = []
+
+    asyncForEach(libraryData, async (libItem, n) => {
+      const promise = dataUrl.base64(libItem.filePath, 'audio/mp3')
+
+      updateConsole('<i class="glyphicon glyphicon-refresh"></i> Reading: ' + libItem.filePath)
+
+      promise.then((fileBuffer) => {
+        let key = libItem.fileBufferId
+        finishedBuffers.push({[key]: fileBuffer})
+
+        const progressAmntDone = Math.floor(100 *  finishedBuffers.length / libraryData.length) + '%'
+        progressAmount.innerHTML = progressAmntDone
+        progressBar.style.width = progressAmntDone
+
+        // console.log(progressBar.style.width);
+        finishedBuffers.length === libraryData.length ? window.setTimeout(() => {
+          // console.log(finishedBuffers);
+          // storage.set('audio', finishedBuffers);
+          // console.log(storage.get('audio'));
+          updateConsole('<i class="glyphicon glyphicon-stop"></i> Ready')
+          $('#modal').modal('hide')
+        }, 3000) : null
+      })
+
+      await waitFor(1000)
+    })
   }
 
   self.toggleFilter = (filter) => {
@@ -554,81 +588,94 @@ const Library = function() {
     self.viewModel.filteredLibrary(self.viewModel.getFilteredLibrary())
   }
 
-  self.storeBase64 = (libraryData) => { // Asynchronous Process
-    const progressBar = document.querySelector('#ModalProgressBar')
-    const progressAmount = document.querySelector('#ModalProgressBar span')
-    let finishedBuffers = []
+  self.makeLibraryItem = (id, fileName, filePath ) => {
+    const info = id3.get(filePath);
 
-    asyncForEach(libraryData, async (libItem, n) => {
-      const promise = dataUrl.base64(libItem.filePath, 'audio/mp3')
-
-      updateConsole('<i class="glyphicon glyphicon-refresh"></i> Reading: ' + libItem.filePath)
-
-      promise.then((fileBuffer) => {
-        let key = libItem.fileBufferId
-        finishedBuffers.push({[key]: fileBuffer})
-
-        const progressAmntDone = Math.floor(100 *  finishedBuffers.length / libraryData.length) + '%'
-        progressAmount.innerHTML = progressAmntDone
-        progressBar.style.width = progressAmntDone
-
-        // console.log(progressBar.style.width);
-        finishedBuffers.length === libraryData.length ? window.setTimeout(() => {
-          // console.log(finishedBuffers);
-          // storage.set('audio', finishedBuffers);
-          // console.log(storage.get('audio'));
-          updateConsole('<i class="glyphicon glyphicon-stop"></i> Ready')
-          $('#modal').modal('hide')
-        }, 3000) : null
-      })
-
-      await waitFor(1000)
-    })
+    libraryTempData.push({
+      catNum: '',
+      compilationId: null,
+      artist: info.artist ? info.artist : '',
+      title: info.title ? info.title : '',
+      description: info.comment ? info.comment.text : '',
+      genre: info.genre ? info.genre : '',
+      bpm: info.bpm ? info.bpm : '',
+      type: info.album ? 'Album' : 'Single',
+      album: info.album ? info.album : '',
+      cover: info.image ? info.image.imageBuffer : '',
+      year: info.year ? info.year : '',
+      copyright: info.copyright ? info.copyright : '',
+      url: '',
+      tags: [],
+      fileBufferId: id,
+      filePath: filePath,
+      fileName: fileName
+    });
   }
 
-  self.scanLibrary = (isUpdate) => {
-    dir.walkParallel(storage.get('preferences.libraryPath'), (err, results) => {
-      if (err)
-        throw err;
+  self.updateLibPath = () => {
+    $('#modal .modal-title').html('Please wait...')
+    $('#modal .modal-body').html('<p>Preparing system...</p>')
+    $('#modal').modal('show')
 
-      results.forEach((filePath, id) => {
-        const fileName = filePath.substr(filePath.lastIndexOf('\/') + 1, filePath.length)
+    audioPlayer.pause()
 
-        if (fileName.split('.').pop() === 'mp3') {
-          const info = id3.get(filePath)
+    libPathInput.innerHTML = storage.get('preferences.libraryPath')
 
-          libraryTempData.push({
-            catNum: '',
-            compilationId: null,
-            artist: info.artist ? info.artist : '',
-            title: info.title ? info.title : '',
-            description: info.comment ? info.comment.text : '',
-            genre: info.genre ? info.genre : '',
-            bpm: info.bpm ? info.bpm : '',
-            type: info.album ? 'Album' : 'Single',
-            album: info.album ? info.album : '',
-            cover: info.image ? info.image.imageBuffer : '',
-            year: info.year ? info.year : '',
-            copyright: info.copyright ? info.copyright : '',
-            url: '',
-            tags: [],
-            fileBufferId: id,
-            filePath: filePath,
-            fileName: fileName
-          })
-        }
+    setTimeout(() => {
+      dir.walkParallel(storage.get('preferences.libraryPath'), (err, results) => {
+        if (err)
+          throw err;
+
+        results.forEach((filePath, id) => {
+          const fileName = filePath.substr(filePath.lastIndexOf('\/') + 1, filePath.length);
+          if (fileName.split('.').pop() === 'mp3') {
+            self.makeLibraryItem(id, fileName, filePath);
+          }
+        });
+
+        fastSort(libraryTempData).asc(u => u.artist)
+        storage.set('library', libraryTempData)
+        libraryTempData = []
+
+        self.filtersSetup(storage.get('library'))
+        self.librarySetup(storage.get('library'))
+        self.updateDisabledFlags()
+
+        self.viewModel.filteredLibrary(self.viewModel.getFilteredLibrary())
+        self.viewModel.filterGroups(self.viewModel.filterGroups())
+
+        updateConsole('<i class="glyphicon glyphicon-stop"></i> Ready')
+        $('#modal').modal('hide')
+        $(window).trigger('resize')
       })
-      console.log(libraryTempData);
-
-      fastSort(libraryTempData).asc(u => u.artist);
-      storage.set('library', libraryTempData)
-      libraryTempData = []
-
-      self.initLibrary(storage, isUpdate)
-    })
+    }, 1000)
   }
 
-  self.updateLibrary = (libraryData) => {
+  self.scanLibrary = () => {
+    setTimeout(() => {
+      dir.walkParallel(storage.get('preferences.libraryPath'), (err, results) => {
+        if (err)
+          throw err;
+
+        results.forEach((filePath, id) => {
+          const fileName = filePath.substr(filePath.lastIndexOf('\/') + 1, filePath.length);
+
+          if (fileName.split('.').pop() === 'mp3') {
+            self.makeLibraryItem(id, fileName, filePath);
+          }
+        });
+
+        fastSort(libraryTempData).asc(u => u.artist);
+        storage.set('library', libraryTempData)
+        libraryTempData = []
+
+        self.initLibrary(storage)
+      })
+    }, 1000);
+  }
+
+  self.updateLibrary = () => {
+    let libraryData = storage.get('library')
     self.refreshTagFilters(libraryData)
     self.librarySetup(libraryData)
     self.updateDisabledFlags()
@@ -636,10 +683,10 @@ const Library = function() {
     // console.log(storage.get('library'))
   }
 
-  self.initLibrary = (storage, isUpdate) => {
+  self.initLibrary = () => {
     if (!storage.get('library').length) {
       console.log('no library');
-      self.scanLibrary(isUpdate);
+      self.scanLibrary();
     }
     else {
       console.log('has library');
@@ -650,11 +697,9 @@ const Library = function() {
       self.playlistSetup(libraryData)
       self.updateDisabledFlags()
 
-      if (!isUpdate)
-        ko.applyBindings(self.viewModel, document.querySelector('#MusicLibrary'))
+      ko.applyBindings(self.viewModel, document.querySelector('#MusicLibrary'))
 
       // load preferences
-      libPathInput = document.querySelector('#LibraryPath')
       libPathInput.innerHTML = storage.get('preferences.libraryPath')
 
       // front load audio files
@@ -684,31 +729,32 @@ const Library = function() {
     }
   }
 
-  self.init = (storageFromIndex, isUpdate = false) => {
-    storage = storageFromIndex;
+  self.init = (Storage) => {
+    $('#modal .modal-title').html('Please wait...');
+    $('#modal .modal-body').html('<p>Preparing system...</p>');
+    $('#modal').modal('show');
 
-    $('#modal .modal-title').html('Please wait...')
-    $('#modal .modal-body').html('<p>Preparing system...</p>')
-    $('#modal').modal('show')
+    // set global storage pointer
+    storage = Storage;
 
     // initializ storage bins
-    if (isUpdate || !storage.get('library'))
-      storage.set('library', [])
+    if (!storage.get('library'))
+      storage.set('library', []);
 
     if (!storage.get('playlist'))
-      storage.set('playlist', [])
+      storage.set('playlist', []);
 
     if (!storage.get('lastPlayed'))
-      storage.set('lastPlayed', {})
+      storage.set('lastPlayed', {});
 
     if (!storage.get('preferences.libraryPath'))
-      storage.set('preferences', { 'libraryPath': defaultLibPath })
+      storage.set('preferences', { 'libraryPath': defaultLibPath });
 
-    self.viewModel = new self.libraryVM()
-    self.initLibrary(storage, isUpdate)
+    self.viewModel = new self.libraryVM();
+    self.initLibrary();
   }
-}
+};
 
 module.exports = {
     Library: Library
-}
+};

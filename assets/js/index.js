@@ -5,22 +5,11 @@ const remote = require('electron').remote
 const { Menu, MenuItem } = remote
 const mainProcess = remote.require('./main')
 const path = require('path')
-const fastSort = require('fast-sort')
 const store = require('electron-store')
 const storage = new store()
 
 const library = require(path.resolve('./assets/js/library'))
 const Library = new library.Library
-
-const dir = require(path.resolve('./assets/js/dir'));
-const id3 = require(path.resolve('./assets/js/id3'))
-
-// defaults / temp
-const defaultLibPath = './mp3'
-let libraryTempData = []
-
-// preferences settings
-let libPathInput
 
 // app process feedback
 const feedback = require(path.resolve('./assets/js/feedback'))
@@ -59,8 +48,7 @@ dirDialogBtn.addEventListener('click', () => {
   mainProcess.selectDirectory((path) => {
     if (path) {
       storage.set('preferences.libraryPath', path[0])
-      updateLibPath()
-      // Library.init(storage, true)
+      Library.updateLibPath()
     }
   })
 })
@@ -137,6 +125,7 @@ const menuRemovePlaylistClicked = () => {
   contextMenuRef.children[contextMenuRef.cells.length - 1].children[3].click();
 }
 
+// watch for right clicks
 window.addEventListener('contextmenu', (e) => {
   e.preventDefault()
   contentMenuRef = null;
@@ -165,70 +154,5 @@ window.addEventListener('contextmenu', (e) => {
   }
 }, false)
 
-// updates the library path in preferences
-const updateLibPath = () => {
-  console.log('update preferences')
-  // const libraryData = storage.get('library')
-
-  audioPlayer.pause()
-
-  $('#modal .modal-title').html('Please wait...')
-  $('#modal .modal-body').html('<p>Preparing system...</p>')
-  $('#modal').modal('show')
-
-  libPathInput = document.querySelector('#LibraryPath')
-  libPathInput.innerHTML = storage.get('preferences.libraryPath')
-
-  window.setTimeout(() => {
-    dir.walkParallel(storage.get('preferences.libraryPath'), (err, results) => {
-      if (err)
-        throw err;
-
-      results.forEach((filePath, id) => {
-        const fileName = filePath.substr(filePath.lastIndexOf('\/') + 1, filePath.length)
-
-        if (fileName.split('.').pop() === 'mp3') {
-          const info = id3.get(filePath)
-
-          libraryTempData.push({
-            catNum: '',
-            compilationId: null,
-            artist: info.artist ? info.artist : '',
-            title: info.title ? info.title : '',
-            description: info.comment ? info.comment.text : '',
-            genre: info.genre ? info.genre : '',
-            bpm: info.bpm ? info.bpm : '',
-            type: info.album ? 'Album' : 'Single',
-            album: info.album ? info.album : '',
-            cover: info.image ? info.image.imageBuffer : '',
-            year: info.year ? info.year : '',
-            copyright: info.copyright ? info.copyright : '',
-            url: '',
-            tags: [],
-            fileBufferId: id,
-            filePath: filePath,
-            fileName: fileName
-          })
-        }
-      })
-      // console.log(libraryTempData);
-
-      fastSort(libraryTempData).asc(u => u.artist)
-      storage.set('library', libraryTempData)
-      libraryTempData = []
-
-      Library.filtersSetup(storage.get('library'))
-      Library.librarySetup(storage.get('library'))
-      Library.updateDisabledFlags()
-
-      Library.viewModel.filteredLibrary(Library.viewModel.getFilteredLibrary())
-      Library.viewModel.filterGroups(Library.viewModel.filterGroups())
-
-      updateConsole('<i class="glyphicon glyphicon-stop"></i> Ready')
-      $('#modal').modal('hide')
-      $(window).trigger('resize')
-    })
-  }, 1000)
-}
-
-Library.init(storage, false)
+// start
+Library.init(storage)
