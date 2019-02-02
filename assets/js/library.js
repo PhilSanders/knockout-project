@@ -8,6 +8,7 @@ const fastSort = require('fast-sort')
 const mp3Duration = require('mp3-duration')
 
 const dataUrl = require(path.resolve('./assets/js/base64'))
+const dir = require(path.resolve('./assets/js/dir'));
 const id3 = require(path.resolve('./assets/js/id3'))
 
 const feedback = require(path.resolve('./assets/js/feedback'))
@@ -19,6 +20,12 @@ const audioSource = audio.audioSource
 const visualizer = audio.visualizer
 
 let storage = {} // this gets set at initCallback(storageFromIndex)
+
+// defaults / temp
+const defaultLibPath = './mp3'
+let libraryTempData = []
+
+let libPathInput = document.querySelector('#LibraryPath')
 
 const waitFor = (ms) => new Promise(r => setTimeout(r, ms))
 
@@ -177,7 +184,7 @@ const Library = function() {
     this.addItemToPlaylist = (item, autoPlay, active) => {
       let playlistData = this.playlistCoreData()
 
-      mp3Duration(item.filePath, (err, duration) => {
+      let duration = mp3Duration(item.filePath, (err, duration) => {
         if (err) return console.log(err.message)
 
         let durmins = Math.floor(duration / 60)
@@ -189,14 +196,17 @@ const Library = function() {
         item.id = playlistData.length + 1
         item.time = durmins + ':' + dursecs
         item.active(active)
+      })
 
-        playlistData.push(item)
+      duration.then(() => {
+        playlistData.push(item);
+        storage.set('playlist', playlistData);
+        this.playlistCoreData(playlistData);
 
-        storage.set('playlist', playlistData)
-        this.playlistCoreData(playlistData)
-        if (autoPlay) this.playThisItem(item, true)
+        if (autoPlay)
+          this.playThisItem(item, true)
 
-        console.log(playlistData)
+        //console.log(playlistData)
       })
     }
 
@@ -283,7 +293,7 @@ const Library = function() {
         })
 
         storage.set('library', storageUpdate)
-        self.updateCallback(storageUpdate)
+        self.updateLibrary()
 
         $('#modal').modal('hide')
       })
@@ -308,6 +318,38 @@ const Library = function() {
     }
 
     let success = id3.update(tags, item.filePath)
+  }
+
+  self.storeBase64 = (libraryData) => { // Asynchronous Process
+    const progressBar = document.querySelector('#ModalProgressBar')
+    const progressAmount = document.querySelector('#ModalProgressBar span')
+    let finishedBuffers = []
+
+    asyncForEach(libraryData, async (libItem, n) => {
+      const promise = dataUrl.base64(libItem.filePath, 'audio/mp3')
+
+      updateConsole('<i class="glyphicon glyphicon-refresh"></i> Reading: ' + libItem.filePath)
+
+      promise.then((fileBuffer) => {
+        let key = libItem.fileBufferId
+        finishedBuffers.push({[key]: fileBuffer})
+
+        const progressAmntDone = Math.floor(100 *  finishedBuffers.length / libraryData.length) + '%'
+        progressAmount.innerHTML = progressAmntDone
+        progressBar.style.width = progressAmntDone
+
+        // console.log(progressBar.style.width);
+        finishedBuffers.length === libraryData.length ? window.setTimeout(() => {
+          // console.log(finishedBuffers);
+          // storage.set('audio', finishedBuffers);
+          // console.log(storage.get('audio'));
+          updateConsole('<i class="glyphicon glyphicon-stop"></i> Ready')
+          $('#modal').modal('hide')
+        }, 3000) : null
+      })
+
+      await waitFor(1000)
+    })
   }
 
   self.toggleFilter = (filter) => {
@@ -546,39 +588,94 @@ const Library = function() {
     self.viewModel.filteredLibrary(self.viewModel.getFilteredLibrary())
   }
 
-  self.storeBase64 = (libraryData) => { // Asynchronous Process
-    const progressBar = document.querySelector('#ModalProgressBar')
-    const progressAmount = document.querySelector('#ModalProgressBar span')
-    let finishedBuffers = []
+  self.makeLibraryItem = (id, fileName, filePath ) => {
+    const info = id3.get(filePath);
 
-    asyncForEach(libraryData, async (libItem, n) => {
-      const promise = dataUrl.base64(libItem.filePath, 'audio/mp3')
-
-      updateConsole('<i class="glyphicon glyphicon-refresh"></i> Reading: ' + libItem.filePath)
-
-      promise.then((fileBuffer) => {
-        let key = libItem.fileBufferId
-        finishedBuffers.push({[key]: fileBuffer})
-
-        const progressAmntDone = Math.floor(100 *  finishedBuffers.length / libraryData.length) + '%'
-        progressAmount.innerHTML = progressAmntDone
-        progressBar.style.width = progressAmntDone
-
-        // console.log(progressBar.style.width);
-        finishedBuffers.length === libraryData.length ? window.setTimeout(() => {
-          // console.log(finishedBuffers);
-          // storage.set('audio', finishedBuffers);
-          // console.log(storage.get('audio'));
-          updateConsole('<i class="glyphicon glyphicon-stop"></i> Ready')
-          $('#modal').modal('hide')
-        }, 3000) : null
-      })
-
-      await waitFor(1000)
-    })
+    libraryTempData.push({
+      catNum: '',
+      compilationId: null,
+      artist: info.artist ? info.artist : '',
+      title: info.title ? info.title : '',
+      description: info.comment ? info.comment.text : '',
+      genre: info.genre ? info.genre : '',
+      bpm: info.bpm ? info.bpm : '',
+      type: info.album ? 'Album' : 'Single',
+      album: info.album ? info.album : '',
+      cover: info.image ? info.image.imageBuffer : '',
+      year: info.year ? info.year : '',
+      copyright: info.copyright ? info.copyright : '',
+      url: '',
+      tags: [],
+      fileBufferId: id,
+      filePath: filePath,
+      fileName: fileName
+    });
   }
 
-  self.updateCallback = (libraryData) => {
+  self.updateLibPath = () => {
+    $('#modal .modal-title').html('Please wait...')
+    $('#modal .modal-body').html('<p>Preparing system...</p>')
+    $('#modal').modal('show')
+
+    audioPlayer.pause()
+
+    libPathInput.innerHTML = storage.get('preferences.libraryPath')
+
+    setTimeout(() => {
+      dir.walkParallel(storage.get('preferences.libraryPath'), (err, results) => {
+        if (err)
+          throw err;
+
+        results.forEach((filePath, id) => {
+          const fileName = filePath.substr(filePath.lastIndexOf('\/') + 1, filePath.length);
+          if (fileName.split('.').pop() === 'mp3') {
+            self.makeLibraryItem(id, fileName, filePath);
+          }
+        });
+
+        fastSort(libraryTempData).asc(u => u.artist)
+        storage.set('library', libraryTempData)
+        libraryTempData = []
+
+        self.filtersSetup(storage.get('library'))
+        self.librarySetup(storage.get('library'))
+        self.updateDisabledFlags()
+
+        self.viewModel.filteredLibrary(self.viewModel.getFilteredLibrary())
+        self.viewModel.filterGroups(self.viewModel.filterGroups())
+
+        updateConsole('<i class="glyphicon glyphicon-stop"></i> Ready')
+        $('#modal').modal('hide')
+        $(window).trigger('resize')
+      })
+    }, 1000)
+  }
+
+  self.scanLibrary = () => {
+    setTimeout(() => {
+      dir.walkParallel(storage.get('preferences.libraryPath'), (err, results) => {
+        if (err)
+          throw err;
+
+        results.forEach((filePath, id) => {
+          const fileName = filePath.substr(filePath.lastIndexOf('\/') + 1, filePath.length);
+
+          if (fileName.split('.').pop() === 'mp3') {
+            self.makeLibraryItem(id, fileName, filePath);
+          }
+        });
+
+        fastSort(libraryTempData).asc(u => u.artist);
+        storage.set('library', libraryTempData)
+        libraryTempData = []
+
+        self.initLibrary(storage)
+      })
+    }, 1000);
+  }
+
+  self.updateLibrary = () => {
+    let libraryData = storage.get('library')
     self.refreshTagFilters(libraryData)
     self.librarySetup(libraryData)
     self.updateDisabledFlags()
@@ -586,54 +683,78 @@ const Library = function() {
     // console.log(storage.get('library'))
   }
 
-  self.initSetup = (storageFromIndex) => {
-    storage = storageFromIndex
+  self.initLibrary = () => {
+    if (!storage.get('library').length) {
+      console.log('no library');
+      self.scanLibrary();
+    }
+    else {
+      console.log('has library');
+      let libraryData = storage.get('library')
 
-    let libraryData = storage.get('library')
+      self.filtersSetup(libraryData)
+      self.librarySetup(libraryData)
+      self.playlistSetup(libraryData)
+      self.updateDisabledFlags()
 
-    self.filtersSetup(libraryData)
-    self.librarySetup(libraryData)
-    self.playlistSetup(libraryData)
-    self.updateDisabledFlags()
+      ko.applyBindings(self.viewModel, document.querySelector('#MusicLibrary'))
 
-    ko.applyBindings(self.viewModel, document.querySelector('#MusicLibrary'))
+      // load preferences
+      libPathInput.innerHTML = storage.get('preferences.libraryPath')
 
-    // load preferences
-    libPathInput = document.querySelector('#LibraryPath')
-    libPathInput.innerHTML = storage.get('preferences.libraryPath')
+      // front load audio files
+      // $('#modal .modal-title').html('Please wait...')
+      // $('#modal .modal-body').html('<p>Reading: ' + storage.get('preferences.libraryPath') + '</p>' + progressBarHtml)
+      // $('#modal').modal('show')
+      // self.storeBase64(libraryData) // TODO do more testing with storage, currently only for show...
 
-    // front load audio files
-    // $('#modal .modal-title').html('Please wait...')
-    // $('#modal .modal-body').html('<p>Reading: ' + storage.get('preferences.libraryPath') + '</p>' + progressBarHtml)
-    // $('#modal').modal('show')
-    // self.storeBase64(libraryData) // TODO do more testing with storage, currently only for show...
+      // sets up fixed position table header
+      $(document).ready(() => {
+        $('.table-fixed').tableFixedHeader({
+          scrollContainer: '.scroll-area'
+        })
 
-    // sets up fixed position table header
-    $(document).ready(() => {
-      $('.table-fixed').tableFixedHeader({
-        scrollContainer: '.scroll-area'
+        $('.table-fixed th a').on('click', (elm) => {
+          self.viewModel.sorterClicked(elm.currentTarget.dataset.sorter)
+        })
+
+        // load last played item
+        if (storage.get('lastPlayed')) {
+          self.lastPlayedSetup()
+        }
       })
 
-      $('.table-fixed th a').on('click', (elm) => {
-        self.viewModel.sorterClicked(elm.currentTarget.dataset.sorter)
-      })
-
-      // load last played item
-      if (storage.get('lastPlayed')) {
-        self.lastPlayedSetup()
-      }
-    })
-
-    updateConsole('<i class="glyphicon glyphicon-stop"></i> Ready')
-    $('#modal').modal('hide')
+      updateConsole('<i class="glyphicon glyphicon-stop"></i> Ready')
+      $('#modal').modal('hide')
+    }
   }
 
-  self.init = (storageFromIndex) => {
-    self.viewModel = new self.libraryVM()
-    self.initSetup(storageFromIndex)
+  self.init = (Storage) => {
+    $('#modal .modal-title').html('Please wait...');
+    $('#modal .modal-body').html('<p>Preparing system...</p>');
+    $('#modal').modal('show');
+
+    // set global storage pointer
+    storage = Storage;
+
+    // initializ storage bins
+    if (!storage.get('library'))
+      storage.set('library', []);
+
+    if (!storage.get('playlist'))
+      storage.set('playlist', []);
+
+    if (!storage.get('lastPlayed'))
+      storage.set('lastPlayed', {});
+
+    if (!storage.get('preferences.libraryPath'))
+      storage.set('preferences', { 'libraryPath': defaultLibPath });
+
+    self.viewModel = new self.libraryVM();
+    self.initLibrary();
   }
-}
+};
 
 module.exports = {
     Library: Library
-}
+};
