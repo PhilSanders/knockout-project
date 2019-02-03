@@ -1,7 +1,7 @@
 // assets / js / base64
 
-const fs = require('fs')
-const dataurl = require('dataurl')
+const fs = require('fs');
+const dataurl = require('dataurl');
 
 const base64 = (filePath, mimetype) => {
   const promise = new Promise((resolve, reject) => {
@@ -11,7 +11,7 @@ const base64 = (filePath, mimetype) => {
     });
   });
   return promise;
-}
+};
 
 const encode = (input) => {
     const keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
@@ -38,9 +38,9 @@ const encode = (input) => {
                   keyStr.charAt(enc3) + keyStr.charAt(enc4);
     }
     return output;
-}
+};
 
 module.exports = {
   base64: base64,
   encode: encode
-}
+};

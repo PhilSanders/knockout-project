@@ -1,7 +1,7 @@
 // assets / js / dir
 
-const fs = require('fs')
-const path = require('path')
+const fs = require('fs');
+const path = require('path');
 
 const walkParallel = function(dir, callbackFunc) {
   let results = [];
@@ -31,7 +31,7 @@ const walkParallel = function(dir, callbackFunc) {
       });
     });
   });
-}
+};
 
 const walkSerial = function(dir, callbackFunc) {
   let results = [];
@@ -61,9 +61,9 @@ const walkSerial = function(dir, callbackFunc) {
       });
     })();
   });
-}
+};
 
 module.exports = {
   walkParallel: walkParallel,
   walkSerial: walkSerial
-}
+};
