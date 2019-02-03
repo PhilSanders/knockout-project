@@ -238,6 +238,7 @@ const Library = function() {
       // console.log(item)
       $('#modal .modal-title').html('Edit Info');
       $('#modal .modal-body').html(id3.editorTemplate(item));
+      $('#modal').modal({ backdrop: 'static' });
       $('#modal').modal('show');
 
       const fileDialogBtn = document.querySelector('#FileBtn'),
@@ -589,7 +590,7 @@ const Library = function() {
     self.viewModel.filteredLibrary(self.viewModel.getFilteredLibrary());
   };
 
-  self.makeLibraryItem = (id, fileName, filePath ) => {
+  self.makeLibraryItem = (id, fileName, filePath , callbackFunc) => {
     const info = id3.get(filePath);
 
     libraryTempData.push({
@@ -611,11 +612,14 @@ const Library = function() {
       filePath: filePath,
       fileName: fileName
     });
+
+    return callbackFunc();
   };
 
   self.updateLibPath = () => {
     $('#modal .modal-title').html('Please wait...');
     $('#modal .modal-body').html('<p>Reading: ' + storage.get('preferences.libraryPath') + '</p>' + progressBarHtml);
+    $('#modal').modal({ backdrop: 'static' });
     $('#modal').modal('show');
 
     const progressBar = document.querySelector('#ModalProgressBar');
@@ -641,8 +645,9 @@ const Library = function() {
           const fileName = filePath.substr(filePath.lastIndexOf('\/') + 1, filePath.length);
           updateConsole('<i class="glyphicon glyphicon-refresh"></i> Reading: ' + filePath);
 
-          self.makeLibraryItem(id, fileName, filePath);
-          finished.push({[id]: fileName});
+          self.makeLibraryItem(id, fileName, filePath, ()=> {
+            finished.push({[id]: fileName});
+          });
 
           const progressAmntDone = Math.floor(100 *  finished.length / results.length) + '%';
           progressAmount.innerHTML = progressAmntDone;
@@ -673,6 +678,7 @@ const Library = function() {
   self.scanLibrary = () => {
     $('#modal .modal-title').html('Please wait...');
     $('#modal .modal-body').html('<p>Reading: ' + storage.get('preferences.libraryPath') + '</p>' + progressBarHtml);
+    $('#modal').modal({ backdrop: 'static' });
     $('#modal').modal('show');
 
     const progressBar = document.querySelector('#ModalProgressBar');
@@ -695,8 +701,9 @@ const Library = function() {
           const fileName = filePath.substr(filePath.lastIndexOf('\/') + 1, filePath.length);
           updateConsole('<i class="glyphicon glyphicon-refresh"></i> Reading: ' + filePath);
 
-          self.makeLibraryItem(id, fileName, filePath);
-          finished.push({[id]: fileName});
+          self.makeLibraryItem(id, fileName, filePath, ()=> {
+            finished.push({[id]: fileName});
+          });
 
           const progressAmntDone = Math.floor(100 *  finished.length / results.length) + '%';
           progressAmount.innerHTML = progressAmntDone;
@@ -713,7 +720,7 @@ const Library = function() {
           await waitFor(100);
         });
       })
-    }, 3000);
+    }, 1000);
   };
 
   self.updateLibrary = () => {
@@ -774,6 +781,7 @@ const Library = function() {
   self.init = (Storage) => {
     $('#modal .modal-title').html('Please wait...');
     $('#modal .modal-body').html('<p>Preparing system...</p>');
+    $('#modal').modal({ backdrop: 'static' });
     $('#modal').modal('show');
 
     // set global storage object
