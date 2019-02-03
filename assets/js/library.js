@@ -615,11 +615,14 @@ const Library = function() {
 
   self.updateLibPath = () => {
     $('#modal .modal-title').html('Please wait...');
-    $('#modal .modal-body').html('<p>Preparing system...</p>');
+    $('#modal .modal-body').html('<p>Reading: ' + storage.get('preferences.libraryPath') + '</p>' + progressBarHtml);
     $('#modal').modal('show');
 
-    audioPlayer.pause();
+    const progressBar = document.querySelector('#ModalProgressBar');
+    const progressAmount = document.querySelector('#ModalProgressBar span');
+    let finished = [];
 
+    audioPlayer.pause();
     libPathInput.innerHTML = storage.get('preferences.libraryPath');
 
     setTimeout(() => {
@@ -627,52 +630,90 @@ const Library = function() {
         if (err)
           throw err;
 
-        results.forEach((filePath, id) => {
-          const fileName = filePath.substr(filePath.lastIndexOf('\/') + 1, filePath.length);
-          if (fileName.split('.').pop() === 'mp3') {
-            self.makeLibraryItem(id, fileName, filePath);
-          }
+        results = results.filter((item) => {
+          if (item.split('.').pop() === 'mp3')
+            return item;
         });
 
-        fastSort(libraryTempData).asc(u => u.artist);
-        storage.set('library', libraryTempData);
-        libraryTempData = [];
+        fastSort(results).asc(u => u.artist);
 
-        self.filtersSetup(storage.get('library'));
-        self.librarySetup(storage.get('library'));
-        self.updateDisabledFlags();
+        asyncForEach(results, async (filePath, id) => {
+          const fileName = filePath.substr(filePath.lastIndexOf('\/') + 1, filePath.length);
+          updateConsole('<i class="glyphicon glyphicon-refresh"></i> Reading: ' + filePath);
 
-        self.viewModel.filteredLibrary(self.viewModel.getFilteredLibrary());
-        self.viewModel.filterGroups(self.viewModel.filterGroups());
+          self.makeLibraryItem(id, fileName, filePath);
+          finished.push({[id]: fileName});
 
-        updateConsole('<i class="glyphicon glyphicon-stop"></i> Ready');
-        $('#modal').modal('hide');
-        $(window).trigger('resize');
+          const progressAmntDone = Math.floor(100 *  finished.length / results.length) + '%';
+          progressAmount.innerHTML = progressAmntDone;
+          progressBar.style.width = progressAmntDone;
+
+          finished.length === results.length ? window.setTimeout(() => {
+            storage.set('library', libraryTempData);
+            libraryTempData = [];
+
+            self.filtersSetup(storage.get('library'));
+            self.librarySetup(storage.get('library'));
+            self.updateDisabledFlags();
+
+            self.viewModel.filteredLibrary(self.viewModel.getFilteredLibrary());
+            self.viewModel.filterGroups(self.viewModel.filterGroups());
+
+            updateConsole('<i class="glyphicon glyphicon-stop"></i> Ready');
+            $('#modal').modal('hide');
+            $(window).trigger('resize');
+          }, 3000) : null;
+
+          await waitFor(100);
+        });
       })
     }, 1000);
   };
 
   self.scanLibrary = () => {
+    $('#modal .modal-title').html('Please wait...');
+    $('#modal .modal-body').html('<p>Reading: ' + storage.get('preferences.libraryPath') + '</p>' + progressBarHtml);
+    $('#modal').modal('show');
+
+    const progressBar = document.querySelector('#ModalProgressBar');
+    const progressAmount = document.querySelector('#ModalProgressBar span');
+    let finished = [];
+
     setTimeout(() => {
       dir.walkParallel(storage.get('preferences.libraryPath'), (err, results) => {
         if (err)
           throw err;
 
-        results.forEach((filePath, id) => {
-          const fileName = filePath.substr(filePath.lastIndexOf('\/') + 1, filePath.length);
-
-          if (fileName.split('.').pop() === 'mp3') {
-            self.makeLibraryItem(id, fileName, filePath);
-          }
+        results = results.filter((item) => {
+          if (item.split('.').pop() === 'mp3')
+            return item;
         });
 
-        fastSort(libraryTempData).asc(u => u.artist);
-        storage.set('library', libraryTempData);
-        libraryTempData = [];
+        fastSort(results).asc(u => u.artist);
 
-        self.initLibrary(storage);
+        asyncForEach(results, async (filePath, id) => {
+          const fileName = filePath.substr(filePath.lastIndexOf('\/') + 1, filePath.length);
+          updateConsole('<i class="glyphicon glyphicon-refresh"></i> Reading: ' + filePath);
+
+          self.makeLibraryItem(id, fileName, filePath);
+          finished.push({[id]: fileName});
+
+          const progressAmntDone = Math.floor(100 *  finished.length / results.length) + '%';
+          progressAmount.innerHTML = progressAmntDone;
+          progressBar.style.width = progressAmntDone;
+
+          finished.length === results.length ? window.setTimeout(() => {
+            storage.set('library', libraryTempData);
+            libraryTempData = [];
+
+            self.initLibrary(storage);
+
+          }, 3000) : null;
+
+          await waitFor(100);
+        });
       })
-    }, 1000);
+    }, 3000);
   };
 
   self.updateLibrary = () => {
